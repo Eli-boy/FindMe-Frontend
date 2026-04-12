@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useCart } from "../CartContext";
-import { useSearchParams } from "next/navigation";
 
 /* ================= TYPES ================= */
 type Product = {
@@ -22,10 +21,14 @@ const products: Product[] = [
   { id: 5, name: "Kids Wristband", price: 2800, image: "/qr5.PNG", category: "sticker" },
 ];
 
-export default function ShopPage() {
+export default function ShopPage({
+  searchParams,
+}: {
+  searchParams: { category?: string };
+}) {
   const { addToCart } = useCart();
-  const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+
+  const category = searchParams?.category;
 
   /* ================= FILTER ================= */
   const filteredProducts =
