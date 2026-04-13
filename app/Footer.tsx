@@ -84,7 +84,7 @@ export default function Footer() {
 
       {/* FLOATING WHATSAPP BUTTON */}
       <a
-        href="https://wa.me/2348000000000?text=Hello%20👋%20I’m%20interested%20in%20FindMe%20tags.%20Can%20you%20help%20me?"
+        href="https://wa.me/2348151171029?text=Hello%20👋%20I’m%20interested%20in%20FindMe%20tags.%20Can%20you%20help%20me?"
         target="_blank"
         className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:scale-110 transition z-[100]"
       >
