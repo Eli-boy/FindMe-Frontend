@@ -16,7 +16,7 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  /* ================= SCROLL EFFECT ================= */
+  /* ================= SCROLL ================= */
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
@@ -38,7 +38,7 @@ export default function Navbar() {
     return () => window.removeEventListener("click", handleClickOutside);
   }, []);
 
-  /* ================= CLOSE MENU ON ROUTE CHANGE ================= */
+  /* ================= CLOSE ON ROUTE CHANGE ================= */
   useEffect(() => {
     setOpenShop(false);
     setMenuOpen(false);
@@ -47,14 +47,14 @@ export default function Navbar() {
   return (
     <>
       {/* TOP BAR */}
-      <div className="fixed top-0 left-0 w-full z-[60] bg-green-700 text-white text-center text-sm py-2">
+      <div className="fixed top-0 left-0 w-full z-[60] bg-gradient-to-r from-green-700 to-green-600 text-white text-center text-sm py-2 tracking-wide">
         Never lose your items again 🔍
       </div>
 
       {/* NAVBAR */}
       <nav
-        className={`fixed top-8 left-0 w-full z-[50] backdrop-blur-md bg-white/100 border-b transition-all duration-300 ${
-          scrolled ? "shadow-md" : ""
+        className={`fixed top-8 left-0 w-full z-[50] backdrop-blur-2xl bg-white/60 border-b border-gray-200/60 transition-all duration-300 ${
+          scrolled ? "shadow-lg bg-white/80" : ""
         }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
@@ -62,64 +62,64 @@ export default function Navbar() {
           {/* LEFT */}
           <div className="flex items-center gap-10">
 
-            {/* 🔥 PREMIUM LOGO */}
+            {/* LOGO */}
             <Link href="/" className="flex items-center gap-3 group">
-
               <Image
                 src="/logo.JPG"
                 alt="FindMe Logo"
-                width={48}
-                height={48}
-                className="object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg"
+                width={44}
+                height={44}
+                className="object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-xl"
               />
 
-              <span className="text-2xl md:text-3xl font-bold tracking-tight text-gray-800 group-hover:tracking-wide transition-all">
-                Find<span className="text-green-700">Me</span>
+              <span className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 group-hover:tracking-wide transition-all">
+                Find<span className="text-green-600">Me</span>
               </span>
-
             </Link>
 
             {/* DESKTOP NAV */}
-            <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+            <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
 
               <Link
                 href="/"
-                className={`hover:text-black transition ${
-                  pathname === "/" ? "text-black font-medium" : ""
+                className={`transition hover:text-black ${
+                  pathname === "/" ? "text-black font-semibold" : ""
                 }`}
               >
                 Home
               </Link>
 
-              {/* SHOP DROPDOWN */}
+              {/* SHOP */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setOpenShop(!openShop);
                   }}
-                  className="hover:text-black transition"
+                  className="transition hover:text-black"
                 >
                   Shop ▾
                 </button>
 
                 {openShop && (
                   <div
-                    className="absolute top-10 left-0 w-56 bg-white shadow-xl rounded-xl p-4 z-[999]"
+                    className="absolute top-12 left-0 w-60 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-3 border border-gray-100 animate-fadeIn"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Link href="/shop?category=all" className="block py-2 px-2 rounded hover:bg-gray-100 hover:text-green-700 transition">
-                      All Products
-                    </Link>
-                    <Link href="/shop?category=key" className="block py-2 px-2 rounded hover:bg-gray-100 hover:text-green-700 transition">
-                      Key Tags
-                    </Link>
-                    <Link href="/shop?category=pet" className="block py-2 px-2 rounded hover:bg-gray-100 hover:text-green-700 transition">
-                      Pet Tags
-                    </Link>
-                    <Link href="/shop?category=sticker" className="block py-2 px-2 rounded hover:bg-gray-100 hover:text-green-700 transition">
-                      Stickers
-                    </Link>
+                    {[
+                      { name: "All Products", link: "/shop?category=all" },
+                      { name: "Key Tags", link: "/shop?category=key" },
+                      { name: "Pet Tags", link: "/shop?category=pet" },
+                      { name: "Stickers", link: "/shop?category=sticker" },
+                    ].map((item, i) => (
+                      <Link
+                        key={i}
+                        href={item.link}
+                        className="block px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-green-600 transition"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>
@@ -142,10 +142,13 @@ export default function Navbar() {
             </span>
 
             {/* CART */}
-            <Link href="/cart" className="relative cursor-pointer hover:scale-105 transition">
+            <Link
+              href="/cart"
+              className="relative cursor-pointer hover:scale-110 transition"
+            >
               🛒
               {cart.length > 0 && (
-                <span className="absolute -top-2 -right-3 bg-green-700 text-white text-xs px-1.5 rounded-full">
+                <span className="absolute -top-2 -right-3 bg-green-600 text-white text-xs px-1.5 rounded-full shadow-md">
                   {cart.length}
                 </span>
               )}
@@ -155,7 +158,7 @@ export default function Navbar() {
               Log In
             </span>
 
-            <button className="bg-[#4b2e2e] text-white px-5 py-2 rounded-full text-sm hover:opacity-90 transition">
+            <button className="bg-[#4b2e2e] text-white px-5 py-2 rounded-full text-sm hover:scale-105 hover:shadow-lg transition">
               Tags Management
             </button>
           </div>
@@ -171,16 +174,18 @@ export default function Navbar() {
 
         {/* MOBILE MENU */}
         {menuOpen && (
-          <div className="md:hidden bg-white border-t px-6 py-6 space-y-4 text-gray-700">
+          <div className="md:hidden bg-white/95 backdrop-blur-xl border-t px-6 py-6 space-y-4 text-gray-700 animate-fadeIn">
 
-            <Link href="/">Home</Link>
-            <Link href="/shop">Shop</Link>
-            <Link href="/#how">How It Works</Link>
-            <Link href="/#about">About</Link>
+            <Link href="/" className="block">Home</Link>
+            <Link href="/shop" className="block">Shop</Link>
+            <Link href="/#how" className="block">How It Works</Link>
+            <Link href="/#about" className="block">About</Link>
 
-            <Link href="/cart">🛒 Cart ({cart.length})</Link>
+            <Link href="/cart" className="block">
+              🛒 Cart ({cart.length})
+            </Link>
 
-            <button className="bg-[#4b2e2e] text-white px-4 py-2 rounded-full w-full">
+            <button className="bg-[#4b2e2e] text-white px-4 py-2 rounded-full w-full hover:scale-105 transition">
               Tags Management
             </button>
           </div>
