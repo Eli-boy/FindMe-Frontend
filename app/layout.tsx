@@ -19,7 +19,12 @@ export const metadata: Metadata = {
     template: "%s | FindMe",
   },
   description: "Never lose your items again. Smart QR tags that connect finders to owners instantly.",
+  icons: {
+    icon: "/icon.png",
+  },
 };
+
+
 
 /* ================= ROOT LAYOUT ================= */
 export default function RootLayout({
