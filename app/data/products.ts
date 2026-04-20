@@ -18,7 +18,7 @@ export const products: Product[] = [
   {
     id: 1,
     name: "FindMe Sticker",
-    price: 2000,
+    price: 5500,
     image: "/elo1.png",
     desc: "Perfect for phones, laptops, and personal items.",
     category: "sticker",
@@ -39,7 +39,7 @@ export const products: Product[] = [
   {
     id: 2,
     name: "Premium Key Tag",
-    price: 3500,
+    price: 10000,
     image: "/elo2.png",
     desc: "Attach to your keys and never lose them again.",
     category: "key",
@@ -60,7 +60,7 @@ export const products: Product[] = [
   {
     id: 3,
     name: "Pet Tag",
-    price: 2500,
+    price: 8000,
     image: "/qr3.png",
     desc: "Keep your pets safe and easy to return.",
     category: "pet",
@@ -76,7 +76,7 @@ export const products: Product[] = [
   {
     id: 4,
     name: "Luggage Tag",
-    price: 3000,
+    price: 7500,
     image: "/qr4.png",
     desc: "Travel worry-free with smart luggage tags.",
     category: "key",
@@ -92,7 +92,7 @@ export const products: Product[] = [
   {
     id: 5,
     name: "Kids Wristband",
-    price: 2800,
+    price: 10000,
     image: "/qr5.png",
     desc: "Protect kids with instant contact QR bands.",
     category: "sticker",
