@@ -38,7 +38,7 @@ export const products: Product[] = [
 
   {
     id: 2,
-    name: "Premium Key Tag",
+    name: "Smart Keychain Tag",
     price: 10000,
     image: "/elo2.png",
     desc: "Attach to your keys and never lose them again.",
