@@ -38,7 +38,7 @@ export default function Home() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-            Never Lose What Matters Again
+            Lost it? Consider it Found.
           </h1>
 
           <p className="text-gray-600 mb-8 text-lg md:text-2xl">
