@@ -11,13 +11,13 @@ export default function HowItWorks() {
       image: "/phone-setup.png",
     },
     {
-      title: "Item Gets Lost",
-      desc: "If your item is misplaced, anyone who finds it can scan the QR code.",
+      title: "Link with FindMe ",
+      desc: "After attaching FindMe tag to your item, Next you link the item with FindMe on whatsApp.",
       image: "/phone-scan.png",
     },
     {
       title: "Scan & Connect",
-      desc: "The finder scans the code and gets a secure option to contact you instantly.",
+      desc: "The finder scans the code and contact you instantly.",
       image: "/phone-contact.png",
     },
     {
