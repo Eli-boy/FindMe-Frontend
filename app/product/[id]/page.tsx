@@ -55,9 +55,8 @@ export default function ProductPage() {
           </h1>
 
           <p className="text-gray-600 mb-6 leading-relaxed">
-            Smart Keychain tag that helps you recover lost items instantly.
-            No apps required — just scan and connect via WhatsApp.
-          </p>
+            {product.desc}
+        </p>
 
           <p className="text-3xl font-semibold mb-8 text-gray-900">
             ₦{product.price.toLocaleString()}
