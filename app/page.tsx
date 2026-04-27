@@ -8,17 +8,6 @@ import { products } from "./data/products";
 import toast from "react-hot-toast";
 import { useCart } from "./CartContext";
 
-/* ================= TYPES ================= */
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-};
-
-/* ================= DATA ================= */
-
-
 export default function Home() {
   const { addToCart } = useCart();
 
@@ -28,7 +17,6 @@ export default function Home() {
       {/* ================= HERO ================= */}
       <section className="px-6 md:px-12 py-28 flex flex-col md:flex-row items-center justify-between gap-16 relative overflow-hidden">
 
-        {/* Glow */}
         <div className="absolute inset-0 bg-gradient-to-r from-green-100 via-transparent to-green-100 blur-3xl opacity-40"></div>
 
         {/* TEXT */}
@@ -36,24 +24,31 @@ export default function Home() {
           className="max-w-xl relative z-10"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
         >
           <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-            Lost it? Consider it Found.
+            Lost it? <br /> Consider it Found.
           </h1>
 
           <p className="text-gray-600 mb-8 text-lg md:text-2xl">
-            Whether it's your luggage, pet, keys, or personal items — FindMe connects you instantly to the person who finds them.
+            Attach a FindMe tag to anything.  
+            If it gets lost, anyone can scan and contact you instantly via WhatsApp.
           </p>
 
-          <motion.a
-            href="/shop"
-            whileHover={{ scale: 1.07 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-block bg-green-700 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-2xl transition"
-          >
-            Shop Now
-          </motion.a>
+          <div className="flex gap-4 flex-wrap">
+            <Link
+              href="/shop"
+              className="bg-green-700 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-2xl transition"
+            >
+              Get Your Tag
+            </Link>
+
+            <a
+              href="#how"
+              className="border border-gray-300 px-8 py-4 rounded-full hover:bg-gray-100 transition"
+            >
+              How It Works
+            </a>
+          </div>
         </motion.div>
 
         {/* IMAGE */}
@@ -68,7 +63,7 @@ export default function Home() {
           >
             <Image
               src="/phone.png"
-              alt="Preview"
+              alt="FindMe Preview"
               width={420}
               height={650}
               className="drop-shadow-2xl"
@@ -83,7 +78,7 @@ export default function Home() {
           Shop Tags
         </h2>
 
-        <div className="flex gap-6 overflow-x-auto scroll-smooth pb-4">
+        <div className="flex gap-6 overflow-x-auto pb-4">
 
           {products.map((p) => (
             <Link key={p.id} href={`/product/${p.id}`}>
@@ -94,10 +89,10 @@ export default function Home() {
                   alt={p.name}
                   width={220}
                   height={160}
-                  className="w-full h-auto object-contain group-hover:scale-105 transition duration-300"
+                  className="w-full object-contain group-hover:scale-105 transition"
                 />
 
-                <h3 className="mt-4 font-semibold text-gray-800 group-hover:text-green-700 transition">
+                <h3 className="mt-4 font-semibold text-gray-800 group-hover:text-green-700">
                   {p.name}
                 </h3>
 
@@ -105,17 +100,21 @@ export default function Home() {
                   ₦{p.price.toLocaleString()}
                 </p>
 
+                <p className="text-sm text-gray-500">
+                  Smart recovery tag
+                </p>
+
                 {/* BUTTON */}
                 <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  addToCart(p);
-                  toast.success(`${p.name} added to cart 🛒`);
-                }}
-                className="bg-green-700 text-white px-4 py-2 mt-4 rounded-full w-full hover:scale-105 hover:shadow-lg transition duration-200"
-              >
-                Add to Cart
-              </button>
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addToCart(p);
+                    toast.success(`${p.name} added to cart 🛒`);
+                  }}
+                  className="bg-green-700 text-white px-4 py-2 mt-4 rounded-full w-full hover:scale-105 hover:shadow-lg transition"
+                >
+                  Add to Cart
+                </button>
 
               </div>
             </Link>
@@ -125,41 +124,85 @@ export default function Home() {
       </section>
 
       {/* ================= HOW IT WORKS ================= */}
-      <HowItWorks />
+      <div id="how">
+        <HowItWorks />
+      </div>
+
+      {/* ================= WHY FINDME ================= */}
+      <section className="py-24 px-6 md:px-12 bg-white text-center">
+        <h2 className="text-4xl font-bold mb-12">
+          Why Choose FindMe?
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-10 text-gray-700">
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">⚡ Instant Chat</h3>
+            <p>Chat instantly with the finder via WhatsApp.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">📱 No App Needed</h3>
+            <p>No downloads required for the finder.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">🌍 Works Anywhere</h3>
+            <p>Global system that works everywhere.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">🔒 Secure</h3>
+            <p>Your identity stays protected.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">⏱ Fast Recovery</h3>
+            <p>Get lost items back faster.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-lg mb-2">🎯 Simple</h3>
+            <p>Just scan and connect.</p>
+          </div>
+
+        </div>
+      </section>
 
       {/* ================= ABOUT ================= */}
       <section className="py-24 px-6 md:px-12 bg-[#f7f5f2]">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-20">
+        <div className="flex flex-col md:flex-row items-center gap-20">
 
-          {/* TEXT */}
           <div className="max-w-xl">
             <h2 className="text-5xl font-bold mb-6">
               Meet Find<span className="text-green-700">Me</span>
             </h2>
 
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              FindMe helps you recover lost items faster by connecting you directly with the finder through WhatsApp.
-              At FindMe, we are dedicated to bringing peace of mind to everyday life. Founded on the principles of <span className="text-green-700 font-bold text-xl"> Reliability, Quality, and Innovation</span>.
+            <p className="text-gray-600 mb-6">
+              FindMe connects you instantly with anyone who finds your lost items.
+              No apps, no stress — just scan and chat.
             </p>
 
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              Our journey began with a simple idea: to make it easier for people to protect their belongings and loved ones in a busy, ever-connected world. From luggage tags to wristbands for kids, our products are designed with one goal in mind—to provide a seamless, worry-free experience for our customers.
-              Simple. Secure. Instant. No apps required for the finder — just scan and connect.
+            <p className="text-gray-600 mb-8">
+              Built for everyday life — from keys to pets to luggage.
+              Simple. Secure. Instant.
             </p>
 
-            <button className="bg-green-700 text-white px-6 py-3 rounded-full hover:scale-105 hover:shadow-lg transition">
-              Learn More
-            </button>
+            <Link
+              href="/shop"
+              className="bg-green-700 text-white px-6 py-3 rounded-full hover:scale-105 transition"
+            >
+              Get Started
+            </Link>
           </div>
 
-          {/* IMAGE */}
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, repeat: Infinity }}
           >
             <Image
               src="/phone.png"
-              alt="FindMe preview"
+              alt="Preview"
               width={420}
               height={650}
               className="drop-shadow-2xl"
@@ -167,6 +210,24 @@ export default function Home() {
           </motion.div>
 
         </div>
+      </section>
+
+      {/* ================= FINAL CTA ================= */}
+      <section className="py-24 text-center bg-green-700 text-white">
+        <h2 className="text-4xl font-bold mb-4">
+          Never lose your items again
+        </h2>
+
+        <p className="mb-6">
+          Get your FindMe tag today and stay protected.
+        </p>
+
+        <Link
+          href="/shop"
+          className="bg-white text-green-700 px-8 py-3 rounded-full font-semibold hover:scale-105 transition"
+        >
+          Shop Now
+        </Link>
       </section>
 
     </div>

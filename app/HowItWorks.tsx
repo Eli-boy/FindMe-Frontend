@@ -6,53 +6,66 @@ import { motion } from "framer-motion";
 export default function HowItWorks() {
   const steps = [
     {
-      title: "Activate Your Tag",
-      desc: "Scan your QR code and link it to your WhatsApp number.",
+      title: "Attach Your Tag",
+      desc: "Place your FindMe QR tag on your keys, bag, pet, or any valuable item.",
       image: "/phone-setup.png",
     },
     {
-      title: "Item Gets Found",
-      desc: "Someone scans your QR code when they find your item.",
+      title: "Item Gets Lost",
+      desc: "If your item is misplaced, anyone who finds it can scan the QR code.",
       image: "/phone-scan.png",
     },
     {
-      title: "Get Contacted",
-      desc: "The finder contacts you instantly via WhatsApp.",
+      title: "Scan & Connect",
+      desc: "The finder scans the code and gets a secure option to contact you instantly.",
+      image: "/phone-contact.png",
+    },
+    {
+      title: "Get It Back",
+      desc: "Chat with the finder via WhatsApp and recover your item quickly.",
       image: "/phone-contact.png",
     },
   ];
 
   return (
-    <section id="how" className="py-28 px-6 md:px-12 bg-white text-center relative overflow-hidden">
-
+    <section
+      id="how"
+      className="py-28 px-6 md:px-12 bg-white text-center relative overflow-hidden"
+    >
       {/* BACKGROUND GLOW */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-100 via-transparent to-green-100 blur-3xl opacity-40"></div>
 
       {/* TITLE */}
-      <motion.h2
-        className="text-4xl md:text-5xl font-bold mb-20 text-gray-900 relative z-10"
+      <motion.div
+        className="relative z-10"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        How FindMe Works
-      </motion.h2>
+        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
+          How FindMe Works
+        </h2>
+
+        <p className="text-gray-600 mb-16 max-w-xl mx-auto">
+          A simple 4-step system that helps you recover lost items quickly and securely.
+        </p>
+      </motion.div>
 
       {/* STEPS */}
-      <div className="flex flex-wrap justify-center gap-12 relative z-10">
+      <div className="grid md:grid-cols-4 gap-10 relative z-10">
+
         {steps.map((step, i) => (
           <motion.div
             key={i}
-            className="group w-80 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition duration-300"
+            className="group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition duration-300"
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{
               duration: 0.6,
-              delay: i * 0.2,
+              delay: i * 0.15,
             }}
             viewport={{ once: true }}
           >
-
             {/* STEP NUMBER */}
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-green-700 text-white font-bold mb-4 mx-auto shadow-md">
               {i + 1}
@@ -64,14 +77,14 @@ export default function HowItWorks() {
               transition={{
                 duration: 4,
                 repeat: Infinity,
-                delay: i * 0.4,
+                delay: i * 0.3,
               }}
             >
               <Image
                 src={step.image}
                 alt={step.title}
-                width={260}
-                height={460}
+                width={220}
+                height={420}
                 className="mx-auto transition-transform duration-300 group-hover:scale-105 drop-shadow-lg"
               />
             </motion.div>
@@ -84,9 +97,15 @@ export default function HowItWorks() {
             <p className="text-gray-600 text-sm mt-2 leading-relaxed">
               {step.desc}
             </p>
-
           </motion.div>
         ))}
+      </div>
+
+      {/* EXTRA TRUST LINE */}
+      <div className="mt-20 text-center text-gray-600 relative z-10">
+        <p className="text-sm">
+          ✔ No app required &nbsp; • &nbsp; ✔ Works worldwide &nbsp; • &nbsp; ✔ Instant WhatsApp chat
+        </p>
       </div>
     </section>
   );
