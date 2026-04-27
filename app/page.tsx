@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { products } from "./data/products";
+import toast from "react-hot-toast";
 import { useCart } from "./CartContext";
 
 /* ================= TYPES ================= */
@@ -106,14 +107,15 @@ export default function Home() {
 
                 {/* BUTTON */}
                 <button
-                  onClick={(e) => {
-                    e.preventDefault(); // 🔥 prevents navigation
-                    addToCart(p);
-                  }}
-                  className="bg-green-700 text-white px-4 py-2 mt-4 rounded-full w-full hover:scale-105 hover:shadow-lg transition duration-200"
-                >
-                  Add to Cart
-                </button>
+                onClick={(e) => {
+                  e.preventDefault();
+                  addToCart(p);
+                  toast.success(`${p.name} added to cart 🛒`);
+                }}
+                className="bg-green-700 text-white px-4 py-2 mt-4 rounded-full w-full hover:scale-105 hover:shadow-lg transition duration-200"
+              >
+                Add to Cart
+              </button>
 
               </div>
             </Link>
