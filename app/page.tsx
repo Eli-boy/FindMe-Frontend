@@ -103,7 +103,7 @@ export default function Home() {
                 </p>
 
                 <p className="text-sm text-gray-500">
-                  {p.desc}
+                  Smart recovery tag
                 </p>
 
                 {/* BUTTON */}
@@ -131,7 +131,7 @@ export default function Home() {
       </div>
 
       {/* ================= DEMO ================= */}
-      <Demo />
+     {/* <Demo />*/}
 
       {/* ================= TESTIMONIALS ================= */}
       <Testimonials />
