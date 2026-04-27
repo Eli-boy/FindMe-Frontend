@@ -36,7 +36,7 @@ export default function Footer() {
             Pages
           </h3>
 
-          <div className="space-y-5 text-sm">
+          <div className="space-y-10 text-sm">
             <Link href="/" className="hover:text-green-400 transition">Home</Link>
             <Link href="/shop" className="hover:text-green-400 transition">Shop</Link>
             <Link href="/#about" className="hover:text-green-400 transition">About Us</Link>
@@ -52,8 +52,8 @@ export default function Footer() {
 
           <div className="space-y-2 text-sm">
             <p>Email: support@findme.com.ng</p>
-            <p>WhatsApp: +234 800 000 0000</p>
-            <p>Address: Abuja, Nigeria</p>
+            <p>WhatsApp: +234 8036244441</p>
+            <p>Address:6, bellow yusuf, Jabi, Abuja, FCT, Nigeria</p>
           </div>
         </div>
 

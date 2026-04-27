@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { products } from "../data/products";
+import toast from "react-hot-toast";
 import { useCart } from "../CartContext";
 
 /* ================= TYPES ================= */
@@ -94,10 +95,13 @@ export default function ShopPage({
 
             {/* BUTTON */}
             <button
-              onClick={() => addToCart(p)}
-              className="mt-5 bg-green-700 text-white px-4 py-2 rounded-full w-full hover:scale-105 hover:shadow-lg transition duration-200"
+            onClick={() => {
+                addToCart(p);
+                toast.success(`${p.name} added to cart 🛒`);
+            }}
+            className="mt-5 bg-green-700 text-white px-4 py-2 rounded-full w-full hover:scale-105 hover:shadow-lg transition duration-200"
             >
-              Add to Cart
+            Add to Cart
             </button>
 
           </div>

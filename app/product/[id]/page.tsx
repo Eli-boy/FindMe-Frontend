@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "../../data/products";
+import toast from "react-hot-toast";
 import { useCart } from "../../CartContext";
 import { useParams } from "next/navigation";
 
@@ -67,10 +68,13 @@ export default function ProductPage() {
 
             {/* ADD TO CART */}
             <button
-              onClick={() => addToCart(product)}
-              className="bg-green-700 text-white px-6 py-3 rounded-full hover:scale-105 hover:shadow-lg transition"
+            onClick={() => {
+                addToCart(product);
+                toast.success(`${product.name} added to cart 🛒`);
+            }}
+            className="bg-green-700 text-white px-6 py-3 rounded-full hover:scale-105 hover:shadow-lg transition"
             >
-              Add to Cart
+            Add to Cart
             </button>
 
             {/* BUY NOW */}
