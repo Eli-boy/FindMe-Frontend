@@ -55,7 +55,7 @@ export default function ProductPage() {
           </h1>
 
           <p className="text-gray-600 mb-6 leading-relaxed">
-            Smart QR-powered tag that helps you recover lost items instantly.
+            Smart Keychain tag that helps you recover lost items instantly.
             No apps required — just scan and connect via WhatsApp.
           </p>
 
