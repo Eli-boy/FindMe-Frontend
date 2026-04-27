@@ -164,12 +164,32 @@ export default function Navbar() {
           </div>
 
           {/* MOBILE BUTTON */}
-          <button
-            className="md:hidden text-2xl"
+          {/* MOBILE RIGHT (Cart + Menu) */}
+        <div className="flex items-center gap-4 md:hidden">
+
+        {/* 🛒 CART */}
+        <Link
+            href="/cart"
+            className="relative text-xl"
+        >
+            🛒
+
+            {cart.length > 0 && (
+            <span className="absolute -top-2 -right-3 bg-green-600 text-white text-xs px-1.5 rounded-full shadow-md">
+                {cart.length}
+            </span>
+            )}
+        </Link>
+
+        {/* ☰ MENU */}
+        <button
+            className="text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
-          >
+        >
             {menuOpen ? "✕" : "☰"}
-          </button>
+        </button>
+
+        </div>
         </div>
 
         {/* MOBILE MENU */}
