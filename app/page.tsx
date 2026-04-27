@@ -1,8 +1,10 @@
 "use client";
 
+import Demo from "./components/Demo";
 import HowItWorks from "./HowItWorks";
 import Image from "next/image";
 import Link from "next/link";
+import Testimonials from "./components/Testimonials";
 import { motion } from "framer-motion";
 import { products } from "./data/products";
 import toast from "react-hot-toast";
@@ -101,7 +103,7 @@ export default function Home() {
                 </p>
 
                 <p className="text-sm text-gray-500">
-                  Smart recovery tag
+                  {p.desc}
                 </p>
 
                 {/* BUTTON */}
@@ -127,6 +129,12 @@ export default function Home() {
       <div id="how">
         <HowItWorks />
       </div>
+
+      {/* ================= DEMO ================= */}
+      <Demo />
+
+      {/* ================= TESTIMONIALS ================= */}
+      <Testimonials />
 
       {/* ================= WHY FINDME ================= */}
       <section className="py-24 px-6 md:px-12 bg-white text-center">
