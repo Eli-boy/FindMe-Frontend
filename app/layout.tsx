@@ -2,59 +2,45 @@ import "./globals.css";
 
 import { CartProvider } from "./CartContext";
 import Footer from "./Footer";
-import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import Navbar from "./Navbar";
-import { Toaster } from "react-hot-toast"; // ✅ ADD THIS
+import { Toaster } from "react-hot-toast";
 
-/* ================= FONT ================= */
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-});
-
-/* ================= METADATA ================= */
 export const metadata: Metadata = {
   title: {
-    default: "FindMe",
+    default: "FindMe — Never Lose Your Things Again",
     template: "%s | FindMe",
   },
   description:
-    "Never lose your items again. Smart QR tags that connect finders to owners instantly.",
-  icons: {
-    icon: "/icon.png",
-  },
+    "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
+  icons: { icon: "/icon.png" },
 };
 
-/* ================= ROOT LAYOUT ================= */
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${inter.className} bg-[#f7f5f2] text-gray-900 min-h-screen flex flex-col antialiased`}
+        style={{ background: "#0a0a0a", color: "#f5f4f0" }}
+        className="min-h-screen flex flex-col antialiased"
       >
         <CartProvider>
-          {/* NAVBAR */}
           <Navbar />
-
-          {/* MAIN */}
-          <main className="pt-24 flex-grow">{children}</main>
-
-          {/* FOOTER */}
+          <main className="pt-[72px] flex-grow">{children}</main>
           <Footer />
-
-          {/* 🔥 TOAST POPUP (ADD THIS) */}
           <Toaster
             position="top-right"
             toastOptions={{
               style: {
-                background: "#111",
-                color: "#fff",
-                borderRadius: "10px",
+                background: "#1e1e1e",
+                color: "#f5f4f0",
+                borderRadius: "12px",
+                border: "1px solid rgba(255,255,255,0.08)",
               },
             }}
           />

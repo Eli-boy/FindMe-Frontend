@@ -6,91 +6,160 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-purple-700 to-purple-900 text-white px-6 md:px-12 py-16 mt- relative">
+    <>
+      <footer style={{
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        background: "#0a0a0a",
+        padding: "80px 48px 40px",
+      }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 40, marginBottom: 60 }}>
 
-      <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-10">
+            {/* BRAND */}
+            <div>
+              <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 22, marginBottom: 16, color: "#f5f4f0" }}>
+                Find<span style={{ color: "#1db954" }}>Me</span>
+              </h2>
+              <p style={{ fontSize: 13, color: "#888", marginBottom: 20, lineHeight: 1.7 }}>
+                Smart QR tags that connect finders to owners instantly via WhatsApp. No app needed.
+              </p>
+              {/* NEWSLETTER */}
+              <p style={{ fontSize: 12, color: "#888", marginBottom: 10 }}>Subscribe to our newsletter</p>
+              <div style={{
+                display: "flex", alignItems: "center",
+                background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 40, padding: "6px 8px 6px 16px",
+              }}>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  style={{
+                    background: "transparent", border: "none", outline: "none",
+                    color: "#f5f4f0", fontSize: 13, flex: 1,
+                  }}
+                />
+                <button style={{
+                  background: "#1db954", color: "#000",
+                  border: "none", borderRadius: 30, padding: "6px 14px",
+                  fontSize: 13, fontWeight: 700, cursor: "pointer",
+                }}>
+                  →
+                </button>
+              </div>
+            </div>
 
-        {/* BRAND */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">
-            Find<span className="text-green-400">Me</span>
-          </h2>
+            {/* PAGES */}
+            <div>
+              <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, marginBottom: 20, color: "#f5f4f0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 12 }}>
+                Pages
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  { label: "Home", href: "/" },
+                  { label: "Shop", href: "/shop" },
+                  { label: "How It Works", href: "/#how" },
+                  { label: "About Us", href: "/#about" },
+                ].map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    style={{ color: "#888", textDecoration: "none", fontSize: 14, transition: "color 0.2s" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#f5f4f0")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
 
-          <p className="mb-4 text-sm">Sign up to our newsletter!</p>
+            {/* CONTACT */}
+            <div>
+              <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, marginBottom: 20, color: "#f5f4f0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 12 }}>
+                Contact Us
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "#888" }}>
+                <p>📧 support@findme.com.ng</p>
+                <p>📱 +234 803 624 4441</p>
+                <p>📍 6, Below Yusuf, Jabi, Abuja, FCT, Nigeria</p>
+              </div>
+            </div>
 
-          <div className="flex items-center bg-white/10 rounded-full px-4 py-2">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="bg-transparent outline-none text-sm flex-1 placeholder:text-gray-300"
-            />
-            <button className="ml-2 bg-white text-black rounded-full px-3 py-1 hover:scale-105 transition">
-              →
-            </button>
+            {/* SOCIAL */}
+            <div>
+              <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, marginBottom: 20, color: "#f5f4f0", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 12 }}>
+                Follow Us
+              </h3>
+              <div style={{ display: "flex", gap: 12 }}>
+                {[
+                  { icon: <FaFacebookF />, href: "#" },
+                  { icon: <FaInstagram />, href: "#" },
+                  { icon: <FaLinkedinIn />, href: "#" },
+                  { icon: <FaTiktok />, href: "#" },
+                ].map((s, i) => (
+                  <a
+                    key={i}
+                    href={s.href}
+                    style={{
+                      width: 40, height: 40, borderRadius: 10,
+                      background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.08)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#888", fontSize: 16, textDecoration: "none",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#1db954";
+                      e.currentTarget.style.color = "#000";
+                      e.currentTarget.style.borderColor = "#1db954";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#1e1e1e";
+                      e.currentTarget.style.color = "#888";
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                    }}
+                  >
+                    {s.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* BOTTOM */}
+          <div style={{
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            paddingTop: 24,
+            display: "flex", flexWrap: "wrap", justifyContent: "space-between",
+            fontSize: 12, color: "#888", gap: 12,
+          }}>
+            <p>© 2026 FindMe Nigeria. All rights reserved.</p>
+            <div style={{ display: "flex", gap: 24 }}>
+              <span style={{ cursor: "pointer" }}>Privacy Policy</span>
+              <span style={{ cursor: "pointer" }}>Terms of Use</span>
+            </div>
           </div>
         </div>
+      </footer>
 
-        {/* PAGES */}
-        <div>
-          <h3 className="font-semibold mb-4 border-b border-white/30 pb-2">
-            Pages
-          </h3>
-
-          <div className="space-y-10 text-sm">
-            <Link href="/" className="hover:text-green-400 transition">Home</Link>
-            <Link href="/shop" className="hover:text-green-400 transition">Shop</Link>
-            <Link href="/#about" className="hover:text-green-400 transition">About Us</Link>
-            <Link href="/#how" className="hover:text-green-400 transition">How It Works</Link>
-          </div>
-        </div>
-
-        {/* CONTACT */}
-        <div>
-          <h3 className="font-semibold mb-4 border-b border-white/30 pb-2">
-            Contact Us
-          </h3>
-
-          <div className="space-y-2 text-sm">
-            <p>Email: support@findme.com.ng</p>
-            <p>WhatsApp: +234 8036244441</p>
-            <p>Address:6, bellow yusuf, Jabi, Abuja, FCT, Nigeria</p>
-          </div>
-        </div>
-
-        {/* SOCIAL */}
-        <div>
-          <h3 className="font-semibold mb-4 border-b border-white/30 pb-2">
-            Follow Us
-          </h3>
-
-          <div className="flex gap-4 text-xl">
-            <a href="#" className="hover:text-green-400 transition"><FaFacebookF /></a>
-            <a href="#" className="hover:text-green-400 transition"><FaInstagram /></a>
-            <a href="#" className="hover:text-green-400 transition"><FaLinkedinIn /></a>
-            <a href="#" className="hover:text-green-400 transition"><FaTiktok /></a>
-          </div>
-        </div>
-      </div>
-
-      {/* BOTTOM */}
-      <div className="mt-10 border-t border-white/20 pt-6 flex flex-col md:flex-row justify-between text-sm text-gray-300">
-        <p>© 2026 FindMe. All rights reserved.</p>
-
-        <div className="flex gap-6">
-          <span className="hover:text-white cursor-pointer">Privacy Policy</span>
-          <span className="hover:text-white cursor-pointer">Terms of Use</span>
-        </div>
-      </div>
-
-      {/* FLOATING WHATSAPP BUTTON */}
+      {/* FLOATING WHATSAPP */}
       <a
-        href="https://wa.me/2348151171029?text=Hello%20👋%20I’m%20interested%20in%20FindMe%20tags.%20Can%20you%20help%20me?"
+        href="https://wa.me/2348036244441?text=Hello%20👋%20I'm%20interested%20in%20FindMe%20tags."
         target="_blank"
-        className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:scale-110 transition z-[100]"
+        rel="noreferrer"
+        style={{
+          position: "fixed", bottom: 24, right: 24, zIndex: 999,
+          background: "#25D366", color: "#fff",
+          width: 56, height: 56, borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 8px 24px rgba(37,211,102,0.4)",
+          fontSize: 24, textDecoration: "none",
+          transition: "transform 0.2s",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
       >
-        <FaWhatsapp size={22} />
+        <FaWhatsapp />
       </a>
-
-    </footer>
+    </>
   );
 }

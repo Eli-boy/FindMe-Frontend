@@ -1,111 +1,115 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 
-export default function HowItWorks() {
-  const steps = [
-    {
-      title: "Attach Your Tag",
-      desc: "Place your FindMe QR tag on your keys, bag, pet, or any valuable item.",
-      image: "/phone-setup.png",
-    },
-    {
-      title: "Link with FindMe ",
-      desc: "After attaching FindMe tag to your item, Next you link the item with FindMe on whatsApp.",
-      image: "/phone-scan.png",
-    },
-    {
-      title: "Scan & Connect",
-      desc: "The finder scans the code and contact you instantly.",
-      image: "/phone-contact.png",
-    },
-    {
-      title: "Get It Back",
-      desc: "Chat with the finder via WhatsApp and recover your item quickly.",
-      image: "/phone-contact.png",
-    },
-  ];
+const steps = [
+  {
+    icon: "📦",
+    num: "01",
+    title: "Order your tags",
+    desc: "Get your FindMe QR tags delivered. Each tag has a unique code tied only to your WhatsApp — nothing else.",
+  },
+  {
+    icon: "🔗",
+    num: "02",
+    title: "Link & attach",
+    desc: "Scan the tag with your phone, send a quick WhatsApp message to activate it, and stick it on your item. Done in under a minute.",
+  },
+  {
+    icon: "🚨",
+    num: "03",
+    title: "Get notified",
+    desc: "When someone finds your item and scans the tag, you get an instant WhatsApp message — and can chat anonymously with the finder.",
+  },
+  {
+    icon: "💬",
+    num: "04",
+    title: "Chat & recover",
+    desc: "A private 2-hour relay chat is created between you and the finder. Coordinate pickup safely — your number stays hidden.",
+  },
+];
 
+export default function HowItWorks() {
   return (
     <section
       id="how"
-      className="py-28 px-6 md:px-12 bg-white text-center relative overflow-hidden"
+      style={{ padding: "120px 48px", maxWidth: 1200, margin: "0 auto" }}
     >
-      {/* BACKGROUND GLOW */}
-      <div className="absolute inset-0 bg-gradient-to-r from-green-100 via-transparent to-green-100 blur-3xl opacity-40"></div>
-
-      {/* TITLE */}
       <motion.div
-        className="relative z-10"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
       >
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-          How FindMe Works
-        </h2>
-
-        <p className="text-gray-600 mb-16 max-w-xl mx-auto">
-          A simple 4-step system that helps you recover lost items quickly and securely.
+        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 16 }}>
+          How it works
         </p>
+        <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800, letterSpacing: -1, lineHeight: 1.1, maxWidth: 560 }}>
+          Three steps to peace of mind
+        </h2>
       </motion.div>
 
-      {/* STEPS */}
-      <div className="grid md:grid-cols-4 gap-10 relative z-10">
-
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: 2,
+          marginTop: 64,
+          background: "rgba(255,255,255,0.06)",
+          borderRadius: 16,
+          overflow: "hidden",
+        }}
+      >
         {steps.map((step, i) => (
           <motion.div
             key={i}
-            className="group bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition duration-300"
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.6,
-              delay: i * 0.15,
-            }}
+            transition={{ duration: 0.6, delay: i * 0.12 }}
             viewport={{ once: true }}
+            style={{
+              background: "#1e1e1e",
+              padding: "48px 36px",
+              position: "relative",
+              transition: "background 0.3s",
+              cursor: "default",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#2e2e2e")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#1e1e1e")}
           >
-            {/* STEP NUMBER */}
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-green-700 text-white font-bold mb-4 mx-auto shadow-md">
-              {i + 1}
+            {/* BIG GHOST NUMBER */}
+            <div style={{
+              fontFamily: "Syne, sans-serif", fontSize: 72, fontWeight: 800,
+              color: "rgba(255,255,255,0.04)", lineHeight: 1,
+              position: "absolute", top: 24, right: 24,
+            }}>
+              {step.num}
             </div>
 
-            {/* IMAGE */}
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                delay: i * 0.3,
-              }}
-            >
-              <Image
-                src={step.image}
-                alt={step.title}
-                width={220}
-                height={420}
-                className="mx-auto transition-transform duration-300 group-hover:scale-105 drop-shadow-lg"
-              />
-            </motion.div>
+            {/* ICON */}
+            <div style={{
+              width: 52, height: 52, borderRadius: 14,
+              background: "rgba(29,185,84,0.12)",
+              border: "1px solid rgba(29,185,84,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, marginBottom: 24,
+            }}>
+              {step.icon}
+            </div>
 
-            {/* TEXT */}
-            <h3 className="mt-6 text-gray-900 font-semibold text-lg group-hover:text-green-700 transition">
+            <h3 style={{ fontFamily: "Syne, sans-serif", fontSize: 20, fontWeight: 700, marginBottom: 12, color: "#f5f4f0" }}>
               {step.title}
             </h3>
-
-            <p className="text-gray-600 text-sm mt-2 leading-relaxed">
+            <p style={{ fontSize: 14, color: "#888", lineHeight: 1.7 }}>
               {step.desc}
             </p>
           </motion.div>
         ))}
       </div>
 
-      {/* EXTRA TRUST LINE */}
-      <div className="mt-20 text-center text-gray-600 relative z-10">
-        <p className="text-sm">
-          ✔ No app required &nbsp; • &nbsp; ✔ Works worldwide &nbsp; • &nbsp; ✔ Instant WhatsApp chat
-        </p>
+      {/* TRUST LINE */}
+      <div style={{ marginTop: 40, textAlign: "center", fontSize: 13, color: "#888" }}>
+        ✔ No app required &nbsp;•&nbsp; ✔ Works worldwide &nbsp;•&nbsp; ✔ Instant WhatsApp chat
       </div>
     </section>
   );

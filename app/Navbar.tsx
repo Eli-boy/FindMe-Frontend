@@ -8,209 +8,213 @@ import { useCart } from "./CartContext";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const { cart } = useCart();
+  const { itemCount } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [openShop, setOpenShop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  /* ================= SCROLL ================= */
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const fn = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", fn);
+    return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  /* ================= CLOSE DROPDOWN ================= */
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+    const fn = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
         setOpenShop(false);
-      }
     };
-
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
+    window.addEventListener("click", fn);
+    return () => window.removeEventListener("click", fn);
   }, []);
 
-  /* ================= CLOSE ON ROUTE CHANGE ================= */
   useEffect(() => {
     setOpenShop(false);
     setMenuOpen(false);
   }, [pathname]);
 
   return (
-    <>
-      {/* TOP BAR */}
-      <div className="fixed top-0 left-0 w-full z-[60] bg-gradient-to-r from-green-700 to-green-600 text-white text-center text-sm py-2 tracking-wide">
-        Never lose your items again 🔍
-      </div>
+    <nav
+      style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
+        background: scrolled ? "rgba(10,10,10,0.98)" : "rgba(10,10,10,0.85)",
+        backdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        transition: "background 0.3s",
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
 
-      {/* NAVBAR */}
-      <nav
-        className={`fixed top-8 left-0 w-full z-[50] backdrop-blur-2xl bg-white/60 border-b border-gray-200/60 transition-all duration-300 ${
-          scrolled ? "shadow-lg bg-white/80" : ""
-        }`}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-
-          {/* LEFT */}
-          <div className="flex items-center gap-10">
-
-            {/* LOGO */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <Image
-                src="/logo.JPG"
-                alt="FindMe Logo"
-                width={44}
-                height={44}
-                className="object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-xl"
-              />
-
-              <span className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 group-hover:tracking-wide transition-all">
-                Find<span className="text-green-600">Me</span>
-              </span>
-            </Link>
-
-            {/* DESKTOP NAV */}
-            <div className="hidden md:flex items-center gap-8 text-sm text-gray-600">
-
-              <Link
-                href="/"
-                className={`transition hover:text-black ${
-                  pathname === "/" ? "text-black font-semibold" : ""
-                }`}
-              >
-                Home
-              </Link>
-
-              {/* SHOP */}
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenShop(!openShop);
-                  }}
-                  className="transition hover:text-black"
-                >
-                  Shop ▾
-                </button>
-
-                {openShop && (
-                  <div
-                    className="absolute top-12 left-0 w-60 bg-white/95 backdrop-blur-xl shadow-2xl rounded-2xl p-3 border border-gray-100 animate-fadeIn"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {[
-                      { name: "All Products", link: "/shop?category=all" },
-                      { name: "Key Tags", link: "/shop?category=key" },
-                      { name: "Pet Tags", link: "/shop?category=pet" },
-                      { name: "Stickers", link: "/shop?category=sticker" },
-                    ].map((item, i) => (
-                      <Link
-                        key={i}
-                        href={item.link}
-                        className="block px-3 py-2 rounded-lg hover:bg-gray-100 hover:text-green-600 transition"
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <Link href="/#how" className="hover:text-black transition">
-                How It Works
-              </Link>
-
-              <Link href="/#about" className="hover:text-black transition">
-                About
-              </Link>
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-
-            <span className="cursor-pointer hover:text-black transition">
-              EN
-            </span>
-
-            {/* CART */}
-            <Link
-              href="/cart"
-              className="relative cursor-pointer hover:scale-110 transition"
-            >
-              🛒
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-3 bg-green-600 text-white text-xs px-1.5 rounded-full shadow-md">
-                  {cart.length}
-                </span>
-              )}
-            </Link>
-
-            <span className="cursor-pointer hover:text-black transition">
-              Log In
-            </span>
-
-            <button className="bg-[#4b2e2e] text-white px-5 py-2 rounded-full text-sm hover:scale-105 hover:shadow-lg transition">
-              Tags Management
-            </button>
-          </div>
-
-          {/* MOBILE BUTTON */}
-          {/* MOBILE RIGHT (Cart + Menu) */}
-        <div className="flex items-center gap-4 md:hidden">
-
-        {/* 🛒 CART */}
-        <Link
-            href="/cart"
-            className="relative text-xl"
-        >
-            🛒
-
-            {cart.length > 0 && (
-            <span className="absolute -top-2 -right-3 bg-green-600 text-white text-xs px-1.5 rounded-full shadow-md">
-                {cart.length}
-            </span>
-            )}
+        {/* LOGO */}
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <Image
+            src="/logo.JPG"
+            alt="FindMe"
+            width={36}
+            height={36}
+            style={{ borderRadius: 8, objectFit: "cover" }}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+          <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 22, color: "#f5f4f0" }}>
+            Find<span style={{ color: "#1db954" }}>Me</span>
+          </span>
         </Link>
 
-        {/* ☰ MENU */}
-        <button
-            className="text-2xl"
-            onClick={() => setMenuOpen(!menuOpen)}
-        >
-            {menuOpen ? "✕" : "☰"}
-        </button>
-
-        </div>
-        </div>
-
-        {/* MOBILE MENU */}
-        {menuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-xl border-t px-6 py-6 space-y-4 text-gray-700 animate-fadeIn">
-
-            <Link href="/" className="block">Home</Link>
-            <Link href="/shop" className="block">Shop</Link>
-            <Link href="/#how" className="block">How It Works</Link>
-            <Link href="/#about" className="block">About</Link>
-
-            <Link href="/cart" className="block">
-              🛒 Cart ({cart.length})
+        {/* DESKTOP LINKS */}
+        <div className="hidden md:flex" style={{ alignItems: "center", gap: 32 }}>
+          {[
+            { label: "Home", href: "/" },
+            { label: "How It Works", href: "/#how" },
+            { label: "About", href: "/#about" },
+          ].map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              style={{
+                color: pathname === l.href ? "#f5f4f0" : "#888",
+                textDecoration: "none", fontSize: 14, fontWeight: 500,
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f5f4f0")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = pathname === l.href ? "#f5f4f0" : "#888")}
+            >
+              {l.label}
             </Link>
+          ))}
 
-            <button className="bg-[#4b2e2e] text-white px-4 py-2 rounded-full w-full hover:scale-105 transition">
-              Tags Management
+          {/* SHOP DROPDOWN */}
+          <div style={{ position: "relative" }} ref={dropdownRef}>
+            <button
+              onClick={(e) => { e.stopPropagation(); setOpenShop(!openShop); }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 14, fontWeight: 500 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f5f4f0")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#888")}
+            >
+              Shop ▾
             </button>
+            {openShop && (
+              <div
+                style={{
+                  position: "absolute", top: 40, left: 0, width: 200,
+                  background: "#1e1e1e", border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: 16, padding: 8,
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="animate-fadeIn"
+              >
+                {[
+                  { name: "All Products", link: "/shop" },
+                  { name: "Key Tags", link: "/shop?category=key" },
+                  { name: "Pet Tags", link: "/shop?category=pet" },
+                  { name: "Stickers", link: "/shop?category=sticker" },
+                ].map((item) => (
+                  <Link
+                    key={item.link}
+                    href={item.link}
+                    style={{
+                      display: "block", padding: "10px 14px", borderRadius: 10,
+                      color: "#888", textDecoration: "none", fontSize: 14,
+                      transition: "background 0.2s, color 0.2s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#2e2e2e";
+                      e.currentTarget.style.color = "#1db954";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "#888";
+                    }}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </nav>
-    </>
+        </div>
+
+        {/* RIGHT */}
+        <div className="hidden md:flex" style={{ alignItems: "center", gap: 20 }}>
+          {/* CART */}
+          <Link href="/cart" style={{ position: "relative", color: "#f5f4f0", textDecoration: "none", fontSize: 20 }}>
+            🛒
+            {itemCount > 0 && (
+              <span style={{
+                position: "absolute", top: -8, right: -10,
+                background: "#1db954", color: "#000",
+                fontSize: 11, fontWeight: 700,
+                padding: "1px 6px", borderRadius: 20,
+              }}>
+                {itemCount}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/shop"
+            style={{
+              background: "#1db954", color: "#000",
+              padding: "10px 22px", borderRadius: 40,
+              fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14,
+              textDecoration: "none", transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#25e668"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#1db954"; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            Get Tags
+          </Link>
+        </div>
+
+        {/* MOBILE */}
+        <div className="flex md:hidden" style={{ alignItems: "center", gap: 16 }}>
+          <Link href="/cart" style={{ position: "relative", color: "#f5f4f0", textDecoration: "none", fontSize: 20 }}>
+            🛒
+            {itemCount > 0 && (
+              <span style={{
+                position: "absolute", top: -8, right: -10,
+                background: "#1db954", color: "#000",
+                fontSize: 11, fontWeight: 700, padding: "1px 6px", borderRadius: 20,
+              }}>
+                {itemCount}
+              </span>
+            )}
+          </Link>
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "#f5f4f0", fontSize: 24 }}
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div
+          className="animate-fadeIn md:hidden"
+          style={{
+            background: "#1e1e1e", borderTop: "1px solid rgba(255,255,255,0.06)",
+            padding: "20px 32px 28px", display: "flex", flexDirection: "column", gap: 16,
+          }}
+        >
+          {[
+            { label: "Home", href: "/" },
+            { label: "Shop", href: "/shop" },
+            { label: "How It Works", href: "/#how" },
+            { label: "About", href: "/#about" },
+          ].map((l) => (
+            <Link key={l.href} href={l.href} style={{ color: "#888", textDecoration: "none", fontSize: 16 }}>
+              {l.label}
+            </Link>
+          ))}
+          <Link href="/cart" style={{ color: "#888", textDecoration: "none", fontSize: 16 }}>
+            🛒 Cart {itemCount > 0 ? `(${itemCount})` : ""}
+          </Link>
+        </div>
+      )}
+    </nav>
   );
 }
