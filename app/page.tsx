@@ -269,7 +269,7 @@ export default function Home() {
         </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 24 }}>
-          {products.map((p, i) => (
+          {products.slice(0, 3).map((p, i) => (
             <motion.div
               key={p.id}
               initial={{ opacity: 0, y: 40 }}
