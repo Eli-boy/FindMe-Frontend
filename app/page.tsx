@@ -529,17 +529,56 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            animate={{ y: [0, -12, 0] }}
-            transition={{ duration: 5, repeat: Infinity }}
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <Image
-              src="/phone.png"
-              alt="FindMe App Preview"
-              width={360}
-              height={560}
-              style={{ filter: "drop-shadow(0 30px 60px rgba(0,0,0,0.5))" }}
-            />
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                width: 260, background: "#3a4e3d",
+                borderRadius: 40, border: "2px solid rgba(255,255,255,0.08)",
+                padding: "20px 16px",
+                boxShadow: "0 32px 70px rgba(0,0,0,0.4)",
+              }}
+            >
+              <div style={{ width: 80, height: 20, background: "#324035", borderRadius: 20, margin: "0 auto 16px", border: "2px solid rgba(255,255,255,0.05)" }} />
+              <div style={{ background: "#334238", borderRadius: 24, padding: 20, minHeight: 380, display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  { text: "🚨 Someone found your Laptop! Reply here to chat.", type: "sys" },
+                  { text: "Hi! I found your bag at the airport lounge", type: "in" },
+                  { text: "Oh thank you! Which terminal? 🙏", type: "out" },
+                  { text: "Terminal 2, near the charging stations", type: "in" },
+                  { text: "On my way! Give me 10 minutes", type: "out" },
+                  { text: "🔒 Chat is private & anonymous", type: "sys" },
+                ].map((m, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.2 }}
+                    viewport={{ once: true }}
+                    style={{
+                      padding: "10px 14px", borderRadius: 16, fontSize: 12, lineHeight: 1.5,
+                      maxWidth: "85%",
+                      alignSelf: m.type === "out" ? "flex-end" : m.type === "sys" ? "center" : "flex-start",
+                      background: m.type === "out" ? "#1db954" : m.type === "sys" ? "rgba(29,185,84,0.1)" : "#425850",
+                      color: m.type === "out" ? "#fff" : m.type === "sys" ? "#1db954" : "#e8ede8",
+                      border: m.type === "sys" ? "1px solid rgba(29,185,84,0.3)" : "none",
+                      borderBottomRightRadius: m.type === "out" ? 4 : 16,
+                      borderBottomLeftRadius: m.type === "in" ? 4 : 16,
+                      fontWeight: m.type === "out" ? 500 : 400,
+                      textAlign: m.type === "sys" ? "center" : "left",
+                    }}
+                  >
+                    {m.text}
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>

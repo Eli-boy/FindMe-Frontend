@@ -45,7 +45,7 @@ export default function HowItWorks() {
           How it works
         </p>
         <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800, letterSpacing: -1, lineHeight: 1.1, maxWidth: 560 }}>
-          Three steps to peace of mind
+          Four steps to peace of mind
         </h2>
       </motion.div>
 
