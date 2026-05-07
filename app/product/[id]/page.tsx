@@ -16,9 +16,14 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="text-center py-20">
-        <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-        <Link href="/shop" className="text-green-700 underline">
+      <div style={{
+        textAlign: "center", padding: "80px 24px",
+        background: "#2c3d30", minHeight: "100vh", color: "#dff0e2",
+      }}>
+        <h1 style={{ fontFamily: "Syne, sans-serif", fontSize: 28, fontWeight: 800, marginBottom: 16 }}>
+          Product not found
+        </h1>
+        <Link href="/shop" style={{ color: "#1db954", textDecoration: "underline" }}>
           Go back to shop
         </Link>
       </div>
@@ -26,149 +31,206 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="bg-[#f7f5f2] min-h-screen px-6 md:px-12 py-24">
+    <div style={{ background: "#2c3d30", minHeight: "100vh", padding: "96px 48px", color: "#dff0e2" }}>
 
       {/* ================= PRODUCT ================= */}
-      <div className="grid md:grid-cols-2 gap-16 items-center">
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: 64, alignItems: "center",
+        maxWidth: 1100, margin: "0 auto",
+      }}>
 
         {/* IMAGE */}
-        <div className="bg-white p-10 rounded-3xl shadow-sm hover:shadow-xl transition">
+        <div style={{
+          background: "#3a4e3d",
+          padding: 40,
+          borderRadius: 28,
+          border: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.3)",
+          transition: "box-shadow 0.3s",
+        }}
+          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 32px 80px rgba(0,0,0,0.45)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 24px 60px rgba(0,0,0,0.3)"; }}
+        >
           <Image
             src={product.image}
             alt={product.name}
             width={450}
             height={450}
-            className="mx-auto object-contain hover:scale-105 transition duration-300"
+            style={{ margin: "0 auto", objectFit: "contain", display: "block", transition: "transform 0.3s" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1)"; }}
           />
         </div>
 
         {/* DETAILS */}
         <div>
-
           {/* BADGE */}
-          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+          <span style={{
+            background: "rgba(29,185,84,0.12)", color: "#1db954",
+            padding: "4px 14px", borderRadius: 40,
+            fontSize: 13, fontWeight: 600,
+            border: "1.5px solid rgba(29,185,84,0.35)",
+          }}>
             Best Seller
           </span>
 
-          <h1 className="text-4xl md:text-5xl font-bold mt-4 mb-4 text-gray-900">
+          <h1 style={{
+            fontFamily: "Syne, sans-serif",
+            fontSize: "clamp(32px, 4vw, 52px)",
+            fontWeight: 800, letterSpacing: -1,
+            color: "#dff0e2",
+            margin: "16px 0 12px",
+          }}>
             {product.name}
           </h1>
 
-          <p className="text-gray-600 mb-6 leading-relaxed">
+          <p style={{ color: "#9dbfa0", marginBottom: 24, lineHeight: 1.8, fontSize: 16 }}>
             {product.desc}
-        </p>
+          </p>
 
-          <p className="text-3xl font-semibold mb-8 text-gray-900">
+          <p style={{
+            fontSize: 36, fontWeight: 700,
+            color: "#1db954", marginBottom: 32,
+            fontFamily: "Syne, sans-serif",
+          }}>
             ₦{product.price.toLocaleString()}
           </p>
 
           {/* BUTTONS */}
-          <div className="flex flex-wrap gap-4">
-
-            {/* ADD TO CART */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
             <button
-            onClick={() => {
+              onClick={() => {
                 addToCart(product);
                 toast.success(`${product.name} added to cart 🛒`);
-            }}
-            className="bg-green-700 text-white px-6 py-3 rounded-full hover:scale-105 hover:shadow-lg transition"
+              }}
+              style={{
+                background: "#1db954", color: "#000",
+                padding: "14px 32px", borderRadius: 40,
+                fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15,
+                border: "none", cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(29,185,84,0.3)",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#25e668"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#1db954"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
-            Add to Cart
+              Add to Cart
             </button>
 
-            {/* BUY NOW */}
             <button
               onClick={() => {
                 const msg = `Hello, I want to buy ${product.name} (₦${product.price.toLocaleString()})`;
-                window.open(
-                  `https://wa.me/2348151171029?text=${encodeURIComponent(msg)}`,
-                  "_blank"
-                );
+                window.open(`https://wa.me/2348151171029?text=${encodeURIComponent(msg)}`, "_blank");
               }}
-              className="border border-green-700 text-green-700 px-6 py-3 rounded-full hover:bg-green-50 transition"
+              style={{
+                background: "transparent", color: "#1db954",
+                padding: "14px 32px", borderRadius: 40,
+                border: "1.5px solid rgba(29,185,84,0.5)",
+                fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 15,
+                cursor: "pointer", transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(29,185,84,0.1)"; e.currentTarget.style.borderColor = "#1db954"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(29,185,84,0.5)"; }}
             >
-              Buy Now
+              Buy Now via WhatsApp
             </button>
-
           </div>
-
         </div>
       </div>
 
       {/* ================= REVIEWS ================= */}
-<div className="mt-24">
+      <div style={{ marginTop: 96, maxWidth: 1100, margin: "96px auto 0" }}>
+        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 12 }}>
+          Reviews
+        </p>
+        <h2 style={{
+          fontFamily: "Syne, sans-serif", fontSize: "clamp(24px, 3vw, 36px)",
+          fontWeight: 800, letterSpacing: -0.5, color: "#dff0e2", marginBottom: 32,
+        }}>
+          Customer Reviews
+        </h2>
 
-  <h2 className="text-2xl font-semibold mb-8 text-gray-900">
-    Customer Reviews
-  </h2>
-
-  <div className="space-y-6">
-
-    {product.reviews && product.reviews.length > 0 ? (
-      product.reviews.map((review, i) => (
-        <div
-          key={i}
-          className="bg-white p-5 rounded-xl shadow-sm border border-gray-100"
-        >
-
-          {/* NAME + RATING */}
-          <div className="flex items-center justify-between mb-2">
-            <p className="font-semibold text-gray-800">
-              {review.name}
-            </p>
-
-            {/* ⭐ STARS */}
-            <div className="text-yellow-500">
-              {"★".repeat(review.rating)}
-              {"☆".repeat(5 - review.rating)}
-            </div>
-          </div>
-
-          {/* COMMENT */}
-          <p className="text-gray-600 text-sm">
-            {review.comment}
-          </p>
-
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {product.reviews && product.reviews.length > 0 ? (
+            product.reviews.map((review, i) => (
+              <div
+                key={i}
+                style={{
+                  background: "#3a4e3d",
+                  padding: "20px 24px",
+                  borderRadius: 16,
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, color: "#dff0e2" }}>
+                    {review.name}
+                  </p>
+                  <div style={{ color: "#f59e0b", letterSpacing: 2, fontSize: 15 }}>
+                    {"★".repeat(review.rating)}
+                    <span style={{ color: "#334538" }}>{"★".repeat(5 - review.rating)}</span>
+                  </div>
+                </div>
+                <p style={{ color: "#9dbfa0", fontSize: 14, lineHeight: 1.7 }}>
+                  {review.comment}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p style={{ color: "#9dbfa0" }}>No reviews yet.</p>
+          )}
         </div>
-      ))
-    ) : (
-      <p className="text-gray-500">No reviews yet.</p>
-    )}
-
-  </div>
-
-</div>
+      </div>
 
       {/* ================= RELATED PRODUCTS ================= */}
-      <div className="mt-24">
-        <h2 className="text-2xl font-semibold mb-8 text-gray-900">
+      <div style={{ marginTop: 96, maxWidth: 1100, margin: "96px auto 0" }}>
+        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 12 }}>
+          Explore More
+        </p>
+        <h2 style={{
+          fontFamily: "Syne, sans-serif", fontSize: "clamp(24px, 3vw, 36px)",
+          fontWeight: 800, letterSpacing: -0.5, color: "#dff0e2", marginBottom: 32,
+        }}>
           You may also like
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: 20,
+        }}>
           {products
             .filter((p) => p.id !== product.id)
             .slice(0, 4)
             .map((p) => (
-              <Link key={p.id} href={`/product/${p.id}`}>
-                <div className="bg-white p-4 rounded-xl shadow hover:shadow-lg transition cursor-pointer">
-
+              <Link key={p.id} href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+                <div
+                  style={{
+                    background: "#3a4e3d",
+                    padding: 16,
+                    borderRadius: 16,
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    cursor: "pointer",
+                    transition: "transform 0.25s, border-color 0.25s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = "rgba(29,185,84,0.35)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}
+                >
                   <Image
                     src={p.image}
                     alt={p.name}
                     width={200}
                     height={150}
-                    className="object-contain"
+                    style={{ objectFit: "contain", width: "100%", height: "auto" }}
                   />
-
-                  <p className="mt-2 text-sm font-medium text-gray-800">
+                  <p style={{ marginTop: 10, fontSize: 13, fontWeight: 700, color: "#dff0e2", fontFamily: "Syne, sans-serif" }}>
                     {p.name}
                   </p>
-
-                  <p className="text-gray-600 text-sm">
+                  <p style={{ color: "#1db954", fontSize: 13, fontWeight: 600, marginTop: 4 }}>
                     ₦{p.price.toLocaleString()}
                   </p>
-
                 </div>
               </Link>
             ))}
