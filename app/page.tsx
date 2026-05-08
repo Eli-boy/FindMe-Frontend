@@ -85,7 +85,7 @@ export default function Home() {
             style={{ fontFamily: "Syne, sans-serif",
               fontSize: isMobile ? "52px" : "78px",
               lineHeight: 1.02, letterSpacing: -2,
-              margin: 0, color: "#1a3a2a", fontWeight: 600 }}>
+              margin: 0, color: "#1a3a2a", fontWeight: 700 }}>
             Lost it?<br/>
             <em style={{ color: "#2d5a30", fontStyle: "italic" }}>Consider it</em><br/>
             Found.
