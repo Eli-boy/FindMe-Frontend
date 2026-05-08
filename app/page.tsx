@@ -125,15 +125,11 @@ export default function Home() {
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              width: isMobile ? 240 : 280,
+              width: isMobile ? 260 : 310,
               background: "#fff",
               borderRadius: 50,
               border: "9px solid #1c1c1e",
               overflow: "hidden",
-              /* The exact bend from the photo:
-                 rotateX tilts top away / bottom toward viewer
-                 rotateY swings left edge away
-                 rotate gives the slight clockwise lean            */
               transform: isMobile
                 ? "none"
                 : "perspective(1200px) rotateX(12deg) rotateY(-18deg) rotate(3deg)",
@@ -143,79 +139,101 @@ export default function Home() {
             }}>
 
             {/* Notch */}
-            <div style={{ width: 110, height: 28, background: "#111",
-              borderRadius: "0 0 20px 20px", margin: "0 auto",
+            <div style={{ width: 120, height: 30, background: "#111",
+              borderRadius: "0 0 22px 22px", margin: "0 auto",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2a2a2a" }}/>
-              <div style={{ width: 40, height: 4, borderRadius: 4, background: "#2a2a2a" }}/>
+              <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#2a2a2a" }}/>
+              <div style={{ width: 42, height: 4, borderRadius: 4, background: "#2a2a2a" }}/>
             </div>
 
-            {/* Screen — dark header like photo */}
-            <div style={{ background: "#1a3a2a", padding: "10px 16px 12px",
-              display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800,
-                fontSize: 18, color: "#fff", letterSpacing: -0.5 }}>FindMe</span>
-            </div>
+            {/* ── SCREEN: "This item is lost" recovery page ── */}
+            <div style={{ background: "#ffffff", display: "flex", flexDirection: "column" }}>
 
-            {/* QR card */}
-            <div style={{ background: "#f7f7f7", margin: "12px 12px 8px",
-              borderRadius: 14, padding: "18px 12px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-              {/* QR code SVG */}
-              <svg width="90" height="90" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {[
-                  [0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],
-                  [0,1],[6,1],[0,2],[2,2],[3,2],[4,2],[6,2],
-                  [0,3],[2,3],[4,3],[6,3],[0,4],[2,4],[3,4],[4,4],[6,4],
-                  [0,5],[6,5],[0,6],[1,6],[2,6],[3,6],[4,6],[5,6],[6,6],
-                  [8,0],[10,0],[11,0],[8,1],[9,1],[11,1],[12,1],
-                  [9,2],[11,2],[8,3],[10,3],[12,3],[8,4],[9,4],[11,4],[12,4],
-                  [0,8],[1,8],[3,8],[5,8],[6,8],[0,9],[2,9],[4,9],[6,9],
-                  [1,10],[2,10],[3,10],[5,10],[6,10],[0,11],[1,11],[3,11],[4,11],[6,11],
-                  [0,12],[2,12],[3,12],[5,12],[6,12],
-                  [8,8],[9,8],[10,8],[12,8],[8,9],[11,9],[12,9],
-                  [9,10],[10,10],[12,10],[8,11],[9,11],[11,11],
-                  [8,12],[10,12],[11,12],[12,12],
-                ].map(([col, row], i) => (
-                  <rect key={i} x={col * 7 + 2} y={row * 7 + 2} width="6" height="6"
-                    fill={col >= 8 && row < 7 ? "#1db954" : "#1a3a2a"} rx="1"/>
-                ))}
-              </svg>
-              <span style={{ fontSize: 11, color: "#666", fontWeight: 500 }}>Scan to recover item</span>
-            </div>
-
-            {/* Notification card */}
-            <div style={{ margin: "0 12px 8px", background: "#1a3a2a", borderRadius: 12,
-              padding: "10px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 8,
-                background: "rgba(29,185,84,0.25)", display: "flex",
-                alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>🔔</div>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>Someone found your Laptop!</div>
-                <div style={{ fontSize: 10, color: "rgba(255,255,255,0.65)", marginTop: 2 }}>Reply here to chat anonymously</div>
-              </div>
-            </div>
-
-            {/* Chat messages */}
-            <div style={{ margin: "0 12px 14px", display: "flex", flexDirection: "column", gap: 6 }}>
-              {[
-                { text: "Hi! I found your bag at the airport lounge", type: "in" },
-                { text: "Thank you! Which terminal? 🙏", type: "out" },
-                { text: "Terminal 2, near charging stations", type: "in" },
-              ].map((m, i) => (
-                <div key={i} style={{
-                  alignSelf: m.type === "out" ? "flex-end" : "flex-start",
-                  background: m.type === "out" ? "#1a3a2a" : "#e8e8e8",
-                  color: m.type === "out" ? "#fff" : "#1a1a1a",
-                  padding: "8px 11px", borderRadius: 12,
-                  borderBottomRightRadius: m.type === "out" ? 3 : 12,
-                  borderBottomLeftRadius: m.type === "in" ? 3 : 12,
-                  fontSize: 10.5, maxWidth: "82%", lineHeight: 1.4, fontWeight: 500,
-                }}>
-                  {m.text}
+              {/* App bar */}
+              <div style={{ padding: "12px 18px", display: "flex", alignItems: "center",
+                justifyContent: "space-between", borderBottom: "1px solid #eeeeee", background: "#fff" }}>
+                <span style={{ fontSize: 14, color: "#aaa", fontWeight: 300 }}>≡</span>
+                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800,
+                  fontSize: 18, color: "#1a3a2a", letterSpacing: -0.5 }}>FindMe</span>
+                <div style={{ background: "#1a3a2a", borderRadius: 20,
+                  padding: "4px 11px", display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontSize: 11 }}>🇳🇬</span>
+                  <span style={{ fontSize: 10, color: "#fff", fontWeight: 700 }}>NG</span>
                 </div>
-              ))}
+              </div>
+
+              {/* Content */}
+              <div style={{ padding: "20px 20px 18px", display: "flex",
+                flexDirection: "column", alignItems: "center", gap: 12 }}>
+
+                {/* Title */}
+                <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a1a",
+                  margin: 0, textAlign: "center" }}>This item is lost</p>
+
+                {/* Backpack icon */}
+                <div style={{ width: 72, height: 72, borderRadius: 18,
+                  background: "#f2f2f2", display: "flex",
+                  alignItems: "center", justifyContent: "center", fontSize: 36 }}>🎒</div>
+
+                {/* Item name */}
+                <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a1a", margin: 0 }}>My Backpack</p>
+
+                {/* Italic message */}
+                <p style={{ fontSize: 11.5, color: "#888", textAlign: "center",
+                  lineHeight: 1.6, margin: 0, fontStyle: "italic", maxWidth: 220 }}>
+                  Hi there! If you&apos;ve found this item, please contact me using the options below
+                </p>
+
+                {/* Owner */}
+                <p style={{ fontSize: 11, color: "#555", margin: 0,
+                  alignSelf: "flex-start", width: "100%" }}>
+                  Tag Owner: <strong style={{ color: "#1a1a1a" }}>Chidi Okafor</strong>
+                </p>
+
+                {/* WhatsApp + Email */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, width: "100%" }}>
+                  <button style={{ background: "#4a90d9", color: "#fff", border: "none",
+                    borderRadius: 10, padding: "13px 8px", fontSize: 12, fontWeight: 700,
+                    cursor: "pointer", display: "flex", alignItems: "center",
+                    justifyContent: "center", gap: 6 }}>
+                    📞 WhatsApp
+                  </button>
+                  <button style={{ background: "#6c757d", color: "#fff", border: "none",
+                    borderRadius: 10, padding: "13px 8px", fontSize: 12, fontWeight: 700,
+                    cursor: "pointer", display: "flex", alignItems: "center",
+                    justifyContent: "center", gap: 6 }}>
+                    ✉️ Email
+                  </button>
+                </div>
+
+                {/* Chat Anonymously */}
+                <button style={{ width: "100%", padding: "14px", borderRadius: 10,
+                  border: "none", background: "#1db954", color: "#fff",
+                  fontWeight: 700, cursor: "pointer", fontSize: 13,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  💬 Chat Anonymously
+                </button>
+
+                {/* Send My Location */}
+                <button style={{ width: "100%", padding: "14px", borderRadius: 10,
+                  border: "none", background: "#e8445a", color: "#fff",
+                  fontWeight: 700, cursor: "pointer", fontSize: 13,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  📍 Send My Location
+                </button>
+
+                {/* Footer */}
+                <div style={{ display: "flex", justifyContent: "space-between",
+                  width: "100%", marginTop: 4 }}>
+                  <span style={{ fontSize: 10, color: "#aaa" }}>ℹ Learn More</span>
+                  <span style={{ fontSize: 10, color: "#aaa" }}>↗ Share</span>
+                </div>
+
+                <p style={{ fontSize: 9, color: "#ccc", margin: 0,
+                  textAlign: "center", wordBreak: "break-all" }}>
+                  Tag Id: fm-ng-a4c2-8f1e-3b92-d047
+                </p>
+              </div>
             </div>
           </motion.div>
         </motion.div>
