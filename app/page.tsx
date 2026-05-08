@@ -85,7 +85,7 @@ export default function Home() {
             style={{ fontFamily: "Syne, sans-serif",
               fontSize: isMobile ? "52px" : "78px",
               lineHeight: 1.02, letterSpacing: -2,
-              margin: 0, color: "#1a3a2a", fontWeight: 800 }}>
+              margin: 0, color: "#1a3a2a", fontWeight: 600 }}>
             Lost it?<br/>
             <em style={{ color: "#2d5a30", fontStyle: "italic" }}>Consider it</em><br/>
             Found.
@@ -116,125 +116,29 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* RIGHT — 3D bent phone */}
+
+        {/* RIGHT — Product image */}
         <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}
           style={{ display: "flex", justifyContent: "center", alignItems: "center",
-            position: "relative", zIndex: 2,
-            perspective: "1200px" }}>
+            position: "relative", zIndex: 2 }}>
           <motion.div
-            animate={{ y: [0, -10, 0] }}
+            animate={{ y: [0, -12, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            style={{
-              width: isMobile ? 260 : 310,
-              background: "#fff",
-              borderRadius: 50,
-              border: "9px solid #1c1c1e",
-              overflow: "hidden",
-              transform: isMobile
-                ? "none"
-                : "perspective(1200px) rotateX(12deg) rotateY(-18deg) rotate(3deg)",
-              boxShadow: isMobile
-                ? "0 30px 60px rgba(0,0,0,0.25)"
-                : "-24px 48px 90px rgba(0,0,0,0.35), -8px 16px 30px rgba(0,0,0,0.2), 2px -4px 16px rgba(255,255,255,0.1)",
-            }}>
-
-            {/* Notch */}
-            <div style={{ width: 120, height: 30, background: "#111",
-              borderRadius: "0 0 22px 22px", margin: "0 auto",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-              <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#2a2a2a" }}/>
-              <div style={{ width: 42, height: 4, borderRadius: 4, background: "#2a2a2a" }}/>
-            </div>
-
-            {/* ── SCREEN: "This item is lost" recovery page ── */}
-            <div style={{ background: "#ffffff", display: "flex", flexDirection: "column" }}>
-
-              {/* App bar */}
-              <div style={{ padding: "12px 18px", display: "flex", alignItems: "center",
-                justifyContent: "space-between", borderBottom: "1px solid #eeeeee", background: "#fff" }}>
-                <span style={{ fontSize: 14, color: "#aaa", fontWeight: 300 }}>≡</span>
-                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800,
-                  fontSize: 18, color: "#1a3a2a", letterSpacing: -0.5 }}>FindMe</span>
-                <div style={{ background: "#1a3a2a", borderRadius: 20,
-                  padding: "4px 11px", display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ fontSize: 11 }}>🇳🇬</span>
-                  <span style={{ fontSize: 10, color: "#fff", fontWeight: 700 }}>NG</span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div style={{ padding: "20px 20px 18px", display: "flex",
-                flexDirection: "column", alignItems: "center", gap: 12 }}>
-
-                {/* Title */}
-                <p style={{ fontSize: 17, fontWeight: 800, color: "#1a1a1a",
-                  margin: 0, textAlign: "center" }}>This item is lost</p>
-
-                {/* Backpack icon */}
-                <div style={{ width: 72, height: 72, borderRadius: 18,
-                  background: "#f2f2f2", display: "flex",
-                  alignItems: "center", justifyContent: "center", fontSize: 36 }}>🎒</div>
-
-                {/* Item name */}
-                <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a1a", margin: 0 }}>My Backpack</p>
-
-                {/* Italic message */}
-                <p style={{ fontSize: 11.5, color: "#888", textAlign: "center",
-                  lineHeight: 1.6, margin: 0, fontStyle: "italic", maxWidth: 220 }}>
-                  Hi there! If you&apos;ve found this item, please contact me using the options below
-                </p>
-
-                {/* Owner */}
-                <p style={{ fontSize: 11, color: "#555", margin: 0,
-                  alignSelf: "flex-start", width: "100%" }}>
-                  Tag Owner: <strong style={{ color: "#1a1a1a" }}>Chidi Okafor</strong>
-                </p>
-
-                {/* WhatsApp + Email */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9, width: "100%" }}>
-                  <button style={{ background: "#4a90d9", color: "#fff", border: "none",
-                    borderRadius: 10, padding: "13px 8px", fontSize: 12, fontWeight: 700,
-                    cursor: "pointer", display: "flex", alignItems: "center",
-                    justifyContent: "center", gap: 6 }}>
-                    📞 WhatsApp
-                  </button>
-                  <button style={{ background: "#6c757d", color: "#fff", border: "none",
-                    borderRadius: 10, padding: "13px 8px", fontSize: 12, fontWeight: 700,
-                    cursor: "pointer", display: "flex", alignItems: "center",
-                    justifyContent: "center", gap: 6 }}>
-                    ✉️ Email
-                  </button>
-                </div>
-
-                {/* Chat Anonymously */}
-                <button style={{ width: "100%", padding: "14px", borderRadius: 10,
-                  border: "none", background: "#1db954", color: "#fff",
-                  fontWeight: 700, cursor: "pointer", fontSize: 13,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  💬 Chat Anonymously
-                </button>
-
-                {/* Send My Location */}
-                <button style={{ width: "100%", padding: "14px", borderRadius: 10,
-                  border: "none", background: "#e8445a", color: "#fff",
-                  fontWeight: 700, cursor: "pointer", fontSize: 13,
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  📍 Send My Location
-                </button>
-
-                {/* Footer */}
-                <div style={{ display: "flex", justifyContent: "space-between",
-                  width: "100%", marginTop: 4 }}>
-                  <span style={{ fontSize: 10, color: "#aaa" }}>ℹ Learn More</span>
-                  <span style={{ fontSize: 10, color: "#aaa" }}>↗ Share</span>
-                </div>
-
-                <p style={{ fontSize: 9, color: "#ccc", margin: 0,
-                  textAlign: "center", wordBreak: "break-all" }}>
-                  Tag Id: fm-ng-a4c2-8f1e-3b92-d047
-                </p>
-              </div>
-            </div>
+            style={{ position: "relative" }}
+          >
+            <Image
+              src="/elo2.png"
+              alt="FindMe Smart ID Tag"
+              width={isMobile ? 280 : 460}
+              height={isMobile ? 280 : 460}
+              style={{
+                width: isMobile ? 280 : 460,
+                height: "auto",
+                objectFit: "contain",
+                filter: "drop-shadow(0 32px 64px rgba(26,58,42,0.3)) drop-shadow(0 8px 20px rgba(0,0,0,0.15))",
+              }}
+              priority
+            />
           </motion.div>
         </motion.div>
       </section>
