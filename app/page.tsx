@@ -85,14 +85,14 @@ export default function Home() {
             style={{ fontFamily: "Syne, sans-serif",
               fontSize: isMobile ? "52px" : "78px",
               lineHeight: 1.02, letterSpacing: -2,
-              margin: 0, color: "#1a3a2a", fontWeight: 700 }}>
+              margin: 0, color: "#1a3a2a", fontWeight: 800 }}>
             Lost it?<br/>
             <em style={{ color: "#2d5a30", fontStyle: "italic" }}>Consider it</em><br/>
             Found.
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }}
-            style={{ marginTop: 28, maxWidth: 480, fontSize: 16, lineHeight: 1.85, color: "#2a4a2a" }}>
+            style={{ marginTop: 28, maxWidth: 480, fontSize: 20, lineHeight: 1.85, color: "#2a4a2a" }}>
             Attach a FindMe QR tag to anything. If it gets lost, anyone can scan and contact you instantly via WhatsApp — anonymously.
           </motion.p>
 
@@ -129,13 +129,13 @@ export default function Home() {
             <Image
               src="/eli2.png"
               alt="FindMe Smart ID Tag"
-              width={isMobile ? 300 : 580}
-              height={isMobile ? 300 : 580}
+              width={isMobile ? 300 : 640}
+              height={isMobile ? 300 : 640}
               style={{
-                width: isMobile ? 300 : 580,
+                width: isMobile ? 300 : 640,
                 height: "auto",
                 objectFit: "contain",
-                filter: "drop-shadow(0 32px 64px rgba(26,58,42,0.3)) drop-shadow(0 8px 20px rgba(0,0,0,0.15))",
+                filter: "drop-shadow(0 40px 80px rgba(26,58,42,0.55)) drop-shadow(0 16px 32px rgba(0,0,0,0.35)) drop-shadow(0 4px 8px rgba(0,0,0,0.2))",
               }}
               priority
             />

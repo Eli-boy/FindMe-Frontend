@@ -25,7 +25,7 @@ const steps = [
     icon: "💬",
     num: "04",
     title: "Chat & recover",
-    desc: "A private 2-hour relay chat is created between you and the finder.",
+    desc: "A private  relay chat is created between you and the finder.",
   },
 ];
 
@@ -150,6 +150,8 @@ export default function HowItWorks() {
           <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> No app required
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> Works worldwide
+          &nbsp;&nbsp;•&nbsp;&nbsp;
+          <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> No battry
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> Instant WhatsApp chat
         </div>
