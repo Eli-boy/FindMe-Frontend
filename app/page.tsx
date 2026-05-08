@@ -299,7 +299,7 @@ export default function Home() {
       </div>
 
       {/* ===================== SHOP TAGS ===================== */}
-      <section style={{ padding: "120px 48px", maxWidth: 1200, margin: "0 auto", background: "#ffffff", maxWidth: "100%" }}>
+      <section style={{ padding: "120px 48px", background: "#ffffff" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 16 }}>
           Products
