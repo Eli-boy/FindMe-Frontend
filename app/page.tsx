@@ -16,6 +16,7 @@ import { useCart } from "./CartContext";
 // text:      #1a1a1a  (near-black)
 // muted:     #555555  (medium grey)
 // accent:    #1db954  (brand green — unchanged)
+// dark-green:#1a3a2a  (deep forest — used as touch on stats bar, CTA, phone bar)
 
 /* ================= STATS ================= */
 const stats = [
@@ -49,20 +50,94 @@ export default function Home() {
         alignItems: "center",
         padding: "100px 64px 80px",
         position: "relative", overflow: "hidden",
-        background: "linear-gradient(135deg, #ffffff 0%, #f0faf4 50%, #ffffff 100%)",
+        background: "#ffffff",
         gap: 48,
       }}>
-        {/* Subtle radial glow */}
+        {/* ── Tagiz-style right-side blob background ── */}
+        {/* Main large rounded blob — warm sage fill */}
         <div style={{
-          position: "absolute", width: 700, height: 700, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(29,185,84,0.10), transparent 65%)",
-          top: "50%", right: "10%",
+          position: "absolute",
+          right: "-4%",
+          top: "50%",
           transform: "translateY(-50%)",
+          width: "52%",
+          height: "90%",
+          borderRadius: "48% 52% 42% 58% / 45% 48% 52% 55%",
+          background: "#e8f5ee",
+          pointerEvents: "none",
+          zIndex: 0,
+        }} />
+        {/* Inner lighter blob for depth */}
+        <div style={{
+          position: "absolute",
+          right: "0%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "42%",
+          height: "72%",
+          borderRadius: "55% 45% 60% 40% / 50% 55% 45% 50%",
+          background: "#d4eedd",
+          pointerEvents: "none",
+          zIndex: 0,
+        }} />
+        {/* Dark green accent blob — bottom right corner */}
+        <div style={{
+          position: "absolute",
+          right: "-2%",
+          bottom: "-8%",
+          width: "22%",
+          height: "35%",
+          borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
+          background: "#1a3a2a",
+          opacity: 0.85,
+          pointerEvents: "none",
+          zIndex: 0,
+        }} />
+        {/* Floating decorative dot — top right */}
+        <div style={{
+          position: "absolute", right: "28%", top: "12%",
+          width: 14, height: 14, borderRadius: "50%",
+          background: "#1db954", opacity: 0.5,
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        {/* Floating decorative dot — mid right edge */}
+        <div style={{
+          position: "absolute", right: "4%", top: "30%",
+          width: 9, height: 9, borderRadius: "50%",
+          background: "#1a3a2a", opacity: 0.35,
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        {/* Floating decorative ring — upper area */}
+        <div style={{
+          position: "absolute", right: "38%", top: "18%",
+          width: 28, height: 28, borderRadius: "50%",
+          border: "2.5px solid rgba(29,185,84,0.3)",
+          background: "transparent",
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        {/* Floating small square dot cluster */}
+        <div style={{
+          position: "absolute", right: "16%", bottom: "20%",
+          width: 8, height: 8, borderRadius: 2,
+          background: "#1db954", opacity: 0.4,
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        <div style={{
+          position: "absolute", right: "18.5%", bottom: "22%",
+          width: 8, height: 8, borderRadius: 2,
+          background: "#1db954", opacity: 0.25,
+          pointerEvents: "none", zIndex: 0,
+        }} />
+        {/* Dark green decorative corner bar — left edge */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0,
+          width: 6, height: "40%",
+          background: "linear-gradient(to top, #1a3a2a, transparent)",
           pointerEvents: "none",
         }} />
 
         {/* LEFT COLUMN — Text */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", position: "relative" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
           {/* BADGE */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
@@ -140,7 +215,7 @@ export default function Home() {
         {/* RIGHT COLUMN — Phone Mockup */}
         <motion.div
           initial={{ opacity: 0, x: 40, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}
-          style={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 1 }}
         >
           <motion.div
             animate={{ y: [0, -10, 0] }}
@@ -150,13 +225,13 @@ export default function Home() {
               background: "#ffffff",
               borderRadius: 44,
               border: "2px solid #e5e5e5",
-              boxShadow: "0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3)",
+              boxShadow: "0 24px 60px rgba(26,58,42,0.18), 0 6px 20px rgba(0,0,0,0.08)",
               overflow: "hidden",
             }}
           >
             {/* Phone Top Bar */}
             <div style={{
-              background: "#1db954",
+              background: "#1a3a2a",
               padding: "20px 20px 18px",
               display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
             }}>
@@ -246,15 +321,15 @@ export default function Home() {
       </section>
 
       {/* ===================== STATS ===================== */}
-      <div style={{ display: "flex", flexWrap: "wrap", borderTop: "1px solid #e8e8e8", borderBottom: "1px solid #e8e8e8", gap: 1, background: "#f9f9f9" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 0, background: "#1a3a2a" }}>
         {stats.map((s, i) => (
-          <div key={i} style={{ flex: "1 1 180px", padding: "48px 32px", textAlign: "center", background: "#ffffff" }}>
-            <div style={{ fontFamily: "Syne, sans-serif", fontSize: 48, fontWeight: 800, lineHeight: 1, color: "#1a1a1a" }}>
+          <div key={i} style={{ flex: "1 1 180px", padding: "48px 32px", textAlign: "center", background: "transparent", borderRight: i < 3 ? "1px solid rgba(255,255,255,0.08)" : "none" }}>
+            <div style={{ fontFamily: "Syne, sans-serif", fontSize: 48, fontWeight: 800, lineHeight: 1, color: "#ffffff" }}>
               {s.num.replace(/\d+/, (n) => `${n}`).split('').map((c, j) =>
-                /\d/.test(c) ? <span key={j} style={{ color: "#1a1a1a" }}>{c}</span> : <span key={j} style={{ color: "#1db954" }}>{c}</span>
+                /\d/.test(c) ? <span key={j} style={{ color: "#ffffff" }}>{c}</span> : <span key={j} style={{ color: "#1db954" }}>{c}</span>
               )}
             </div>
-            <div style={{ marginTop: 8, fontSize: 14, color: "#555555" }}>{s.label}</div>
+            <div style={{ marginTop: 8, fontSize: 14, color: "rgba(255,255,255,0.6)" }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -293,7 +368,7 @@ export default function Home() {
               }}
             >
               <Link href={`/product/${p.id}`} style={{ textDecoration: "none", display: "block" }}>
-                <div style={{ padding: "28px 28px 0", background: "#f7f9f7", borderRadius: "16px 16px 0 0" }}>
+                <div style={{ padding: "28px 28px 0", background: "#1a3a2a", borderRadius: "16px 16px 0 0" }}>
                   <Image
                     src={p.image}
                     alt={p.name}
@@ -470,18 +545,21 @@ export default function Home() {
               style={{
                 background: "#ffffff", border: "1px solid #e5e5e5",
                 borderRadius: 16, padding: 36,
-                transition: "border-color 0.3s, transform 0.3s",
+                borderLeft: "3px solid #1a3a2a",
+                transition: "border-color 0.3s, transform 0.3s, box-shadow 0.3s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(29,185,84,0.35)";
+                e.currentTarget.style.borderColor = "#1db954";
                 e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 8px 32px rgba(26,58,42,0.1)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "#e5e5e5";
                 e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <div style={{ fontSize: 32, marginBottom: 20 }}>{f.icon}</div>
+              <div style={{ fontSize: 32, marginBottom: 20, width: 56, height: 56, borderRadius: 14, background: "rgba(26,58,42,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>{f.icon}</div>
               <h3 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 10, color: "#1a1a1a" }}>
                 {f.title}
               </h3>
@@ -585,8 +663,8 @@ export default function Home() {
 
       {/* ===================== FINAL CTA ===================== */}
       <section style={{
-        background: "linear-gradient(135deg, #f0faf4, #ffffff)",
-        borderTop: "1px solid rgba(29,185,84,0.2)",
+        background: "#1a3a2a",
+        borderTop: "none",
         padding: "120px 48px",
         textAlign: "center",
       }}>
@@ -600,11 +678,11 @@ export default function Home() {
             fontFamily: "Syne, sans-serif",
             fontSize: "clamp(32px, 5vw, 64px)",
             fontWeight: 800, letterSpacing: -1, lineHeight: 1.1, marginBottom: 20,
-            color: "#1a1a1a",
+            color: "#ffffff",
           }}>
             Your things deserve to<br />find their way <span style={{ color: "#1db954" }}>home</span>
           </h2>
-          <p style={{ color: "#555555", fontSize: 18, maxWidth: 480, margin: "0 auto 40px" }}>
+          <p style={{ color: "rgba(255,255,255,0.65)", fontSize: 18, maxWidth: 480, margin: "0 auto 40px" }}>
             Join thousands of Nigerians who never stress about losing their valuables again.
           </p>
           <Link
