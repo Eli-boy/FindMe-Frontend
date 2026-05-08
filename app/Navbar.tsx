@@ -68,6 +68,7 @@ export default function Navbar() {
           {[
             { label: "Home", href: "/" },
             { label: "How It Works", href: "/#how" },
+            { label: "FAQ", href: "/faq" },
             { label: "About", href: "/#about" },
           ].map((l) => (
             <Link
@@ -206,6 +207,7 @@ export default function Navbar() {
             { label: "Home", href: "/" },
             { label: "Shop", href: "/shop" },
             { label: "How It Works", href: "/#how" },
+            { label: "FAQ", href: "/faq" },
             { label: "About", href: "/#about" },
           ].map((l) => (
             <Link key={l.href} href={l.href} style={{ color: "#4a6a4a", textDecoration: "none", fontSize: 16, fontWeight: 600 }}>
