@@ -50,94 +50,95 @@ export default function Home() {
         alignItems: "center",
         padding: "100px 64px 80px",
         position: "relative", overflow: "hidden",
-        background: "#ffffff",
+        background: "#faf9f7",
         gap: 48,
       }}>
-        {/* ── Tagiz-style right-side blob background ── */}
-        {/* Main large rounded blob — warm sage fill */}
+
+        {/* ══════════ GEOMETRIC SHAPES BEHIND PHONE ══════════ */}
+        {/* Large cream/beige background blob — fills right half */}
         <div style={{
-          position: "absolute",
-          right: "-4%",
-          top: "50%",
-          transform: "translateY(-50%)",
-          width: "52%",
-          height: "90%",
-          borderRadius: "48% 52% 42% 58% / 45% 48% 52% 55%",
-          background: "#e8f5ee",
-          pointerEvents: "none",
-          zIndex: 0,
-        }} />
-        {/* Inner lighter blob for depth */}
-        <div style={{
-          position: "absolute",
-          right: "0%",
-          top: "50%",
-          transform: "translateY(-50%)",
-          width: "42%",
-          height: "72%",
-          borderRadius: "55% 45% 60% 40% / 50% 55% 45% 50%",
-          background: "#d4eedd",
-          pointerEvents: "none",
-          zIndex: 0,
-        }} />
-        {/* Dark green accent blob — bottom right corner */}
-        <div style={{
-          position: "absolute",
-          right: "-2%",
-          bottom: "-8%",
-          width: "22%",
-          height: "35%",
-          borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
-          background: "#1a3a2a",
-          opacity: 0.85,
-          pointerEvents: "none",
-          zIndex: 0,
-        }} />
-        {/* Floating decorative dot — top right */}
-        <div style={{
-          position: "absolute", right: "28%", top: "12%",
-          width: 14, height: 14, borderRadius: "50%",
-          background: "#1db954", opacity: 0.5,
+          position: "absolute", right: 0, top: 0,
+          width: "55%", height: "100%",
+          background: "#f5f0e8",
           pointerEvents: "none", zIndex: 0,
         }} />
-        {/* Floating decorative dot — mid right edge */}
+
+        {/* RED circle — top centre-right */}
         <div style={{
-          position: "absolute", right: "4%", top: "30%",
-          width: 9, height: 9, borderRadius: "50%",
-          background: "#1a3a2a", opacity: 0.35,
-          pointerEvents: "none", zIndex: 0,
+          position: "absolute", right: "34%", top: "-4%",
+          width: 110, height: 110, borderRadius: "50%",
+          background: "#e8445a",
+          pointerEvents: "none", zIndex: 1,
         }} />
-        {/* Floating decorative ring — upper area */}
+
+        {/* BLUE large circle — right edge mid */}
         <div style={{
-          position: "absolute", right: "38%", top: "18%",
-          width: 28, height: 28, borderRadius: "50%",
-          border: "2.5px solid rgba(29,185,84,0.3)",
-          background: "transparent",
-          pointerEvents: "none", zIndex: 0,
+          position: "absolute", right: "-3%", top: "18%",
+          width: 170, height: 170, borderRadius: "50%",
+          background: "#4a7fd4",
+          pointerEvents: "none", zIndex: 1,
         }} />
-        {/* Floating small square dot cluster */}
+
+        {/* BLUE half-circle — right side lower */}
         <div style={{
-          position: "absolute", right: "16%", bottom: "20%",
-          width: 8, height: 8, borderRadius: 2,
-          background: "#1db954", opacity: 0.4,
-          pointerEvents: "none", zIndex: 0,
+          position: "absolute", right: "-2%", top: "42%",
+          width: 130, height: 130, borderRadius: "50%",
+          background: "#5b8ee6",
+          pointerEvents: "none", zIndex: 1,
         }} />
+
+        {/* YELLOW large half-shape — bottom right */}
         <div style={{
-          position: "absolute", right: "18.5%", bottom: "22%",
-          width: 8, height: 8, borderRadius: 2,
-          background: "#1db954", opacity: 0.25,
-          pointerEvents: "none", zIndex: 0,
+          position: "absolute", right: "0%", bottom: "8%",
+          width: 200, height: 160,
+          borderRadius: "50% 0 0 50%",
+          background: "#f5c842",
+          pointerEvents: "none", zIndex: 1,
         }} />
-        {/* Dark green decorative corner bar — left edge */}
+
+        {/* DARK NAVY circle — bottom left of right column */}
+        <div style={{
+          position: "absolute", right: "44%", bottom: "-6%",
+          width: 150, height: 150, borderRadius: "50%",
+          background: "#1a2744",
+          pointerEvents: "none", zIndex: 1,
+        }} />
+
+        {/* PINK/RED circle — bottom right */}
+        <div style={{
+          position: "absolute", right: "10%", bottom: "-3%",
+          width: 100, height: 100, borderRadius: "50%",
+          background: "#e8445a",
+          pointerEvents: "none", zIndex: 1,
+        }} />
+
+        {/* PINK rectangle — far right edge */}
+        <div style={{
+          position: "absolute", right: 0, top: "30%",
+          width: 18, height: 120,
+          borderRadius: "4px 0 0 4px",
+          background: "#e8445a",
+          pointerEvents: "none", zIndex: 2,
+        }} />
+
+        {/* TEAL/CYAN small semicircle — mid left of right section */}
+        <div style={{
+          position: "absolute", right: "44%", top: "55%",
+          width: 60, height: 60, borderRadius: "50%",
+          background: "#2abfbf",
+          pointerEvents: "none", zIndex: 1,
+        }} />
+
+        {/* Dark green left-edge bar (brand accent) */}
         <div style={{
           position: "absolute", bottom: 0, left: 0,
           width: 6, height: "40%",
           background: "linear-gradient(to top, #1a3a2a, transparent)",
-          pointerEvents: "none",
+          pointerEvents: "none", zIndex: 0,
         }} />
 
         {/* LEFT COLUMN — Text */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", position: "relative", zIndex: 2 }}>
           {/* BADGE */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
@@ -212,108 +213,90 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN — Phone Mockup */}
+        {/* RIGHT COLUMN — Tilted Phone Mockup */}
         <motion.div
           initial={{ opacity: 0, x: 40, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}
-          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 1 }}
+          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 2 }}
         >
           <motion.div
-            animate={{ y: [0, -10, 0] }}
+            animate={{ y: [0, -8, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              width: 290,
+              width: 270,
               background: "#ffffff",
-              borderRadius: 44,
-              border: "2px solid #e5e5e5",
-              boxShadow: "0 24px 60px rgba(26,58,42,0.18), 0 6px 20px rgba(0,0,0,0.08)",
+              borderRadius: 48,
+              border: "8px solid #1a1a1a",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.15), inset 0 0 0 2px rgba(255,255,255,0.9)",
               overflow: "hidden",
+              transform: "rotate(6deg)",
+              position: "relative",
             }}
           >
-            {/* Phone Top Bar */}
+            {/* Phone notch */}
             <div style={{
-              background: "#1a3a2a",
-              padding: "20px 20px 18px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+              position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+              width: 100, height: 28, background: "#1a1a1a",
+              borderRadius: "0 0 20px 20px", zIndex: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
             }}>
-              <div style={{ width: 60, height: 8, background: "rgba(0,0,0,0.25)", borderRadius: 8 }} />
-              <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, color: "#fff", marginTop: 4 }}>FindMe</span>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2a2a2a" }} />
+              <div style={{ width: 40, height: 4, borderRadius: 4, background: "#2a2a2a" }} />
             </div>
 
-            {/* Phone Content */}
-            <div style={{ padding: "16px 14px", display: "flex", flexDirection: "column", gap: 10, background: "#f7f9f7" }}>
-              {/* QR Card */}
-              <div style={{
-                background: "#eef4ee", borderRadius: 16, padding: "20px 16px",
-                display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}>
-                <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  {[
-                    [0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],
-                    [0,1],[6,1],
-                    [0,2],[2,2],[3,2],[4,2],[6,2],
-                    [0,3],[2,3],[4,3],[6,3],
-                    [0,4],[2,4],[3,4],[4,4],[6,4],
-                    [0,5],[6,5],
-                    [0,6],[1,6],[2,6],[3,6],[4,6],[5,6],[6,6],
-                    [8,0],[10,0],[11,0],
-                    [8,1],[9,1],[11,1],[12,1],
-                    [9,2],[11,2],
-                    [8,3],[10,3],[12,3],
-                    [8,4],[9,4],[11,4],[12,4],
-                    [0,8],[1,8],[3,8],[5,8],[6,8],
-                    [0,9],[2,9],[4,9],[6,9],
-                    [1,10],[2,10],[3,10],[5,10],[6,10],
-                    [0,11],[1,11],[3,11],[4,11],[6,11],
-                    [0,12],[2,12],[3,12],[5,12],[6,12],
-                    [8,8],[9,8],[10,8],[12,8],
-                    [8,9],[11,9],[12,9],
-                    [9,10],[10,10],[12,10],
-                    [8,11],[9,11],[11,11],
-                    [8,12],[10,12],[11,12],[12,12],
-                  ].map(([col, row], i) => (
-                    <rect key={i} x={col * 7 + 2} y={row * 7 + 2} width="6" height="6"
-                      fill={[8,9,10,11,12].some(c => [c].includes(col)) && row < 7 ? "#1db954" : "#333333"} rx="1" />
-                  ))}
-                </svg>
-                <span style={{ fontSize: 12, color: "#555555", fontWeight: 500 }}>Scan to recover item</span>
+            {/* Phone screen content — FindMe recovery page */}
+            <div style={{ background: "#ffffff", paddingTop: 32, minHeight: 560, display: "flex", flexDirection: "column" }}>
+
+              {/* App bar */}
+              <div style={{ padding: "10px 16px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #f0f0f0" }}>
+                <span style={{ fontSize: 10, color: "#888" }}>☰</span>
+                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 15, color: "#1a3a2a", letterSpacing: -0.3 }}>FindMe</span>
+                <span style={{ fontSize: 9, background: "#1a3a2a", color: "#fff", borderRadius: 10, padding: "2px 7px", fontWeight: 600 }}>🇳🇬 NG</span>
               </div>
 
-              {/* Notification Card */}
-              <div style={{
-                background: "#eef4ee", borderRadius: 14, padding: "12px 14px",
-                display: "flex", alignItems: "flex-start", gap: 10,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}>
+              {/* Main content */}
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flex: 1 }}>
+
+                {/* Lost item header */}
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", margin: 0, textAlign: "center" }}>This item is lost</p>
+
+                {/* Item icon */}
                 <div style={{
-                  width: 34, height: 34, borderRadius: 10,
-                  background: "rgba(239,68,68,0.15)", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 18, flexShrink: 0,
-                }}>🔍</div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.3 }}>Someone found your Laptop!</div>
-                  <div style={{ fontSize: 11, color: "#555555", marginTop: 2 }}>Reply here to chat anonymously</div>
-                </div>
-              </div>
+                  width: 56, height: 56, borderRadius: 14, background: "#f5f5f5",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26,
+                }}>🎒</div>
 
-              {/* Chat Messages */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 7, padding: "4px 2px" }}>
-                {[
-                  { text: "Hi! I found your bag at the airport lounge", type: "in" },
-                  { text: "Thank you! Which terminal? 🙏", type: "out" },
-                  { text: "Terminal 2, near charging stations", type: "in" },
-                ].map((m, i) => (
-                  <div key={i} style={{
-                    alignSelf: m.type === "out" ? "flex-end" : "flex-start",
-                    background: m.type === "out" ? "#1db954" : "#e8e8e8",
-                    color: m.type === "out" ? "#fff" : "#1a1a1a",
-                    padding: "8px 12px", borderRadius: 14,
-                    borderBottomRightRadius: m.type === "out" ? 4 : 14,
-                    borderBottomLeftRadius: m.type === "in" ? 4 : 14,
-                    fontSize: 11.5, maxWidth: "82%", lineHeight: 1.45,
-                    fontWeight: 500,
-                  }}>{m.text}</div>
-                ))}
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>My Backpack</p>
+
+                <p style={{ fontSize: 9.5, color: "#777", textAlign: "center", lineHeight: 1.5, margin: 0, fontStyle: "italic" }}>
+                  Hi there!{"\n"}If you&apos;ve found this item, please contact me using the options below
+                </p>
+
+                <p style={{ fontSize: 9, color: "#555", margin: 0, alignSelf: "flex-start" }}>Tag Owner: <strong>Chidi Okafor</strong></p>
+
+                {/* Contact buttons — matching Tagiz style */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7, width: "100%" }}>
+                  <button style={{ background: "#4a90d9", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                    📞 <span>WhatsApp</span>
+                  </button>
+                  <button style={{ background: "#6c757d", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                    ✉️ <span>Email</span>
+                  </button>
+                </div>
+                <button style={{ background: "#1db954", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                  💬 Chat Anonymously
+                </button>
+                <button style={{ background: "#e8445a", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                  📍 Send My Location
+                </button>
+
+                {/* Footer */}
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginTop: 4 }}>
+                  <span style={{ fontSize: 8.5, color: "#888" }}>ℹ Learn More</span>
+                  <span style={{ fontSize: 8.5, color: "#888" }}>↗ Share</span>
+                </div>
+                <p style={{ fontSize: 7.5, color: "#bbb", margin: 0, textAlign: "center", wordBreak: "break-all" }}>
+                  Tag Id: fm-ng-a4c2-8f1e-3b92-d047
+                </p>
               </div>
             </div>
           </motion.div>
