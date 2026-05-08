@@ -60,7 +60,7 @@ export const products: Product[] = [
   {
     id: 3,
     name: "Pet Tag",
-    price: 8000,
+    price: Coming Soon,
     image: "/qr3.png",
     desc: "Keep your pets safe with a smart QR pet tag. If your pet ever gets lost, anyone who finds them can scan the code and reach you immediately via WhatsApp. Designed for comfort, durability, and peace of mind.",
     category: "pet",
@@ -92,7 +92,7 @@ export const products: Product[] = [
   {
     id: 5,
     name: "Kids Wristband",
-    price: 10000,
+    price: Coming Soon,
     image: "/qr5.png",
     desc: "A secure QR wristband designed to protect children in crowded places. If your child gets separated, anyone can scan and contact you instantly via WhatsApp. Comfortable, reliable, and built for safety.",
     category: "sticker",

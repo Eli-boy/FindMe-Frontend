@@ -257,7 +257,10 @@ export default function Home() {
           <p style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Products</p>
           <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "54px", marginBottom: 50, color: "#1a3a2a" }}>Shop Tags</h2>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(280px,1fr))", gap: 24 }}>
-            {products.slice(0, 3).map((p) => (
+            {products
+              .filter((p) => !p.category?.toLowerCase().includes("pet") && !p.name?.toLowerCase().includes("pet"))
+              .slice(0, 3)
+              .map((p) => (
               <motion.div key={p.id} whileHover={{ y: -4 }}
                 style={{ border: "1px solid rgba(26,58,42,0.15)", borderRadius: 18, overflow: "hidden", background: "rgba(255,255,255,0.7)" }}>
                 <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
