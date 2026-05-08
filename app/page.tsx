@@ -56,7 +56,7 @@ export default function Home() {
       }}>
 
         {/* Full-page honeycomb SVG */}
-        <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: 0.38 }}
+        <svg style={{ position: "absolute", top: 0, right: 0, width: "30%", height: "100%", pointerEvents: "none", opacity: 0.45 }}
           xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <defs>
             <pattern id="hc" x="0" y="0" width="104" height="180" patternUnits="userSpaceOnUse">
@@ -244,7 +244,7 @@ export default function Home() {
                 style={{ border: "1px solid rgba(26,58,42,0.15)", borderRadius: 18, overflow: "hidden", background: "rgba(255,255,255,0.7)" }}>
                 <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
                   <div style={{ background: "#1a3a2a", padding: 24 }}>
-                    <Image src={p.image} alt={p.name} width={300} height={220}
+                    <Image src={p.image} alt={p.name} width={400} height={220}
                       style={{ width: "100%", height: "220px", objectFit: "contain" }}/>
                   </div>
                   <div style={{ padding: 24 }}>

@@ -80,7 +80,7 @@ export default function Footer() {
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "#888" }}>
                 <p>📧 support@findme.com.ng</p>
-                <p>📱 +234 803 624 4441</p>
+                <p>📱 +234 8073238118</p>
                 <p>📍 6, Below Yusuf, Jabi, Abuja, FCT, Nigeria</p>
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function Footer() {
 
       {/* FLOATING WHATSAPP */}
       <a
-        href="https://wa.me/2348036244441?text=Hello%20👋%20I'm%20interested%20in%20FindMe%20tags."
+        href="https://wa.me/2348073238118?text=Hello%20👋%20I'm%20interested%20in%20FindMe%20tags."
         target="_blank"
         rel="noreferrer"
         style={{
