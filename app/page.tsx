@@ -9,13 +9,13 @@ import toast from "react-hot-toast";
 import { useCart } from "./CartContext";
 
 /* ================= PALETTE ================= */
-// bg:        #ede6e6  (clean white — Tagiz style)
+// bg:        #ffffff  (clean white — Tagiz style)
 // bg-alt:    #f7f9f7  (very light green-grey for alternating sections)
-// card:      #e4dede  (white cards)
-// border:    #95a48d  (light grey borders)
-// text:      #454343  (near-black)
+// card:      #ffffff  (white cards)
+// border:    #e5e5e5  (light grey borders)
+// text:      #1a1a1a  (near-black)
 // muted:     #555555  (medium grey)
-// accent:    #277141  (brand green — unchanged)
+// accent:    #1db954  (brand green — unchanged)
 // dark-green:#1a3a2a  (deep forest — used as touch on stats bar, CTA, phone bar)
 
 /* ================= STATS ================= */
@@ -50,92 +50,39 @@ export default function Home() {
         alignItems: "center",
         padding: "100px 64px 80px",
         position: "relative", overflow: "hidden",
-        background: "#ffffff",
+        background: "#c8dfc8",
         gap: 48,
       }}>
 
-        {/* ══════════ GEOMETRIC SHAPES BEHIND PHONE ══════════ */}
-        {/* Large cream/beige background blob — fills right half */}
-        <div style={{
-          position: "absolute", right: 0, top: 0,
-          width: "55%", height: "100%",
-          background: "#f5f0e8",
-          pointerEvents: "none", zIndex: 0,
-        }} />
-
-        {/* RED circle — top centre-right */}
-        <div style={{
-          position: "absolute", right: "34%", top: "-4%",
-          width: 110, height: 110, borderRadius: "50%",
-          background: "#e8445a",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* BLUE large circle — right edge mid */}
-        <div style={{
-          position: "absolute", right: "-3%", top: "18%",
-          width: 170, height: 170, borderRadius: "50%",
-          background: "#4a7fd4",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* BLUE half-circle — right side lower */}
-        <div style={{
-          position: "absolute", right: "-2%", top: "42%",
-          width: 130, height: 130, borderRadius: "50%",
-          background: "#5b8ee6",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* YELLOW large half-shape — bottom right */}
-        <div style={{
-          position: "absolute", right: "0%", bottom: "8%",
-          width: 200, height: 160,
-          borderRadius: "50% 0 0 50%",
-          background: "#f5c842",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* DARK NAVY circle — bottom left of right column */}
-        <div style={{
-          position: "absolute", right: "44%", bottom: "-6%",
-          width: 150, height: 150, borderRadius: "50%",
-          background: "#1a2744",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* PINK/RED circle — bottom right */}
-        <div style={{
-          position: "absolute", right: "10%", bottom: "-3%",
-          width: 100, height: 100, borderRadius: "50%",
-          background: "#e8445a",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* PINK rectangle — far right edge */}
-        <div style={{
-          position: "absolute", right: 0, top: "30%",
-          width: 18, height: 120,
-          borderRadius: "4px 0 0 4px",
-          background: "#e8445a",
-          pointerEvents: "none", zIndex: 2,
-        }} />
-
-        {/* TEAL/CYAN small semicircle — mid left of right section */}
-        <div style={{
-          position: "absolute", right: "44%", top: "55%",
-          width: 60, height: 60, borderRadius: "50%",
-          background: "#2abfbf",
-          pointerEvents: "none", zIndex: 1,
-        }} />
-
-        {/* Dark green left-edge bar (brand accent) */}
-        <div style={{
-          position: "absolute", bottom: 0, left: 0,
-          width: 6, height: "40%",
-          background: "linear-gradient(to top, #1a3a2a, transparent)",
-          pointerEvents: "none", zIndex: 0,
-        }} />
+        {/* ══════════ HEXAGON PATTERN — right side ══════════ */}
+        <svg
+          style={{ position: "absolute", right: 0, top: 0, width: "58%", height: "100%", pointerEvents: "none", zIndex: 0, opacity: 0.55 }}
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <defs>
+            {/* Single flat-top hexagon tile: w=104, h=90, repeat x=104, y=90 */}
+            <pattern id="hex" x="0" y="0" width="104" height="90" patternUnits="userSpaceOnUse">
+              {/* Row 1 hex centred at 52,30 */}
+              <polygon points="52,0 90,22 90,67 52,90 14,67 14,22"
+                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
+              {/* Row 2 offset hex at 104,75 (half-step) */}
+              <polygon points="104,45 104,45 142,67 142,112 104,135 66,112 66,67"
+                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
+              <polygon points="0,45 38,67 38,112 0,135 -38,112 -38,67"
+                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hex)" />
+          {/* Larger lighter hexagons layered on top for depth */}
+          <defs>
+            <pattern id="hex2" x="52" y="45" width="104" height="90" patternUnits="userSpaceOnUse">
+              <polygon points="52,0 90,22 90,67 52,90 14,67 14,22"
+                fill="rgba(255,255,255,0.12)" stroke="none" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hex2)" />
+        </svg>
 
         {/* LEFT COLUMN — Text */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", position: "relative", zIndex: 2 }}>
@@ -144,12 +91,12 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
-              background: "rgba(29,185,84,0.1)", border: "1.5px solid rgba(29,185,84,0.35)",
+              background: "rgba(255,255,255,0.35)", border: "1.5px solid rgba(255,255,255,0.6)",
               borderRadius: 40, padding: "6px 16px", fontSize: 13, fontWeight: 500,
-              color: "#1db954", marginBottom: 32,
+              color: "#1a3a2a", marginBottom: 32,
             }}
           >
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#1db954", display: "inline-block", animation: "blink 1.5s infinite" }} />
+            <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#1a3a2a", display: "inline-block" }} />
             Now available in Nigeria
           </motion.div>
 
@@ -158,20 +105,20 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             style={{
               fontFamily: "Syne, sans-serif",
-              fontSize: "clamp(42px, 5.5vw, 80px)",
+              fontSize: "clamp(42px, 5.5vw, 76px)",
               fontWeight: 800, lineHeight: 1.05, letterSpacing: -2,
-              color: "#1a1a1a",
+              color: "#1a3a2a",
               margin: 0,
             }}
           >
             Lost it?{" "}
-            <em style={{ fontStyle: "italic", color: "#1db954", display: "block" }}>Consider it</em>
+            <em style={{ fontStyle: "italic", color: "#2d6a3f", display: "block" }}>Consider it</em>
             Found.
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            style={{ marginTop: 24, fontSize: "clamp(15px, 1.5vw, 18px)", color: "#555555", maxWidth: 480, fontWeight: 400, lineHeight: 1.75 }}
+            style={{ marginTop: 24, fontSize: "clamp(15px, 1.5vw, 17px)", color: "#2a4a2a", maxWidth: 460, fontWeight: 400, lineHeight: 1.75 }}
           >
             Attach a FindMe QR tag to anything. If it gets lost, anyone can scan and contact you instantly via WhatsApp — anonymously.
           </motion.p>
@@ -184,36 +131,36 @@ export default function Home() {
             <Link
               href="/shop"
               style={{
-                background: "#1db954", color: "#000",
+                background: "#1a3a2a", color: "#ffffff",
                 padding: "16px 36px", borderRadius: 12,
                 fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15,
                 textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8,
-                boxShadow: "0 4px 24px rgba(29,185,84,0.3)",
+                boxShadow: "0 4px 20px rgba(26,58,42,0.35)",
                 transition: "all 0.25s ease",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#19a348"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(29,185,84,0.4)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#1db954"; e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(29,185,84,0.3)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#0f2419"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               Get Your Tags →
             </Link>
             <a
               href="#how"
               style={{
-                background: "#f5f5f5", color: "#1a1a1a",
+                background: "rgba(255,255,255,0.55)", color: "#1a3a2a",
                 padding: "16px 36px", borderRadius: 12,
-                border: "1.5px solid #d0d0d0",
+                border: "1.5px solid rgba(255,255,255,0.7)",
                 fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 15,
                 textDecoration: "none", transition: "all 0.25s ease",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#eeeeee"; e.currentTarget.style.borderColor = "rgba(29,185,84,0.6)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#f5f5f5"; e.currentTarget.style.borderColor = "#d0d0d0"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.75)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.55)"; }}
             >
               How It Works
             </a>
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN — Tilted Phone Mockup */}
+        {/* RIGHT COLUMN — Phone Mockup (Image 2 exact screen) */}
         <motion.div
           initial={{ opacity: 0, x: 40, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}
           style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 2 }}
@@ -222,79 +169,118 @@ export default function Home() {
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             style={{
-              width: 270,
+              width: 280,
               background: "#ffffff",
-              borderRadius: 48,
-              border: "8px solid #1a1a1a",
-              boxShadow: "0 32px 80px rgba(0,0,0,0.28), 0 8px 24px rgba(0,0,0,0.15), inset 0 0 0 2px rgba(255,255,255,0.9)",
+              borderRadius: 52,
+              border: "10px solid #1a1a1a",
+              boxShadow: "0 40px 90px rgba(0,0,0,0.32), 0 10px 30px rgba(0,0,0,0.18)",
               overflow: "hidden",
-              transform: "rotate(6deg)",
+              transform: "rotate(5deg)",
               position: "relative",
             }}
           >
-            {/* Phone notch */}
+            {/* Notch */}
             <div style={{
               position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-              width: 100, height: 28, background: "#1a1a1a",
-              borderRadius: "0 0 20px 20px", zIndex: 10,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              width: 110, height: 30, background: "#1a1a1a",
+              borderRadius: "0 0 22px 22px", zIndex: 10,
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
             }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#2a2a2a" }} />
-              <div style={{ width: 40, height: 4, borderRadius: 4, background: "#2a2a2a" }} />
+              <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#2e2e2e" }} />
+              <div style={{ width: 42, height: 4, borderRadius: 4, background: "#2e2e2e" }} />
             </div>
 
-            {/* Phone screen content — FindMe recovery page */}
-            <div style={{ background: "#ffffff", paddingTop: 32, minHeight: 560, display: "flex", flexDirection: "column" }}>
+            {/* ── SCREEN: exact match to Image 2 ── */}
+            <div style={{ background: "#faf9f7", paddingTop: 34, minHeight: 580, display: "flex", flexDirection: "column" }}>
 
-              {/* App bar */}
-              <div style={{ padding: "10px 16px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #f0f0f0" }}>
-                <span style={{ fontSize: 10, color: "#888" }}>☰</span>
-                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 15, color: "#1a3a2a", letterSpacing: -0.3 }}>FindMe</span>
-                <span style={{ fontSize: 9, background: "#1a3a2a", color: "#fff", borderRadius: 10, padding: "2px 7px", fontWeight: 600 }}>🇳🇬 NG</span>
+              {/* App bar — dark green FindMe logo + NG badge */}
+              <div style={{
+                padding: "10px 18px 10px",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                borderBottom: "1px solid #eeeeee",
+                background: "#ffffff",
+              }}>
+                <span style={{ fontSize: 11, color: "#999", fontWeight: 300 }}>≡</span>
+                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: "#1a3a2a", letterSpacing: -0.5 }}>FindMe</span>
+                <div style={{ background: "#1a3a2a", borderRadius: 20, padding: "3px 10px 3px 8px", display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontSize: 9 }}>🇳🇬</span>
+                  <span style={{ fontSize: 9, color: "#fff", fontWeight: 700 }}>NG</span>
+                </div>
               </div>
 
-              {/* Main content */}
-              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, flex: 1 }}>
+              {/* Page content */}
+              <div style={{ padding: "18px 20px 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, background: "#ffffff", flex: 1 }}>
 
-                {/* Lost item header */}
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", margin: 0, textAlign: "center" }}>This item is lost</p>
-
-                {/* Item icon */}
-                <div style={{
-                  width: 56, height: 56, borderRadius: 14, background: "#f5f5f5",
-                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26,
-                }}>🎒</div>
-
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#1a1a1a", margin: 0 }}>My Backpack</p>
-
-                <p style={{ fontSize: 9.5, color: "#777", textAlign: "center", lineHeight: 1.5, margin: 0, fontStyle: "italic" }}>
-                  Hi there!{"\n"}If you&apos;ve found this item, please contact me using the options below
+                {/* Title */}
+                <p style={{ fontSize: 15, fontWeight: 800, color: "#1a1a1a", margin: 0, textAlign: "center", letterSpacing: -0.3 }}>
+                  This item is lost
                 </p>
 
-                <p style={{ fontSize: 9, color: "#555", margin: 0, alignSelf: "flex-start" }}>Tag Owner: <strong>Chidi Okafor</strong></p>
+                {/* Backpack icon card */}
+                <div style={{
+                  width: 64, height: 64, borderRadius: 16,
+                  background: "#f2f2f2",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30,
+                  marginTop: 2,
+                }}>🎒</div>
 
-                {/* Contact buttons — matching Tagiz style */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7, width: "100%" }}>
-                  <button style={{ background: "#4a90d9", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                    📞 <span>WhatsApp</span>
+                {/* Item name */}
+                <p style={{ fontSize: 13, fontWeight: 800, color: "#1a1a1a", margin: 0 }}>My Backpack</p>
+
+                {/* Italic message */}
+                <p style={{ fontSize: 10, color: "#888", textAlign: "center", lineHeight: 1.6, margin: 0, fontStyle: "italic", maxWidth: 200 }}>
+                  Hi there! If you&apos;ve found this item, please contact me using the options below
+                </p>
+
+                {/* Owner */}
+                <p style={{ fontSize: 10, color: "#555", margin: 0, alignSelf: "flex-start", width: "100%" }}>
+                  Tag Owner: <strong style={{ color: "#1a1a1a" }}>Chidi Okafor</strong>
+                </p>
+
+                {/* WhatsApp + Email row */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, width: "100%" }}>
+                  <button style={{
+                    background: "#4a90d9", color: "#fff", border: "none", borderRadius: 10,
+                    padding: "11px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  }}>
+                    <span>📞</span> WhatsApp
                   </button>
-                  <button style={{ background: "#6c757d", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                    ✉️ <span>Email</span>
+                  <button style={{
+                    background: "#6c757d", color: "#fff", border: "none", borderRadius: 10,
+                    padding: "11px 8px", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  }}>
+                    <span>✉️</span> Email
                   </button>
                 </div>
-                <button style={{ background: "#1db954", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+
+                {/* Chat Anonymously — full width green */}
+                <button style={{
+                  background: "#1db954", color: "#fff", border: "none", borderRadius: 10,
+                  padding: "12px", fontSize: 11, fontWeight: 700, cursor: "pointer", width: "100%",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                }}>
                   💬 Chat Anonymously
                 </button>
-                <button style={{ background: "#e8445a", color: "#fff", border: "none", borderRadius: 8, padding: "9px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+
+                {/* Send My Location — full width red */}
+                <button style={{
+                  background: "#e8445a", color: "#fff", border: "none", borderRadius: 10,
+                  padding: "12px", fontSize: 11, fontWeight: 700, cursor: "pointer", width: "100%",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                }}>
                   📍 Send My Location
                 </button>
 
-                {/* Footer */}
-                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginTop: 4 }}>
-                  <span style={{ fontSize: 8.5, color: "#888" }}>ℹ Learn More</span>
-                  <span style={{ fontSize: 8.5, color: "#888" }}>↗ Share</span>
+                {/* Footer row */}
+                <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginTop: 2 }}>
+                  <span style={{ fontSize: 9, color: "#aaa" }}>ℹ Learn More</span>
+                  <span style={{ fontSize: 9, color: "#aaa" }}>↗ Share</span>
                 </div>
-                <p style={{ fontSize: 7.5, color: "#bbb", margin: 0, textAlign: "center", wordBreak: "break-all" }}>
+
+                {/* Tag ID */}
+                <p style={{ fontSize: 8, color: "#ccc", margin: 0, textAlign: "center", wordBreak: "break-all" }}>
                   Tag Id: fm-ng-a4c2-8f1e-3b92-d047
                 </p>
               </div>
