@@ -9,13 +9,13 @@ import toast from "react-hot-toast";
 import { useCart } from "./CartContext";
 
 /* ================= PALETTE ================= */
-// bg:        #ffffff  (clean white — Tagiz style)
+// bg:        #ede6e6  (clean white — Tagiz style)
 // bg-alt:    #f7f9f7  (very light green-grey for alternating sections)
-// card:      #ffffff  (white cards)
-// border:    #e5e5e5  (light grey borders)
-// text:      #1a1a1a  (near-black)
+// card:      #e4dede  (white cards)
+// border:    #95a48d  (light grey borders)
+// text:      #454343  (near-black)
 // muted:     #555555  (medium grey)
-// accent:    #1db954  (brand green — unchanged)
+// accent:    #277141  (brand green — unchanged)
 // dark-green:#1a3a2a  (deep forest — used as touch on stats bar, CTA, phone bar)
 
 /* ================= STATS ================= */
@@ -50,7 +50,7 @@ export default function Home() {
         alignItems: "center",
         padding: "100px 64px 80px",
         position: "relative", overflow: "hidden",
-        background: "#faf9f7",
+        background: "#ffffff",
         gap: 48,
       }}>
 
