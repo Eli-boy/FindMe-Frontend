@@ -129,10 +129,10 @@ export default function Home() {
             <Image
               src="/eli2.png"
               alt="FindMe Smart ID Tag"
-              width={isMobile ? 280 : 460}
-              height={isMobile ? 280 : 460}
+              width={isMobile ? 300 : 580}
+              height={isMobile ? 300 : 580}
               style={{
-                width: isMobile ? 280 : 460,
+                width: isMobile ? 300 : 580,
                 height: "auto",
                 objectFit: "contain",
                 filter: "drop-shadow(0 32px 64px rgba(26,58,42,0.3)) drop-shadow(0 8px 20px rgba(0,0,0,0.15))",
