@@ -40,7 +40,7 @@ export default function Home() {
   const { addToCart } = useCart();
 
   return (
-    <div style={{ background: "#ffffff", color: "#1a1a1a", minHeight: "100vh" }}>
+    <div style={{ background: "#c8dfc8", color: "#1a1a1a", minHeight: "100vh" }}>
 
       {/* ===================== HERO ===================== */}
       <section style={{
@@ -54,33 +54,27 @@ export default function Home() {
         gap: 48,
       }}>
 
-        {/* ══════════ HEXAGON PATTERN — right side ══════════ */}
+        {/* ══════════ HEXAGON PATTERN — full width ══════════ */}
         <svg
-          style={{ position: "absolute", right: 0, top: 0, width: "58%", height: "100%", pointerEvents: "none", zIndex: 0, opacity: 0.55 }}
+          style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0, opacity: 0.45 }}
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="xMidYMid slice"
         >
           <defs>
-            {/* Single flat-top hexagon tile: w=104, h=90, repeat x=104, y=90 */}
             <pattern id="hex" x="0" y="0" width="104" height="90" patternUnits="userSpaceOnUse">
-              {/* Row 1 hex centred at 52,30 */}
               <polygon points="52,0 90,22 90,67 52,90 14,67 14,22"
-                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
-              {/* Row 2 offset hex at 104,75 (half-step) */}
-              <polygon points="104,45 104,45 142,67 142,112 104,135 66,112 66,67"
-                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
+                fill="none" stroke="#3d6b3d" strokeWidth="1.5" />
+              <polygon points="104,45 142,67 142,112 104,135 66,112 66,67"
+                fill="none" stroke="#3d6b3d" strokeWidth="1.5" />
               <polygon points="0,45 38,67 38,112 0,135 -38,112 -38,67"
-                fill="none" stroke="#4a7a4a" strokeWidth="1.5" opacity="0.5" />
+                fill="none" stroke="#3d6b3d" strokeWidth="1.5" />
+            </pattern>
+            <pattern id="hex2" x="52" y="45" width="104" height="90" patternUnits="userSpaceOnUse">
+              <polygon points="52,0 90,22 90,67 52,90 14,67 14,22"
+                fill="rgba(255,255,255,0.13)" stroke="none" />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#hex)" />
-          {/* Larger lighter hexagons layered on top for depth */}
-          <defs>
-            <pattern id="hex2" x="52" y="45" width="104" height="90" patternUnits="userSpaceOnUse">
-              <polygon points="52,0 90,22 90,67 52,90 14,67 14,22"
-                fill="rgba(255,255,255,0.12)" stroke="none" />
-            </pattern>
-          </defs>
           <rect width="100%" height="100%" fill="url(#hex2)" />
         </svg>
 
@@ -160,10 +154,10 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN — Phone Mockup (Image 2 exact screen) */}
+        {/* RIGHT COLUMN — Phone Mockup with 3D perspective tilt */}
         <motion.div
           initial={{ opacity: 0, x: 40, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }}
-          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 2 }}
+          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 2, perspective: "1200px" }}
         >
           <motion.div
             animate={{ y: [0, -8, 0] }}
@@ -172,11 +166,12 @@ export default function Home() {
               width: 280,
               background: "#ffffff",
               borderRadius: 52,
-              border: "10px solid #1a1a1a",
-              boxShadow: "0 40px 90px rgba(0,0,0,0.32), 0 10px 30px rgba(0,0,0,0.18)",
+              border: "10px solid #1c1c1e",
+              boxShadow: "-20px 40px 80px rgba(0,0,0,0.35), -8px 16px 32px rgba(0,0,0,0.2), 4px 0px 20px rgba(255,255,255,0.08)",
               overflow: "hidden",
-              transform: "rotate(5deg)",
+              transform: "perspective(1200px) rotateY(-22deg) rotateX(6deg) rotate(2deg)",
               position: "relative",
+              transformStyle: "preserve-3d",
             }}
           >
             {/* Notch */}
@@ -304,7 +299,8 @@ export default function Home() {
       </div>
 
       {/* ===================== SHOP TAGS ===================== */}
-      <section style={{ padding: "120px 48px", maxWidth: 1200, margin: "0 auto" }}>
+      <section style={{ padding: "120px 48px", maxWidth: 1200, margin: "0 auto", background: "#ffffff", maxWidth: "100%" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 16 }}>
           Products
         </p>
@@ -395,13 +391,14 @@ export default function Home() {
             View all products →
           </Link>
         </div>
+        </div>
       </section>
 
       {/* ===================== HOW IT WORKS ===================== */}
       <HowItWorks />
 
       {/* ===================== PHONE DEMO ===================== */}
-      <div style={{ background: "#f7f9f7", borderTop: "1px solid #e8e8e8", borderBottom: "1px solid #e8e8e8" }}>
+      <div style={{ background: "#ffffff", borderTop: "1px solid #e8e8e8", borderBottom: "1px solid #e8e8e8" }}>
         <div style={{
           maxWidth: 1200, margin: "0 auto", padding: "120px 48px",
           display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
@@ -496,7 +493,8 @@ export default function Home() {
       </div>
 
       {/* ===================== FEATURES ===================== */}
-      <section style={{ padding: "120px 48px", maxWidth: 1200, margin: "0 auto" }}>
+      <section style={{ padding: "120px 48px", background: "#ffffff" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 16 }}>
           Features
         </p>
@@ -539,7 +537,7 @@ export default function Home() {
       </section>
 
       {/* ===================== ABOUT ===================== */}
-      <section id="about" style={{ background: "#f7f9f7", borderTop: "1px solid #e8e8e8", padding: "120px 48px" }}>
+      <section id="about" style={{ background: "#ffffff", borderTop: "1px solid #e8e8e8", padding: "120px 48px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 80, alignItems: "center" }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
