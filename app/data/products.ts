@@ -8,6 +8,7 @@ export type Product = {
   id: number;
   name: string;
   price: number;
+  comingSoon?: boolean;
   image: string;
   desc: string;
   category: string;
@@ -23,16 +24,8 @@ export const products: Product[] = [
     desc: "A slim and durable QR sticker designed for your everyday items like phones, laptops, and gadgets. If lost, anyone can scan the code and instantly contact you via WhatsApp. No app required — just scan and connect. Simple, discreet, and effective protection.",
     category: "sticker",
     reviews: [
-      {
-        name: "Daniel",
-        rating: 5,
-        comment: "Very useful! Got my lost bag back in 2 days.",
-      },
-      {
-        name: "Ada",
-        rating: 4,
-        comment: "Simple and works perfectly.",
-      },
+      { name: "Daniel", rating: 5, comment: "Very useful! Got my lost bag back in 2 days." },
+      { name: "Ada", rating: 4, comment: "Simple and works perfectly." },
     ],
   },
 
@@ -44,32 +37,21 @@ export const products: Product[] = [
     desc: "A premium QR-powered keychain tag built to keep your keys, bags, and valuables safe. Attach it once and relax — if lost, the finder can scan and contact you instantly through WhatsApp. Fast, secure, and no app needed.",
     category: "key",
     reviews: [
-      {
-        name: "Tunde",
-        rating: 5,
-        comment: "Solid build quality. Worth the price!",
-      },
-      {
-        name: "Blessing",
-        rating: 4,
-        comment: "Works great with WhatsApp connection.",
-      },
+      { name: "Tunde", rating: 5, comment: "Solid build quality. Worth the price!" },
+      { name: "Blessing", rating: 4, comment: "Works great with WhatsApp connection." },
     ],
   },
 
   {
     id: 3,
     name: "Pet Tag",
-    price: Coming Soon,
+    price: 0,
+    comingSoon: true,
     image: "/qr3.png",
     desc: "Keep your pets safe with a smart QR pet tag. If your pet ever gets lost, anyone who finds them can scan the code and reach you immediately via WhatsApp. Designed for comfort, durability, and peace of mind.",
     category: "pet",
     reviews: [
-      {
-        name: "Chioma",
-        rating: 5,
-        comment: "Helped me find my dog in hours!",
-      },
+      { name: "Chioma", rating: 5, comment: "Helped me find my dog in hours!" },
     ],
   },
 
@@ -81,27 +63,20 @@ export const products: Product[] = [
     desc: "Travel confidently with a smart luggage tag that protects your bags anywhere in the world. If misplaced, the finder can scan and contact you instantly. Perfect for airports, travel, and everyday use.",
     category: "key",
     reviews: [
-      {
-        name: "Emeka",
-        rating: 4,
-        comment: "Very helpful for airport travel.",
-      },
+      { name: "Emeka", rating: 4, comment: "Very helpful for airport travel." },
     ],
   },
 
   {
     id: 5,
     name: "Kids Wristband",
-    price: Coming Soon,
+    price: 0,
+    comingSoon: true,
     image: "/qr5.png",
     desc: "A secure QR wristband designed to protect children in crowded places. If your child gets separated, anyone can scan and contact you instantly via WhatsApp. Comfortable, reliable, and built for safety.",
     category: "sticker",
     reviews: [
-      {
-        name: "Aisha",
-        rating: 5,
-        comment: "Peace of mind as a parent. Love it!",
-      },
+      { name: "Aisha", rating: 5, comment: "Peace of mind as a parent. Love it!" },
     ],
   },
 ];
