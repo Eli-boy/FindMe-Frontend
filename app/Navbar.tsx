@@ -51,7 +51,7 @@ export default function Navbar() {
         {/* LOGO */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <Image
-            src="/logo.JPG"
+            src="/me.png"
             alt="FindMe"
             width={40}
             height={40}
