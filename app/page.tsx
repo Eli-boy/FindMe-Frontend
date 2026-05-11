@@ -201,7 +201,7 @@ export default function Home() {
       </section>
 
       {/* ===================== HOW IT WORKS ===================== */}
-      <HowItWorks />
+      <div id="how"><HowItWorks /></div>
 
       {/* ===================== FEATURES ===================== */}
       <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
@@ -226,7 +226,7 @@ export default function Home() {
       </section>
 
       {/* ===================== ABOUT ===================== */}
-      <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
+      <section id="about" style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 60, alignItems: "center" }}>
           <div>
