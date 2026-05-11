@@ -92,8 +92,8 @@ export default function Footer() {
               </h3>
               <div style={{ display: "flex", gap: 12 }}>
                 {[
-                  { icon: <FaFacebookF />, href: "#" },
-                  { icon: <FaInstagram />, href: "#" },
+                  { icon: <FaFacebookF />, href: "https://www.facebook.com/share/17dS92Q1K1/?mibextid=wwXIfr" },
+                  { icon: <FaInstagram />, href: "https://www.instagram.com/findme_nigeria/" },
                   { icon: <FaLinkedinIn />, href: "#" },
                   { icon: <FaTiktok />, href: "#" },
                 ].map((s, i) => (
