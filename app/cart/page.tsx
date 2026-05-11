@@ -16,7 +16,7 @@ export default function CartPage() {
   const handleWhatsAppCheckout = () => {
     if (cart.length === 0) return;
 
-    const phoneNumber = "2348151171029";
+    const phoneNumber = "2348073238118";
 
     const message = cart
       .map(
