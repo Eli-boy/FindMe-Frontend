@@ -298,7 +298,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                         (i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`
                       );
                       const msg = `Hello! I'd like to order:\n${lines.join("\n")}\n\nTotal: ₦${total.toLocaleString()}`;
-                      window.open(`https://wa.me/2348151171029?text=${encodeURIComponent(msg)}`, "_blank");
+                      window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
                     }}
                     style={{
                       width: "100%", padding: "15px",

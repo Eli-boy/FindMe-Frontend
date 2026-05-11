@@ -158,39 +158,42 @@ export default function Home() {
       {/* ===================== PRODUCTS ===================== */}
       <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <p style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Products</p>
-          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "54px", marginBottom: 50, color: "#1a3a2a" }}>Shop Tags</h2>
+          <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, letterSpacing: 4, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Products</p>
+          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "54px", fontWeight: 800, letterSpacing: -1, lineHeight: 1.05, marginBottom: 50, color: "#1a3a2a" }}>Shop Tags</h2>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(280px,1fr))", gap: 24 }}>
             {products
               .filter((p) => !p.category?.toLowerCase().includes("pet") && !p.name?.toLowerCase().includes("pet"))
               .slice(0, 3)
               .map((p) => (
               <motion.div key={p.id} whileHover={{ y: -4 }}
-                style={{ border: "1px solid rgba(26,58,42,0.15)", borderRadius: 18, overflow: "hidden", background: "rgba(255,255,255,0.7)" }}>
+                style={{ border: "1px solid rgba(26,58,42,0.15)", borderRadius: 20, overflow: "hidden",
+                  background: "rgba(255,255,255,0.7)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)" }}>
                 <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
-                  <div style={{ background: "#1a3a2a", padding: 24 }}>
+                  <div style={{ background: "#1a3a2a", padding: 28 }}>
                     <Image src={p.image} alt={p.name} width={400} height={220}
                       style={{ width: "100%", height: "220px", objectFit: "contain" }}/>
                   </div>
-                  <div style={{ padding: 24 }}>
-                    <h3 style={{ margin: 0, fontFamily: "Syne, sans-serif", color: "#1a3a2a" }}>{p.name}</h3>
-                    <p style={{ color: "#1db954", fontWeight: 800, fontSize: 24, marginTop: 10 }}>₦{p.price.toLocaleString()}</p>
-                    <p style={{ color: "#2a4a2a", fontSize: 14 }}>Smart QR recovery tag</p>
+                  <div style={{ padding: "22px 24px 10px" }}>
+                    <h3 style={{ margin: 0, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#1a3a2a" }}>{p.name}</h3>
+                    <p style={{ fontFamily: "Syne, sans-serif", color: "#1db954", fontWeight: 800, fontSize: 22, marginTop: 8, marginBottom: 4 }}>₦{p.price.toLocaleString()}</p>
+                    <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 13, fontWeight: 500, letterSpacing: 0.2 }}>Smart QR recovery tag</p>
                   </div>
                 </Link>
-                <div style={{ padding: "0 24px 24px" }}>
+                <div style={{ padding: "8px 24px 24px" }}>
                   <button onClick={() => { addToCart(p); toast.success(`${p.name} added to cart 🛒`); }}
                     style={{ width: "100%", border: "none", padding: "14px", borderRadius: 40,
-                      background: "#1a3a2a", color: "#fff", fontWeight: 800, cursor: "pointer", fontFamily: "Syne, sans-serif" }}>
+                      background: "#1a3a2a", color: "#fff", fontWeight: 700, fontSize: 14,
+                      letterSpacing: 0.3, cursor: "pointer", fontFamily: "Syne, sans-serif" }}>
                     Add to Cart
                   </button>
                 </div>
               </motion.div>
             ))}
           </div>
-          <div style={{ textAlign: "center", marginTop: 48 }}>
-            <Link href="/shop" style={{ border: "1.5px solid #1a3a2a", color: "#1a3a2a",
-              padding: "14px 36px", borderRadius: 40, textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
+          <div style={{ textAlign: "center", marginTop: 56 }}>
+            <Link href="/shop" style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 14,
+              border: "1.5px solid #1a3a2a", color: "#1a3a2a", letterSpacing: 0.3,
+              padding: "14px 36px", borderRadius: 40, textDecoration: "none" }}>
               View all products →
             </Link>
           </div>
@@ -203,17 +206,19 @@ export default function Home() {
       {/* ===================== FEATURES ===================== */}
       <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <p style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Features</p>
-          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "52px", marginBottom: 64, color: "#1a3a2a" }}>Built for real life</h2>
+          <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, letterSpacing: 4, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Features</p>
+          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "52px", fontWeight: 800, letterSpacing: -1, lineHeight: 1.05, marginBottom: 64, color: "#1a3a2a" }}>Built for real life</h2>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(280px,1fr))", gap: 24 }}>
             {features.map((f, i) => (
               <motion.div key={i} whileHover={{ y: -4 }}
                 style={{ border: "1px solid rgba(26,58,42,0.15)", borderLeft: "3px solid #1a3a2a",
-                  borderRadius: 18, padding: 34, background: "rgba(255,255,255,0.65)" }}>
+                  borderRadius: 20, padding: 34, background: "rgba(255,255,255,0.7)",
+                  boxShadow: "0 4px 24px rgba(26,58,42,0.08)", transition: "box-shadow 0.3s" }}>
                 <div style={{ width: 56, height: 56, borderRadius: 14, background: "rgba(26,58,42,0.1)",
                   display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 20 }}>{f.icon}</div>
-                <h3 style={{ fontFamily: "Syne, sans-serif", marginBottom: 10, color: "#1a3a2a" }}>{f.title}</h3>
-                <p style={{ color: "#2a4a2a", lineHeight: 1.8, fontSize: 14 }}>{f.desc}</p>
+                <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 17, letterSpacing: -0.2,
+                  marginBottom: 10, marginTop: 0, color: "#1a3a2a" }}>{f.title}</h3>
+                <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", lineHeight: 1.85, fontSize: 14, fontWeight: 400 }}>{f.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -225,27 +230,33 @@ export default function Home() {
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 60, alignItems: "center" }}>
           <div>
-            <p style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>About</p>
-            <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "42px" : "58px", lineHeight: 1, color: "#1a3a2a" }}>
+            <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, letterSpacing: 4, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>About</p>
+            <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "42px" : "58px", fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.02, color: "#1a3a2a" }}>
               Meet Find<span style={{ color: "#1db954" }}>Me</span>
             </h2>
-            <p style={{ color: "#2a4a2a", lineHeight: 1.9, marginTop: 24, fontSize: 16 }}>
+            <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", lineHeight: 1.9, marginTop: 24, fontSize: 16, fontWeight: 400 }}>
               FindMe connects you instantly with anyone who finds your lost items. No apps, no stress — just scan and chat. Built for everyday Nigerian life — from keys to pets to luggage.
             </p>
             <Link href="/shop" style={{ display: "inline-block", marginTop: 32,
               background: "#1a3a2a", color: "#fff", padding: "14px 32px",
-              borderRadius: 40, textDecoration: "none", fontWeight: 700, fontFamily: "Syne, sans-serif" }}>
+              borderRadius: 40, textDecoration: "none", fontWeight: 700,
+              fontFamily: "Syne, sans-serif", fontSize: 15, letterSpacing: 0.2 }}>
               Get Started →
             </Link>
           </div>
-          <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 30, padding: 40,
-            boxShadow: "0 20px 50px rgba(26,58,42,0.12)", border: "1px solid rgba(26,58,42,0.1)" }}>
-            <h3 style={{ marginTop: 0, fontFamily: "Syne, sans-serif", color: "#1a3a2a" }}>Why Nigerians love FindMe</h3>
-            <ul style={{ paddingLeft: 20, color: "#2a4a2a", lineHeight: 2.2 }}>
-              <li>No app download required</li>
-              <li>Anonymous WhatsApp recovery</li>
-              <li>Works anywhere instantly</li>
-              <li>Affordable smart protection</li>
+          <div style={{ background: "rgba(255,255,255,0.7)", borderRadius: 24, padding: 40,
+            boxShadow: "0 4px 24px rgba(26,58,42,0.08)", border: "1px solid rgba(26,58,42,0.12)" }}>
+            <h3 style={{ marginTop: 0, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 20,
+              letterSpacing: -0.3, color: "#1a3a2a", marginBottom: 24 }}>Why Nigerians love FindMe</h3>
+            <ul style={{ paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 16 }}>
+              {["No app download required", "Anonymous WhatsApp recovery", "Works anywhere instantly", "Affordable smart protection"].map((item, i) => (
+                <li key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1a3a2a",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "#fff", fontSize: 12, flexShrink: 0, fontWeight: 700 }}>✓</span>
+                  <span style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 15, fontWeight: 500 }}>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
