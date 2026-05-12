@@ -18,7 +18,7 @@ export type Product = {
 export const products: Product[] = [
   {
     id: 1,
-    name: "FindMe Sticker",
+    name: "Sticker Pack",
     price: 8000,
     image: "/elo1.png",
     desc: "A slim and durable QR sticker designed for your everyday items like phones, laptops, and gadgets. If lost, anyone can scan the code and instantly contact you via WhatsApp. No app required — just scan and connect. Simple, discreet, and effective protection.",

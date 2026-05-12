@@ -16,7 +16,7 @@ const steps = [
     desc: "Scan the tag with your phone, send a quick WhatsApp message to activate it.",
   },
   {
-    icon: "🚨",
+    icon: "🔔",
     num: "03",
     title: "Get notified",
     desc: "When someone finds your item and scans the tag, you get an instant WhatsApp message.",
@@ -151,7 +151,7 @@ export default function HowItWorks() {
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> Works worldwide
           &nbsp;&nbsp;•&nbsp;&nbsp;
-          <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> No battry
+          <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> No battery
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span style={{ color: "#1db954", fontWeight: 700 }}>✔</span> Instant WhatsApp chat
         </div>

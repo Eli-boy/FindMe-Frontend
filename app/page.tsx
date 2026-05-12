@@ -175,8 +175,14 @@ export default function Home() {
                   </div>
                   <div style={{ padding: "22px 24px 10px" }}>
                     <h3 style={{ margin: 0, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#1a3a2a" }}>{p.name}</h3>
-                    <p style={{ fontFamily: "Syne, sans-serif", color: "#1db954", fontWeight: 800, fontSize: 22, marginTop: 8, marginBottom: 4 }}>₦{p.price.toLocaleString()}</p>
-                    <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 13, fontWeight: 500, letterSpacing: 0.2 }}>Smart QR recovery tag</p>
+                    <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 13, fontWeight: 500, lineHeight: 1.7, marginTop: 8, marginBottom: 6 }}>
+                      {p.id === 1 && "A slim QR sticker for phones, laptops & gadgets. Scan to contact you via WhatsApp instantly."}
+                      {p.id === 2 && "Premium QR keychain for keys & bags. Lost it? Finder scans and reaches you in seconds."}
+                      {p.id === 3 && "Smart QR tag for your pet's collar. If they wander off, anyone can scan and call you right away."}
+                      {p.id === 4 && "Travel-ready QR tag for your luggage. Misplaced bag? Get reunited at any airport worldwide."}
+                      {p.id === 5 && "QR wristband designed for kids. If separated in a crowd, a quick scan connects finder to you."}
+                    </p>
+                    <p style={{ fontFamily: "Syne, sans-serif", color: "#1db954", fontWeight: 800, fontSize: 22, marginTop: 4, marginBottom: 0 }}>₦{p.price.toLocaleString()}</p>
                   </div>
                 </Link>
                 <div style={{ padding: "8px 24px 24px" }}>
