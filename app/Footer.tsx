@@ -81,7 +81,7 @@ export default function Footer() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "#888" }}>
                 <p>📧 support@findme.com.ng</p>
                 <p>📱 +234 8073238118</p>
-                <p>📍 6, Below Yusuf, Jabi, Abuja, FCT, Nigeria</p>
+                <p>📍</p>
               </div>
             </div>
 

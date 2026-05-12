@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   },
   description:
     "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
-  icons: { icon: "/icon.png" },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,10 +41,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="top-right"
             toastOptions={{
               style: {
-                background: "#1e1e1e",
-                color: "#f5f4f0",
+                background: "#1a3a2a",
+                color: "#fff",
                 borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                fontFamily: "Syne, sans-serif",
+                fontWeight: 600,
+                fontSize: "14px",
               },
             }}
           />

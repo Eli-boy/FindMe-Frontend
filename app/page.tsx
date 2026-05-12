@@ -24,7 +24,7 @@ const features = [
   { icon: "⚡", title: "Instant WhatsApp", desc: "No app to download. No account to create. Everything happens on WhatsApp — already on everyone's phone." },
   { icon: "🌍", title: "Works Anywhere",   desc: "Any smartphone can scan a FindMe tag. No app, no login — just a camera and WhatsApp." },
   { icon: "🏷️", title: "Tag Anything",     desc: "Laptops, keys, wallets, bags, AirPods, passports — if you can stick a tag on it, you can protect it." },
-  { icon: "💬", title: "Anonymous Chat",   desc: "A 2-hour private session is created between you and the finder to coordinate pickup — safely." },
+  { icon: "🔋", title: "Battery-Free",   desc: "Relax knowing your tags work day and night—no batteries to worry about, no maintenance stress, just solid peace of mind." },
   { icon: "🛡️", title: "Tamper-Evident",  desc: "Durable, water-resistant tags designed to stay put. Built for keys, bags, and everyday wear." },
 ];
 
