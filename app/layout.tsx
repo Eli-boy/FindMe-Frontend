@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   description:
     "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
-    shortcut: "/icon.png",
+    icon: "/icon2.png",
+    apple: "/icon2.png",
+    shortcut: "/icon2.png",
   },
 };
 
