@@ -59,6 +59,10 @@ export default function Footer() {
                   { label: "Shop", href: "/shop" },
                   { label: "How It Works", href: "/#how" },
                   { label: "About Us", href: "/#about" },
+<<<<<<< HEAD
+=======
+                  { label: "FAQ", href: "/faq" },
+>>>>>>> cf68237 (feat: consistent Syne typography and card styles across products, features and about sections)
                 ].map((l) => (
                   <Link
                     key={l.href}
