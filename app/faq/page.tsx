@@ -195,7 +195,7 @@ export default function FAQPage() {
             Still have questions? We&apos;re happy to help.
           </p>
           <a
-            href="https://wa.me/2348036244441?text=Hi%20I%20have%20a%20question%20about%20FindMe"
+            href="https://wa.me/2348073238118?text=Hi%20I%20have%20a%20question%20about%20FindMe"
             target="_blank" rel="noreferrer"
             style={{
               display: "inline-block",
