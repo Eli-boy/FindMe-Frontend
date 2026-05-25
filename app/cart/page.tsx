@@ -97,8 +97,8 @@ export default function CartPage() {
   }
 
   return (
-    <div style={{ background: BG, minHeight: "100vh", padding: "100px 24px 60px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{ background: BG, minHeight: "100vh", width: "100%", padding: "100px 24px 60px", boxSizing: "border-box" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%" }}>
 
         {/* HEADER */}
         <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(32px, 5vw, 52px)", color: DARK, marginBottom: 8, letterSpacing: -1 }}>Your Cart</h1>
@@ -116,7 +116,7 @@ export default function CartPage() {
         )}
 
         {cart.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr min(360px, 100%)", gap: 32, alignItems: "start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32, alignItems: "start" }}>
 
             {/* LEFT — ITEMS */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -143,7 +143,7 @@ export default function CartPage() {
             </div>
 
             {/* RIGHT — SUMMARY + FORM */}
-            <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 24, padding: 28, border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)", position: "sticky", top: 96 }}>
+            <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 24, padding: 28, border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)" }}>
               <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, color: DARK, marginBottom: 20, marginTop: 0 }}>Order Summary</h2>
 
               {/* PRICE BREAKDOWN */}
