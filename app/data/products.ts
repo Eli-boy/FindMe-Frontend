@@ -83,7 +83,7 @@ export const products: Product[] = [
   {
     id: 6,
     name: "Family Pack",
-    price: 35000,
+    price: 40000,
     image: "/family.png",
     desc: "The complete FindMe bundle for your whole family. Includes sticker tags, keychain tags, and luggage tags — everything you need to protect everyone and everything you love. One pack, total peace of mind.",
     category: "bundle",
@@ -96,7 +96,7 @@ export const products: Product[] = [
   {
     id: 7,
     name: "Travel Pack",
-    price: 18000,
+    price: 25000,
     image: "/travel.png",
     desc: "The ultimate travel companion. Includes luggage tags and sticker tags designed for frequent travellers. Protect your bags, gadgets, and valuables anywhere in the world — scan, connect, recover.",
     category: "bundle",

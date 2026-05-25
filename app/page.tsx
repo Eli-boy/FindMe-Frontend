@@ -196,7 +196,7 @@ export default function Home() {
         >
           <style>{`#product-scroll::-webkit-scrollbar { display: none; }`}</style>
 
-          {products.filter((p) => [1, 2, 4, 6, 7].includes(p.id)).map((p) => (
+          {products.filter((p) => [1, 2, 4, 6].includes(p.id)).map((p) => (
             <motion.div
               key={p.id}
               whileHover={{ y: -4 }}
@@ -236,12 +236,25 @@ export default function Home() {
                     {p.id === 4 && "Travel-ready QR tag for your luggage. Misplaced bag? Get reunited at any airport worldwide."}
                     {p.id === 5 && "QR wristband designed for kids. A quick scan connects the finder to you instantly."}
                     {p.id === 6 && "The complete FindMe bundle for the whole family. Stickers, keychain & luggage tags in one pack."}
-                    {p.id === 7 && "The ultimate travel pack — luggage & sticker tags for frequent travellers. Protect your bags worldwide."}
                   </p>
-                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, marginTop: 4, marginBottom: 0,
-                    color: p.comingSoon ? "#aaa" : "#1db954" }}>
-                    {p.comingSoon ? "Coming Soon" : `₦${p.price.toLocaleString()}`}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4, flexWrap: "wrap" }}>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, margin: 0,
+                      color: p.comingSoon ? "#aaa" : "#1db954" }}>
+                      {p.comingSoon ? "Coming Soon" : `₦${p.price.toLocaleString()}`}
+                    </p>
+                    {p.id === 6 && (
+                      <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 14, margin: 0,
+                        color: "#aaa", textDecoration: "line-through" }}>
+                        ₦45,000
+                      </p>
+                    )}
+                    {p.id === 7 && (
+                      <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 14, margin: 0,
+                        color: "#aaa", textDecoration: "line-through" }}>
+                        ₦28,000
+                      </p>
+                    )}
+                  </div>
                 </div>
               </Link>
               <div style={{ padding: "8px 22px 22px" }}>
