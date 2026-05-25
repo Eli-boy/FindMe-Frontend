@@ -196,7 +196,7 @@ export default function Home() {
         >
           <style>{`#product-scroll::-webkit-scrollbar { display: none; }`}</style>
 
-          {products.filter((p) => [1, 2, 4, 6].includes(p.id)).map((p) => (
+          {products.filter((p) => [1, 2, 4, 6, 7].includes(p.id)).map((p) => (
             <motion.div
               key={p.id}
               whileHover={{ y: -4 }}
