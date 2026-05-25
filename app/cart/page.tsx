@@ -47,12 +47,20 @@ export default function CartPage() {
       console.log("Order response:", data);
 
       if (data.orderNumber) {
-        setOrderNum(data.orderNumber);
-        setDone(true);
+        // Build WhatsApp message
         const lines = cart.map((i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
         const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\nDelivery to: ${form.address}`;
-        window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
+        const waUrl = `https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`;
+
+        // Use window.location for guaranteed redirect (not blocked by browsers)
+        setOrderNum(data.orderNumber);
+        setDone(true);
         clearCart();
+
+        // Small delay so state updates render, then redirect
+        setTimeout(() => {
+          window.location.href = waUrl;
+        }, 1500);
       } else {
         alert(`Order failed: ${data.error || "Unknown error. Check console."}`);
       }
@@ -74,8 +82,11 @@ export default function CartPage() {
           <p style={{ color: "#4a7a5a", fontSize: 15, lineHeight: 1.7, marginBottom: 8 }}>
             Thank you, <strong>{form.name}</strong>! Your order <strong>#{orderNum}</strong> has been received.
           </p>
-          <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, marginBottom: 32 }}>
-            A confirmation email has been sent to <strong>{form.email}</strong>. We&apos;ll be in touch via WhatsApp shortly.
+          <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, marginBottom: 8 }}>
+            A confirmation email has been sent to <strong>{form.email}</strong>.
+          </p>
+          <p style={{ color: "#1db954", fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
+            Redirecting you to WhatsApp to complete your order...
           </p>
           <Link href="/shop" style={{ display: "inline-block", background: DARK, color: "#fff", padding: "14px 32px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15 }}>
             Continue Shopping
