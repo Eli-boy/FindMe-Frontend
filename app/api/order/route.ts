@@ -31,8 +31,8 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
-      return NextResponse.json({ error: "Failed to save order" }, { status: 500 });
+      console.error("Supabase error:", JSON.stringify(error));
+      return NextResponse.json({ error: `Supabase: ${error.message} (code: ${error.code})` }, { status: 500 });
     }
 
     const orderNumber = order.order_number;
