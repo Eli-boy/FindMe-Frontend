@@ -236,6 +236,7 @@ export default function Home() {
                     {p.id === 4 && "Travel-ready QR tag for your luggage. Misplaced bag? Get reunited at any airport worldwide."}
                     {p.id === 5 && "QR wristband designed for kids. A quick scan connects the finder to you instantly."}
                     {p.id === 6 && "The complete FindMe bundle for the whole family. Stickers, keychain & luggage tags in one pack."}
+                    {p.id === 7 && "Tag your bags before you fly. If anything goes missing, a quick scan connects the finder straight to your WhatsApp."}
                   </p>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4, flexWrap: "wrap" }}>
                     <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, margin: 0,
