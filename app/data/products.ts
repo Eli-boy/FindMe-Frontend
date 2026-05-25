@@ -59,7 +59,7 @@ export const products: Product[] = [
     id: 4,
     name: "Luggage Tag",
     price: 10000,
-    image: "/qr4.png",
+    image: "/lug4.png",
     desc: "Travel confidently with a smart luggage tag that protects your bags anywhere in the world. If misplaced, the finder can scan and contact you instantly. Perfect for airports, travel, and everyday use.",
     category: "key",
     reviews: [
@@ -83,7 +83,7 @@ export const products: Product[] = [
   {
     id: 6,
     name: "Family Pack",
-    price: 25000,
+    price: 35000,
     image: "/family.png",
     desc: "The complete FindMe bundle for your whole family. Includes sticker tags, keychain tags, and luggage tags — everything you need to protect everyone and everything you love. One pack, total peace of mind.",
     category: "bundle",

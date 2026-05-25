@@ -122,7 +122,7 @@ export default function ProductPage() {
             <button
               onClick={() => {
                 const msg = `Hello, I want to buy ${product.name} (₦${product.price.toLocaleString()})`;
-                window.open(`https://wa.me/2348151171029?text=${encodeURIComponent(msg)}`, "_blank");
+                window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
               }}
               style={{
                 background: "transparent", color: "#1db954",
