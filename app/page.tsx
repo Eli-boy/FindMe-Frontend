@@ -156,55 +156,119 @@ export default function Home() {
       </section>
 
       {/* ===================== PRODUCTS ===================== */}
-      <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+      <section style={{ padding: isMobile ? "80px 0" : "120px 0", background: BG, overflow: "hidden" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "0 24px" : "0 48px" }}>
           <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, letterSpacing: 4, textTransform: "uppercase", color: "#1a3a2a", fontWeight: 700, marginBottom: 12 }}>Products</p>
-          <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "54px", fontWeight: 800, letterSpacing: -1, lineHeight: 1.05, marginBottom: 50, color: "#1a3a2a" }}>Shop Tags</h2>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit,minmax(280px,1fr))", gap: 24 }}>
-            {products
-              .filter((p) => !p.category?.toLowerCase().includes("pet") && !p.name?.toLowerCase().includes("pet"))
-              .slice(0, 3)
-              .map((p) => (
-              <motion.div key={p.id} whileHover={{ y: -4 }}
-                style={{ border: "1px solid rgba(26,58,42,0.15)", borderRadius: 20, overflow: "hidden",
-                  background: "rgba(255,255,255,0.7)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)" }}>
-                <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
-                  <div style={{ background: "#1a3a2a", padding: 28 }}>
-                    <Image src={p.image} alt={p.name} width={400} height={220}
-                      style={{ width: "100%", height: "220px", objectFit: "contain" }}/>
-                  </div>
-                  <div style={{ padding: "22px 24px 10px" }}>
-                    <h3 style={{ margin: 0, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 18, letterSpacing: -0.3, color: "#1a3a2a" }}>{p.name}</h3>
-                    <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 13, fontWeight: 500, lineHeight: 1.7, marginTop: 8, marginBottom: 6 }}>
-                      {p.id === 1 && "A slim QR sticker for phones, laptops & gadgets. Scan to contact you via WhatsApp instantly."}
-                      {p.id === 2 && "Premium QR keychain for keys & bags. Lost it? Finder scans and reaches you in seconds."}
-                      {p.id === 3 && "Smart QR tag for your pet's collar. If they wander off, anyone can scan and call you right away."}
-                      {p.id === 4 && "Travel-ready QR tag for your luggage. Misplaced bag? Get reunited at any airport worldwide."}
-                      {p.id === 5 && "QR wristband designed for kids. If separated in a crowd, a quick scan connects finder to you."}
-                    </p>
-                    <p style={{ fontFamily: "Syne, sans-serif", color: "#1db954", fontWeight: 800, fontSize: 22, marginTop: 4, marginBottom: 0 }}>₦{p.price.toLocaleString()}</p>
-                  </div>
-                </Link>
-                <div style={{ padding: "8px 24px 24px" }}>
-                  <button onClick={() => { addToCart(p); toast.success(`${p.name} added to cart 🛒`); }}
-                    style={{ width: "100%", border: "none", padding: "14px", borderRadius: 40,
-                      background: "#1a3a2a", color: "#fff", fontWeight: 700, fontSize: 14,
-                      letterSpacing: 0.3, cursor: "pointer", fontFamily: "Syne, sans-serif" }}>
-                    Add to Cart
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          <div style={{ textAlign: "center", marginTop: 56 }}>
-            <Link href="/shop" style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 14,
-              border: "1.5px solid #1a3a2a", color: "#1a3a2a", letterSpacing: 0.3,
-              padding: "14px 36px", borderRadius: 40, textDecoration: "none" }}>
-              View all products →
-            </Link>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 36, flexWrap: "wrap", gap: 16 }}>
+            <h2 style={{ fontFamily: "Syne, sans-serif", fontSize: isMobile ? "38px" : "54px", fontWeight: 800, letterSpacing: -1, lineHeight: 1.05, margin: 0, color: "#1a3a2a" }}>Shop Tags</h2>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => { const el = document.getElementById("product-scroll"); if (el) el.scrollBy({ left: -320, behavior: "smooth" }); }}
+                style={{ width: 44, height: 44, borderRadius: "50%", border: "1.5px solid rgba(26,58,42,0.25)",
+                  background: "rgba(255,255,255,0.8)", color: "#1a3a2a", fontSize: 18, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.8)"; e.currentTarget.style.color = "#1a3a2a"; }}
+              >←</button>
+              <button
+                onClick={() => { const el = document.getElementById("product-scroll"); if (el) el.scrollBy({ left: 320, behavior: "smooth" }); }}
+                style={{ width: 44, height: 44, borderRadius: "50%", border: "none",
+                  background: "#1a3a2a", color: "#fff", fontSize: 18, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#2d5a30"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "#1a3a2a"; }}
+              >→</button>
+            </div>
           </div>
         </div>
+
+        <div
+          id="product-scroll"
+          style={{
+            display: "flex", gap: 20,
+            overflowX: "auto", overflowY: "visible",
+            paddingLeft: isMobile ? 24 : 48,
+            paddingRight: isMobile ? 24 : 48,
+            paddingBottom: 16,
+            scrollSnapType: "x mandatory",
+            scrollbarWidth: "none",
+          }}
+        >
+          <style>{`#product-scroll::-webkit-scrollbar { display: none; }`}</style>
+
+          {products.filter((p) => [1, 2, 4, 6].includes(p.id)).map((p) => (
+            <motion.div
+              key={p.id}
+              whileHover={{ y: -4 }}
+              style={{
+                minWidth: isMobile ? "80vw" : 290,
+                maxWidth: isMobile ? "80vw" : 290,
+                border: "1px solid rgba(26,58,42,0.15)", borderRadius: 20, overflow: "hidden",
+                background: "rgba(255,255,255,0.7)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)",
+                scrollSnapAlign: "start", flexShrink: 0, position: "relative",
+              }}
+            >
+              {p.comingSoon && (
+                <div style={{ position: "absolute", top: 14, right: 14, zIndex: 10,
+                  background: "#1a3a2a", color: "#fff", fontSize: 10, fontWeight: 700,
+                  letterSpacing: 1, padding: "4px 10px", borderRadius: 20, fontFamily: "Syne, sans-serif" }}>
+                  COMING SOON
+                </div>
+              )}
+              {p.id === 6 && (
+                <div style={{ position: "absolute", top: 14, right: 14, zIndex: 10,
+                  background: "#1db954", color: "#000", fontSize: 10, fontWeight: 700,
+                  letterSpacing: 1, padding: "4px 10px", borderRadius: 20, fontFamily: "Syne, sans-serif" }}>
+                  BEST VALUE
+                </div>
+              )}
+              <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+                <div style={{ background: "#1a3a2a", padding: 24 }}>
+                  <Image src={p.image} alt={p.name} width={400} height={200}
+                    style={{ width: "100%", height: "200px", objectFit: "contain" }}/>
+                </div>
+                <div style={{ padding: "20px 22px 10px" }}>
+                  <h3 style={{ margin: 0, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 17, letterSpacing: -0.3, color: "#1a3a2a" }}>{p.name}</h3>
+                  <p style={{ fontFamily: "Syne, sans-serif", color: "#4a7a5a", fontSize: 13, fontWeight: 500, lineHeight: 1.7, marginTop: 8, marginBottom: 6 }}>
+                    {p.id === 1 && "A slim QR sticker for phones, laptops & gadgets. Scan to contact you via WhatsApp instantly."}
+                    {p.id === 2 && "Premium QR keychain for keys & bags. Lost it? Finder scans and reaches you in seconds."}
+                    {p.id === 3 && "Smart QR tag for your pet. If they wander off, anyone can scan and call you right away."}
+                    {p.id === 4 && "Travel-ready QR tag for your luggage. Misplaced bag? Get reunited at any airport worldwide."}
+                    {p.id === 5 && "QR wristband designed for kids. A quick scan connects the finder to you instantly."}
+                    {p.id === 6 && "The complete FindMe bundle for the whole family. Stickers, keychain & luggage tags in one pack."}
+                  </p>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, marginTop: 4, marginBottom: 0,
+                    color: p.comingSoon ? "#aaa" : "#1db954" }}>
+                    {p.comingSoon ? "Coming Soon" : `₦${p.price.toLocaleString()}`}
+                  </p>
+                </div>
+              </Link>
+              <div style={{ padding: "8px 22px 22px" }}>
+                <button
+                  onClick={() => { if (!p.comingSoon) { addToCart(p); toast.success(p.name + " added to cart"); } }}
+                  disabled={!!p.comingSoon}
+                  style={{ width: "100%", border: "none", padding: "13px", borderRadius: 40,
+                    background: p.comingSoon ? "rgba(26,58,42,0.15)" : "#1a3a2a",
+                    color: p.comingSoon ? "#888" : "#fff", fontWeight: 700, fontSize: 14,
+                    letterSpacing: 0.3, cursor: p.comingSoon ? "not-allowed" : "pointer",
+                    fontFamily: "Syne, sans-serif", transition: "background 0.2s" }}>
+                  {p.comingSoon ? "Coming Soon" : "Add to Cart"}
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div style={{ textAlign: "center", marginTop: 40, padding: "0 48px" }}>
+          <Link href="/shop" style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 14,
+            border: "1.5px solid #1a3a2a", color: "#1a3a2a", letterSpacing: 0.3,
+            padding: "14px 36px", borderRadius: 40, textDecoration: "none" }}>
+            View all products →
+          </Link>
+        </div>
       </section>
+
+      
 
       {/* ===================== HOW IT WORKS ===================== */}
       <div id="how"><HowItWorks /></div>

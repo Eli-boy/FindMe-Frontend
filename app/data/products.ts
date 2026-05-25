@@ -79,4 +79,17 @@ export const products: Product[] = [
       { name: "Aisha", rating: 5, comment: "Peace of mind as a parent. Love it!" },
     ],
   },
+
+  {
+    id: 6,
+    name: "Family Pack",
+    price: 25000,
+    image: "/family.png",
+    desc: "The complete FindMe bundle for your whole family. Includes sticker tags, keychain tags, and luggage tags — everything you need to protect everyone and everything you love. One pack, total peace of mind.",
+    category: "bundle",
+    reviews: [
+      { name: "Mrs. Okafor", rating: 5, comment: "Perfect for the whole family. Great value!" },
+      { name: "Emeka", rating: 5, comment: "Bought for my family. Everyone is protected now." },
+    ],
+  },
 ];
