@@ -44,20 +44,21 @@ export default function CartPage() {
       });
 
       const data = await res.json();
+      console.log("Order response:", data);
 
       if (data.orderNumber) {
         setOrderNum(data.orderNumber);
         setDone(true);
-
-        // Open WhatsApp with order summary
         const lines = cart.map((i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
         const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\nDelivery to: ${form.address}`;
         window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
-
         clearCart();
+      } else {
+        alert(`Order failed: ${data.error || "Unknown error. Check console."}`);
       }
-    } catch (err) {
-      alert("Something went wrong. Please try again.");
+    } catch (err: any) {
+      console.error("Checkout error:", err);
+      alert(`Error: ${err.message}`);
     }
 
     setLoading(false);
