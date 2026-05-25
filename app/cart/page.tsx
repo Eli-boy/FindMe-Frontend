@@ -3,168 +3,234 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "../CartContext";
+import { useState } from "react";
+
+const BG = "#c8dfc8";
+const DARK = "#1a3a2a";
+const GREEN = "#1db954";
 
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty, clearCart } = useCart();
 
-  /* ================= TOTAL ================= */
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [orderNum, setOrderNum] = useState<number | null>(null);
+  const [form, setForm] = useState({
+    name: "", email: "", phone: "", address: "",
+  });
 
-  const handleWhatsAppCheckout = () => {
-    if (cart.length === 0) return;
+  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const shipping = 3000;
+  const total = subtotal + shipping;
 
-    const phoneNumber = "2348073238118";
-
-    const message = cart
-      .map(
-        (item) =>
-          `• ${item.name} x${item.quantity} (₦${(
-            item.price * item.quantity
-          ).toLocaleString()})`
-      )
-      .join("\n");
-
-    const finalMessage = `Hello, I want to order:\n\n${message}\n\nTotal: ₦${total.toLocaleString()}`;
-
-    const encodedMessage = encodeURIComponent(finalMessage);
-
-    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, "_blank");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  return (
-    <div className="bg-[#f7f5f2] min-h-screen px-6 md:px-12 py-24">
+  const handleCheckout = async () => {
+    if (!form.name || !form.email || !form.phone || !form.address) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
-      {/* HEADER */}
-      <h1 className="text-4xl font-bold mb-12 text-gray-900 text-center">
-        Your Cart
-      </h1>
+    setLoading(true);
 
-      {/* EMPTY STATE */}
-      {cart.length === 0 && (
-        <div className="text-center mt-20">
-          <h2 className="text-xl font-semibold mb-6 text-gray-700">
-            Your cart is empty 🛒
-          </h2>
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, cart, subtotal, shipping, total }),
+      });
 
-          <Link
-            href="/shop"
-            className="bg-green-700 text-white px-8 py-3 rounded-full shadow-md hover:shadow-xl hover:scale-105 transition"
-          >
-            Start Shopping
+      const data = await res.json();
+
+      if (data.orderNumber) {
+        setOrderNum(data.orderNumber);
+        setDone(true);
+
+        // Open WhatsApp with order summary
+        const lines = cart.map((i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
+        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\nDelivery to: ${form.address}`;
+        window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
+
+        clearCart();
+      }
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+    }
+
+    setLoading(false);
+  };
+
+  /* ── ORDER SUCCESS ── */
+  if (done) {
+    return (
+      <div style={{ background: BG, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
+        <div style={{ background: "#fff", borderRadius: 24, padding: "56px 40px", maxWidth: 480, width: "100%", textAlign: "center", boxShadow: "0 8px 40px rgba(26,58,42,0.12)" }}>
+          <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(29,185,84,0.12)", border: "2px solid #1db954", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, margin: "0 auto 24px" }}>✓</div>
+          <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 28, color: DARK, marginBottom: 12 }}>Order Placed!</h1>
+          <p style={{ color: "#4a7a5a", fontSize: 15, lineHeight: 1.7, marginBottom: 8 }}>
+            Thank you, <strong>{form.name}</strong>! Your order <strong>#{orderNum}</strong> has been received.
+          </p>
+          <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, marginBottom: 32 }}>
+            A confirmation email has been sent to <strong>{form.email}</strong>. We&apos;ll be in touch via WhatsApp shortly.
+          </p>
+          <Link href="/shop" style={{ display: "inline-block", background: DARK, color: "#fff", padding: "14px 32px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15 }}>
+            Continue Shopping
           </Link>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* CART CONTENT */}
-      {cart.length > 0 && (
-        <div className="grid md:grid-cols-3 gap-12">
+  return (
+    <div style={{ background: BG, minHeight: "100vh", padding: "100px 24px 60px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-          {/* LEFT - ITEMS */}
-          <div className="md:col-span-2 space-y-6">
+        {/* HEADER */}
+        <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(32px, 5vw, 52px)", color: DARK, marginBottom: 8, letterSpacing: -1 }}>Your Cart</h1>
+        <p style={{ color: "#4a7a5a", fontSize: 15, marginBottom: 48 }}>{cart.length} {cart.length === 1 ? "item" : "items"}</p>
 
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="flex gap-5 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition duration-300"
-              >
-                {/* IMAGE */}
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={110}
-                  height={90}
-                  className="w-28 h-auto object-contain"
-                />
+        {/* EMPTY */}
+        {cart.length === 0 && (
+          <div style={{ textAlign: "center", paddingTop: 80 }}>
+            <div style={{ fontSize: 56, marginBottom: 20 }}>🛒</div>
+            <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 22, color: DARK, marginBottom: 24 }}>Your cart is empty</h2>
+            <Link href="/shop" style={{ background: DARK, color: "#fff", padding: "14px 36px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700 }}>
+              Start Shopping
+            </Link>
+          </div>
+        )}
 
-                {/* INFO */}
-                <div className="flex-1">
+        {cart.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr min(360px, 100%)", gap: 32, alignItems: "start" }}>
 
-                  <h3 className="font-semibold text-gray-900 text-lg">
-                    {item.name}
-                  </h3>
-
-                  <p className="text-gray-500 text-sm">
-                    Smart recovery tag
-                  </p>
-
-                  <p className="text-gray-800 font-medium mt-1">
-                    ₦{item.price.toLocaleString()}
-                  </p>
-
-                  {/* QUANTITY */}
-                  <div className="flex items-center gap-3 mt-3">
-                    <button
-                      onClick={() => decreaseQty(item.id)}
-                      className="w-8 h-8 text-gray-800 rounded-full hover:bg-gray-200 transition"
-                    >
-                      −
-                    </button>
-
-                    <span className="font-medium text-gray-800">
-                      {item.quantity}
-                    </span>
-
-                    <button
-                      onClick={() => increaseQty(item.id)}
-                      className="w-8 h-8 text-gray-800 rounded-full hover:bg-gray-200 transition"
-                    >
-                      +
-                    </button>
+            {/* LEFT — ITEMS */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {cart.map((item) => (
+                <div key={item.id} style={{ background: "rgba(255,255,255,0.8)", borderRadius: 20, padding: "20px 24px", display: "flex", gap: 20, alignItems: "center", border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 2px 12px rgba(26,58,42,0.06)" }}>
+                  <div style={{ background: DARK, borderRadius: 14, padding: 10, flexShrink: 0 }}>
+                    <Image src={item.image} alt={item.name} width={80} height={70} style={{ objectFit: "contain", width: 80, height: 70 }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 16, color: DARK, margin: 0, marginBottom: 4 }}>{item.name}</h3>
+                    <p style={{ color: "#4a7a5a", fontSize: 13, marginBottom: 8 }}>Smart QR recovery tag</p>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, color: GREEN, fontSize: 17 }}>₦{item.price.toLocaleString()}</p>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, background: "rgba(26,58,42,0.06)", borderRadius: 40, padding: "6px 14px" }}>
+                      <button onClick={() => decreaseQty(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>−</button>
+                      <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, color: DARK, fontSize: 15, minWidth: 20, textAlign: "center" }}>{item.quantity}</span>
+                      <button onClick={() => increaseQty(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>+</button>
+                    </div>
+                    <button onClick={() => removeFromCart(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#e57373", fontSize: 12, fontWeight: 600 }}>Remove</button>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                {/* REMOVE */}
-                <button
-                  onClick={() => removeFromCart(item.id)}
-                  className="text-red-500 text-sm hover:underline"
-                >
-                  Remove
-                </button>
+            {/* RIGHT — SUMMARY + FORM */}
+            <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 24, padding: 28, border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 4px 24px rgba(26,58,42,0.08)", position: "sticky", top: 96 }}>
+              <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, color: DARK, marginBottom: 20, marginTop: 0 }}>Order Summary</h2>
+
+              {/* PRICE BREAKDOWN */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                {cart.map((i) => (
+                  <div key={i.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
+                    <span>{i.name} x{i.quantity}</span>
+                    <span>₦{(i.price * i.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: "1px solid rgba(26,58,42,0.1)", paddingTop: 10, display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
+                  <span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
+                  <span>Shipping</span><span>₦{shipping.toLocaleString()}</span>
+                </div>
+                <div style={{ borderTop: "1.5px solid rgba(26,58,42,0.15)", paddingTop: 10, display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: DARK }}>Total</span>
+                  <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, color: GREEN }}>₦{total.toLocaleString()}</span>
+                </div>
               </div>
-            ))}
 
-          </div>
+              {/* CHECKOUT FORM */}
+              {!showForm ? (
+                <button
+                  onClick={() => setShowForm(true)}
+                  style={{ width: "100%", background: DARK, color: "#fff", border: "none", padding: "15px", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
+                >
+                  Proceed to Checkout →
+                </button>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
 
-          {/* RIGHT - SUMMARY */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-fit sticky top-28">
+                  {[
+                    { name: "name", placeholder: "Full Name", type: "text" },
+                    { name: "email", placeholder: "Email Address", type: "email" },
+                    { name: "phone", placeholder: "Phone Number", type: "tel" },
+                  ].map((f) => (
+                    <input
+                      key={f.name}
+                      name={f.name}
+                      type={f.type}
+                      placeholder={f.placeholder}
+                      value={(form as any)[f.name]}
+                      onChange={handleChange}
+                      style={{
+                        width: "100%", padding: "12px 16px",
+                        background: "rgba(26,58,42,0.05)",
+                        border: "1.5px solid rgba(26,58,42,0.15)",
+                        borderRadius: 12, fontSize: 14, color: DARK,
+                        outline: "none", boxSizing: "border-box",
+                        fontFamily: "Syne, sans-serif",
+                      }}
+                    />
+                  ))}
 
-            <h2 className="text-xl font-semibold mb-6 text-gray-900">
-              Order Summary
-            </h2>
+                  <textarea
+                    name="address"
+                    placeholder="Delivery Address"
+                    value={form.address}
+                    onChange={handleChange}
+                    rows={3}
+                    style={{
+                      width: "100%", padding: "12px 16px",
+                      background: "rgba(26,58,42,0.05)",
+                      border: "1.5px solid rgba(26,58,42,0.15)",
+                      borderRadius: 12, fontSize: 14, color: DARK,
+                      outline: "none", resize: "none", boxSizing: "border-box",
+                      fontFamily: "Syne, sans-serif",
+                    }}
+                  />
 
-            <div className="flex justify-between mb-3 text-gray-600">
-              <span>Items</span>
-              <span>{cart.length}</span>
+                  <button
+                    onClick={handleCheckout}
+                    disabled={loading}
+                    style={{
+                      width: "100%", background: loading ? "#aaa" : GREEN,
+                      color: "#000", border: "none", padding: "15px",
+                      borderRadius: 40, fontFamily: "Syne, sans-serif",
+                      fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {loading ? "Placing Order..." : "Place Order & Chat on WhatsApp →"}
+                  </button>
+
+                  <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#aaa", fontSize: 13, cursor: "pointer" }}>
+                    ← Back
+                  </button>
+                </div>
+              )}
+
+              <button onClick={clearCart} style={{ background: "none", border: "none", color: "#e57373", fontSize: 13, fontWeight: 600, cursor: "pointer", width: "100%", marginTop: 12 }}>
+                Clear Cart
+              </button>
             </div>
-
-            <div className="flex justify-between mb-6 text-gray-900 text-lg font-semibold">
-              <span>Total</span>
-              <span>₦{total.toLocaleString()}</span>
-            </div>
-
-            {/* CHECKOUT */}
-            <button
-              onClick={handleWhatsAppCheckout}
-              className="bg-green-700 text-white w-full py-3 rounded-full hover:scale-105 hover:shadow-lg transition duration-200 mb-4"
-            >
-              Checkout via WhatsApp
-            </button>
-
-            {/* CLEAR */}
-            <button
-              onClick={clearCart}
-              className="text-red-500 text-sm w-full hover:underline"
-            >
-              Clear Cart
-            </button>
-
           </div>
-
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
