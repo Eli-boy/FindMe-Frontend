@@ -20,7 +20,7 @@ export const products: Product[] = [
     id: 1,
     name: "Sticker Pack",
     price: 8000,
-    image: "/elo1.png",
+    image: "/pack1.png",
     desc: "A slim and durable QR sticker designed for your everyday items like phones, laptops, and gadgets. If lost, anyone can scan the code and instantly contact you via WhatsApp. No app required — just scan and connect. Simple, discreet, and effective protection.",
     category: "sticker",
     reviews: [
@@ -90,6 +90,19 @@ export const products: Product[] = [
     reviews: [
       { name: "Mrs. Okafor", rating: 5, comment: "Perfect for the whole family. Great value!" },
       { name: "Emeka", rating: 5, comment: "Bought for my family. Everyone is protected now." },
+    ],
+  },
+
+  {
+    id: 7,
+    name: "Travel Pack",
+    price: 18000,
+    image: "/travel.png",
+    desc: "The ultimate travel companion. Includes luggage tags and sticker tags designed for frequent travellers. Protect your bags, gadgets, and valuables anywhere in the world — scan, connect, recover.",
+    category: "bundle",
+    reviews: [
+      { name: "Kemi", rating: 5, comment: "Perfect for my trips. Already saved my luggage once!" },
+      { name: "Chukwudi", rating: 5, comment: "Great value for travellers. Highly recommend." },
     ],
   },
 ];
