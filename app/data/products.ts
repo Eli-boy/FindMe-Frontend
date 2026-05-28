@@ -20,7 +20,7 @@ export const products: Product[] = [
     id: 1,
     name: "Sticker Pack",
     price: 8000,
-    image: "/pack1.png",
+    image: "/sticker.png",
     desc: "A slim and durable QR sticker designed for your everyday items like phones, laptops, and gadgets. If lost, anyone can scan the code and instantly contact you via WhatsApp. No app required — just scan and connect. Simple, discreet, and effective protection.",
     category: "sticker",
     reviews: [
@@ -84,7 +84,7 @@ export const products: Product[] = [
     id: 6,
     name: "Family Pack",
     price: 40000,
-    image: "/family.png",
+    image: "/fam.png",
     desc: "The complete FindMe bundle for your whole family. Includes sticker tags, keychain tags, and luggage tags — everything you need to protect everyone and everything you love. One pack, total peace of mind.",
     category: "bundle",
     reviews: [
@@ -97,7 +97,7 @@ export const products: Product[] = [
     id: 7,
     name: "Travel Pack",
     price: 25000,
-    image: "/travel.png",
+    image: "/travel1.png",
     desc: "The ultimate travel companion. Includes luggage tags and sticker tags designed for frequent travellers. Protect your bags, gadgets, and valuables anywhere in the world — scan, connect, recover.",
     category: "bundle",
     reviews: [
