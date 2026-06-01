@@ -15,6 +15,7 @@ export default function ProductPage() {
   const id = Number(params?.id);
   const product = products.find((p) => p.id === id);
   const [selectedVariant, setSelectedVariant] = useState(0);
+  const activeImage = product?.variants?.[selectedVariant]?.image || product?.image || "";
 
   if (!product) {
     return (
@@ -56,11 +57,11 @@ export default function ProductPage() {
           onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 24px 60px rgba(0,0,0,0.3)"; }}
         >
           <Image
-            src={product.image}
+            src={activeImage}
             alt={product.name}
             width={450}
             height={450}
-            style={{ margin: "0 auto", objectFit: "contain", display: "block", transition: "transform 0.3s" }}
+            style={{ margin: "0 auto", objectFit: "contain", display: "block", transition: "all 0.35s ease" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1)"; }}
           />
@@ -121,25 +122,43 @@ export default function ProductPage() {
           {/* VARIANTS */}
           {product.variants && product.variants.length > 0 && (
             <div style={{ marginBottom: 28 }}>
-              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#9dbfa0", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#9dbfa0", letterSpacing: 1, textTransform: "uppercase", marginBottom: 14 }}>
                 Select Pack
               </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                 {product.variants.map((v, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedVariant(i)}
                     style={{
-                      padding: "10px 18px", borderRadius: 12,
-                      fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13,
-                      cursor: "pointer", transition: "all 0.2s",
-                      background: selectedVariant === i ? "#1db954" : "rgba(29,185,84,0.08)",
-                      color: selectedVariant === i ? "#000" : "#9dbfa0",
-                      border: selectedVariant === i ? "1.5px solid #1db954" : "1.5px solid rgba(29,185,84,0.2)",
+                      width: 130,
+                      padding: "14px 10px",
+                      borderRadius: 16,
+                      fontFamily: "Syne, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 12,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      background: selectedVariant === i ? "rgba(29,185,84,0.15)" : "rgba(255,255,255,0.04)",
+                      color: selectedVariant === i ? "#1db954" : "#9dbfa0",
+                      border: selectedVariant === i ? "2px solid #1db954" : "1.5px solid rgba(255,255,255,0.1)",
+                      display: "flex", flexDirection: "column",
+                      alignItems: "center", gap: 10,
+                      boxShadow: selectedVariant === i ? "0 4px 16px rgba(29,185,84,0.2)" : "none",
                     }}
                   >
-                    {v.label}
-                    <span style={{ display: "block", fontSize: 11, marginTop: 2, fontWeight: 700 }}>
+                    <Image
+                      src={v.image}
+                      alt={v.label}
+                      width={70}
+                      height={60}
+                      style={{ objectFit: "contain", width: 70, height: 60 }}
+                    />
+                    <span style={{ textAlign: "center", lineHeight: 1.4 }}>{v.label}</span>
+                    <span style={{
+                      fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 13,
+                      color: selectedVariant === i ? "#1db954" : "#dff0e2",
+                    }}>
                       ₦{v.price.toLocaleString()}
                     </span>
                   </button>

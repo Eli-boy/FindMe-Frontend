@@ -8,6 +8,7 @@ export type Variant = {
   label: string;
   quantity: number;
   price: number;
+  image: string;
 };
 
 export type Product = {
@@ -42,9 +43,9 @@ export const products: Product[] = [
       "Water-resistant and tamper-evident",
     ],
     variants: [
-      { label: "One Pack (5 Stickers)", quantity: 5, price: 8000 },
-      { label: "Two Packs (10 Stickers)", quantity: 10, price: 14000 },
-      { label: "Three Packs (15 Stickers)", quantity: 15, price: 20000 },
+      { label: "One Pack (4 Stickers)", quantity: 5, price: 8000, image: "/sticker.png" },
+      { label: "Two Packs (8 Stickers)", quantity: 10, price: 14000, image: "/sticker2.png" },
+      { label: "Three Packs (12 Stickers)", quantity: 15, price: 20000, image: "/sticker3.png" },
     ],
     category: "sticker",
     reviews: [
@@ -69,9 +70,9 @@ export const products: Product[] = [
       "No battery, no charging — always active",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000 },
-      { label: "Two Tags", quantity: 2, price: 18000 },
-      { label: "Three Tags", quantity: 3, price: 25000 },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/elo2.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, image: "/elo3.png" },
+      { label: "Three Tags", quantity: 3, price: 25000, image: "/elo2.png" },
     ],
     category: "key",
     reviews: [
@@ -118,8 +119,8 @@ export const products: Product[] = [
       "No battery required — always ready",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000 },
-      { label: "Two Tags", quantity: 2, price: 18000 },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/lug4.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, image: "/lug5.png" },
     ],
     category: "key",
     reviews: [
