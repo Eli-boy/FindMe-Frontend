@@ -4,13 +4,23 @@ export type Review = {
   comment: string;
 };
 
+export type Variant = {
+  label: string;
+  quantity: number;
+  price: number;
+};
+
 export type Product = {
   id: number;
   name: string;
   price: number;
   comingSoon?: boolean;
   image: string;
+  images?: string[];
   desc: string;
+  shortDesc: string;
+  features: string[];
+  variants?: Variant[];
   category: string;
   reviews: Review[];
 };
@@ -21,7 +31,21 @@ export const products: Product[] = [
     name: "Sticker Pack",
     price: 8000,
     image: "/sticker.png",
-    desc: "A slim and durable QR sticker designed for your everyday items like phones, laptops, and gadgets. If lost, anyone can scan the code and instantly contact you via WhatsApp. No app required — just scan and connect. Simple, discreet, and effective protection.",
+    images: ["/sticker.png"],
+    shortDesc: "Smart QR sticker for any personal item — if it gets lost, anyone can scan it and contact you instantly via WhatsApp.",
+    desc: "A slim QR sticker for phones, laptops and gadgets. Scan if found — you get an instant WhatsApp alert. No app required.",
+    features: [
+      "Receive instant WhatsApp notification when your tag is scanned",
+      "Works on any smartphone — no app needed",
+      "No battery required — works forever",
+      "Anonymous contact — your number is never shared",
+      "Water-resistant and tamper-evident",
+    ],
+    variants: [
+      { label: "One Pack (5 Stickers)", quantity: 5, price: 8000 },
+      { label: "Two Packs (10 Stickers)", quantity: 10, price: 14000 },
+      { label: "Three Packs (15 Stickers)", quantity: 15, price: 20000 },
+    ],
     category: "sticker",
     reviews: [
       { name: "Daniel", rating: 5, comment: "Very useful! Got my lost bag back in 2 days." },
@@ -34,7 +58,21 @@ export const products: Product[] = [
     name: "Smart Keychain Tag",
     price: 10000,
     image: "/elo2.png",
-    desc: "A premium QR-powered keychain tag built to keep your keys, bags, and valuables safe. Attach it once and relax — if lost, the finder can scan and contact you instantly through WhatsApp. Fast, secure, and no app needed.",
+    images: ["/elo2.png"],
+    shortDesc: "Premium QR keychain tag for your keys and bags — lost items find their way back instantly.",
+    desc: "A premium QR keychain for your keys and bags. Lost? The finder scans it and reaches you on WhatsApp instantly.",
+    features: [
+      "Instant WhatsApp alert when someone finds your item",
+      "Durable metal keychain ring — built to last",
+      "Works on any smartphone — no app needed",
+      "Anonymous relay chat — your number stays private",
+      "No battery, no charging — always active",
+    ],
+    variants: [
+      { label: "Single Tag", quantity: 1, price: 10000 },
+      { label: "Two Tags", quantity: 2, price: 18000 },
+      { label: "Three Tags", quantity: 3, price: 25000 },
+    ],
     category: "key",
     reviews: [
       { name: "Tunde", rating: 5, comment: "Solid build quality. Worth the price!" },
@@ -48,7 +86,16 @@ export const products: Product[] = [
     price: 0,
     comingSoon: true,
     image: "/qr3.png",
-    desc: "Keep your pets safe with a smart QR pet tag. If your pet ever gets lost, anyone who finds them can scan the code and reach you immediately via WhatsApp. Designed for comfort, durability, and peace of mind.",
+    images: ["/qr3.png"],
+    shortDesc: "Smart QR tag for your pet's collar — if they wander off, anyone can scan and reach you instantly.",
+    desc: "A smart QR tag for your pet's collar. If they get lost, anyone can scan and contact you immediately via WhatsApp.",
+    features: [
+      "Instant WhatsApp alert when your pet's tag is scanned",
+      "Lightweight and comfortable for all pet sizes",
+      "Waterproof and durable for outdoor use",
+      "Anonymous contact — finder never sees your real number",
+      "No app, no battery — just scan and connect",
+    ],
     category: "pet",
     reviews: [
       { name: "Chioma", rating: 5, comment: "Helped me find my dog in hours!" },
@@ -60,7 +107,20 @@ export const products: Product[] = [
     name: "Luggage Tag",
     price: 10000,
     image: "/lug4.png",
-    desc: "Travel confidently with a smart luggage tag that protects your bags anywhere in the world. If misplaced, the finder can scan and contact you instantly. Perfect for airports, travel, and everyday use.",
+    images: ["/lug4.png"],
+    shortDesc: "Travel confidently — smart QR luggage tag that gets your bags back from anywhere in the world.",
+    desc: "A smart QR luggage tag for travellers. If your bag goes missing, the finder scans it and you're connected instantly.",
+    features: [
+      "Instant WhatsApp notification when your bag is found",
+      "Works at any airport worldwide — no app needed",
+      "Durable, waterproof design built for travel",
+      "Anonymous contact — your number is never exposed",
+      "No battery required — always ready",
+    ],
+    variants: [
+      { label: "Single Tag", quantity: 1, price: 10000 },
+      { label: "Two Tags", quantity: 2, price: 18000 },
+    ],
     category: "key",
     reviews: [
       { name: "Emeka", rating: 4, comment: "Very helpful for airport travel." },
@@ -73,7 +133,16 @@ export const products: Product[] = [
     price: 0,
     comingSoon: true,
     image: "/qr5.png",
-    desc: "A secure QR wristband designed to protect children in crowded places. If your child gets separated, anyone can scan and contact you instantly via WhatsApp. Comfortable, reliable, and built for safety.",
+    images: ["/qr5.png"],
+    shortDesc: "QR wristband for kids — if separated in a crowd, a quick scan connects the finder to you instantly.",
+    desc: "A QR wristband for children. If separated in a crowd, a quick scan connects the finder straight to your WhatsApp.",
+    features: [
+      "Instant WhatsApp alert if your child's band is scanned",
+      "Soft, adjustable band — comfortable for all ages",
+      "Works on any smartphone — no app needed",
+      "Anonymous relay — strangers never see your number",
+      "Waterproof and durable for everyday wear",
+    ],
     category: "sticker",
     reviews: [
       { name: "Aisha", rating: 5, comment: "Peace of mind as a parent. Love it!" },
@@ -85,7 +154,16 @@ export const products: Product[] = [
     name: "Family Pack",
     price: 40000,
     image: "/fam.png",
-    desc: "The complete FindMe bundle for your whole family. Includes sticker tags, keychain tags, and luggage tags — everything you need to protect everyone and everything you love. One pack, total peace of mind.",
+    images: ["/fam.png"],
+    shortDesc: "The complete FindMe bundle for your whole family — protect everyone and everything you love.",
+    desc: "The complete FindMe bundle — sticker tags, keychain tags and luggage tags to protect your whole family.",
+    features: [
+      "Includes sticker tags, keychain tags and luggage tags",
+      "Covers phones, laptops, keys, bags and luggage",
+      "Instant WhatsApp alerts for every item in the pack",
+      "Best value — save more than buying individually",
+      "Anonymous contact on all tags — total privacy",
+    ],
     category: "bundle",
     reviews: [
       { name: "Mrs. Okafor", rating: 5, comment: "Perfect for the whole family. Great value!" },
@@ -98,7 +176,16 @@ export const products: Product[] = [
     name: "Travel Pack",
     price: 25000,
     image: "/travel1.png",
-    desc: "The ultimate travel companion. Includes luggage tags and sticker tags designed for frequent travellers. Protect your bags, gadgets, and valuables anywhere in the world — scan, connect, recover.",
+    images: ["/travel1.png"],
+    shortDesc: "The ultimate travel companion — luggage and sticker tags for frequent travellers worldwide.",
+    desc: "Luggage tags and sticker tags for frequent travellers. Protect your bags and gadgets anywhere in the world.",
+    features: [
+      "Includes luggage tags and sticker tags for all your gear",
+      "Works at every airport and hotel worldwide",
+      "Instant WhatsApp notification when any item is found",
+      "Anonymous relay chat — your privacy is protected",
+      "Durable, waterproof — built for frequent travel",
+    ],
     category: "bundle",
     reviews: [
       { name: "Kemi", rating: 5, comment: "Perfect for my trips. Already saved my luggage once!" },
