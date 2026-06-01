@@ -70,9 +70,9 @@ export const products: Product[] = [
       "No battery, no charging — always active",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/elo2.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/elo1.png" },
       { label: "Two Tags", quantity: 2, price: 18000, image: "/elo3.png" },
-      { label: "Three Tags", quantity: 3, price: 25000, image: "/elo2.png" },
+      { label: "Three Tags", quantity: 3, price: 25000, image: "/elo4.png" },
     ],
     category: "key",
     reviews: [
