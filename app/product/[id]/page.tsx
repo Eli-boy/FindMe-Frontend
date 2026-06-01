@@ -6,6 +6,7 @@ import { products } from "../../data/products";
 import toast from "react-hot-toast";
 import { useCart } from "../../CartContext";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 export default function ProductPage() {
   const { addToCart } = useCart();
@@ -13,6 +14,7 @@ export default function ProductPage() {
 
   const id = Number(params?.id);
   const product = products.find((p) => p.id === id);
+  const [selectedVariant, setSelectedVariant] = useState(0);
 
   if (!product) {
     return (
@@ -90,20 +92,71 @@ export default function ProductPage() {
             {product.desc}
           </p>
 
+          {/* PRICE */}
           <p style={{
             fontSize: 36, fontWeight: 700,
-            color: "#1db954", marginBottom: 32,
+            color: "#1db954", marginBottom: 24,
             fontFamily: "Syne, sans-serif",
           }}>
-            ₦{product.price.toLocaleString()}
+            ₦{(product.variants ? product.variants[selectedVariant].price : product.price).toLocaleString()}
           </p>
+
+          {/* FEATURES */}
+          {product.features && product.features.length > 0 && (
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {product.features.map((f, i) => (
+                <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#9dbfa0", lineHeight: 1.6 }}>
+                  <span style={{
+                    width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+                    background: "rgba(29,185,84,0.12)", border: "1px solid rgba(29,185,84,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    color: "#1db954", fontSize: 10, fontWeight: 800,
+                  }}>✓</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* VARIANTS */}
+          {product.variants && product.variants.length > 0 && (
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#9dbfa0", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>
+                Select Pack
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                {product.variants.map((v, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedVariant(i)}
+                    style={{
+                      padding: "10px 18px", borderRadius: 12,
+                      fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13,
+                      cursor: "pointer", transition: "all 0.2s",
+                      background: selectedVariant === i ? "#1db954" : "rgba(29,185,84,0.08)",
+                      color: selectedVariant === i ? "#000" : "#9dbfa0",
+                      border: selectedVariant === i ? "1.5px solid #1db954" : "1.5px solid rgba(29,185,84,0.2)",
+                    }}
+                  >
+                    {v.label}
+                    <span style={{ display: "block", fontSize: 11, marginTop: 2, fontWeight: 700 }}>
+                      ₦{v.price.toLocaleString()}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* BUTTONS */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
             <button
               onClick={() => {
-                addToCart(product);
-                toast.success(`${product.name} added to cart 🛒`);
+                const cartProduct = product.variants
+                  ? { ...product, price: product.variants[selectedVariant].price, name: `${product.name} (${product.variants[selectedVariant].label})` }
+                  : product;
+                addToCart(cartProduct);
+                toast.success(`${cartProduct.name} added to cart 🛒`);
               }}
               style={{
                 background: "#1db954", color: "#000",
@@ -121,7 +174,9 @@ export default function ProductPage() {
 
             <button
               onClick={() => {
-                const msg = `Hello, I want to buy ${product.name} (₦${product.price.toLocaleString()})`;
+                const variantLabel = product.variants ? ` — ${product.variants[selectedVariant].label}` : "";
+                const price = product.variants ? product.variants[selectedVariant].price : product.price;
+                const msg = `Hello, I want to buy ${product.name}${variantLabel} (₦${price.toLocaleString()})`;
                 window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
               }}
               style={{
