@@ -12,7 +12,7 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, phone, address, cart, subtotal, shipping, total } = await req.json();
+    const { name, email, phone, address, cart, subtotal, shipping, total, deliveryMethod } = await req.json();
 
     /* ── 1. Save order to Supabase ── */
     const { data: order, error } = await supabase
@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
         customer_name: name,
         customer_email: email,
         customer_phone: phone,
-        delivery_address: address,
+        delivery_address: deliveryMethod === "pickup" ? "Self Pickup" : address,
+        delivery_method: deliveryMethod,
         items: cart,
         subtotal,
         shipping,
@@ -120,10 +121,13 @@ export async function POST(req: NextRequest) {
                 </tr>
               </table>
 
-              <!-- DELIVERY ADDRESS -->
+              <!-- DELIVERY METHOD -->
               <div style="background:#f0f7f0;border-radius:12px;padding:20px;margin-bottom:32px;">
-                <p style="margin:0 0 8px;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Delivery Address</p>
-                <p style="margin:0;color:#1a3a2a;font-size:14px;line-height:1.6;">${address}</p>
+                <p style="margin:0 0 8px;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">${deliveryMethod === "pickup" ? "Fulfilment" : "Delivery Address"}</p>
+                ${deliveryMethod === "pickup"
+                  ? `<p style="margin:0;color:#1a3a2a;font-size:14px;font-weight:700;">🏪 Self Pickup</p><p style="margin:4px 0 0;color:#4a7a5a;font-size:13px;">Pickup location will be shared via WhatsApp.</p>`
+                  : `<p style="margin:0;color:#1a3a2a;font-size:14px;line-height:1.6;">🚚 ${address}</p>`
+                }
               </div>
 
               <!-- DISCOUNT COUPON -->

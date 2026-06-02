@@ -16,12 +16,13 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [orderNum, setOrderNum] = useState<number | null>(null);
+  const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [form, setForm] = useState({
     name: "", email: "", phone: "", address: "",
   });
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = 3000;
+  const shipping = deliveryMethod === "delivery" ? 5000 : 0;
   const total = subtotal + shipping;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -29,8 +30,12 @@ export default function CartPage() {
   };
 
   const handleCheckout = async () => {
-    if (!form.name || !form.email || !form.phone || !form.address) {
+    if (!form.name || !form.email || !form.phone) {
       alert("Please fill in all fields.");
+      return;
+    }
+    if (deliveryMethod === "delivery" && !form.address) {
+      alert("Please enter your delivery address.");
       return;
     }
 
@@ -40,7 +45,7 @@ export default function CartPage() {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, cart, subtotal, shipping, total }),
+        body: JSON.stringify({ ...form, cart, subtotal, shipping, total, deliveryMethod }),
       });
 
       const data = await res.json();
@@ -49,7 +54,10 @@ export default function CartPage() {
       if (data.orderNumber) {
         // Build WhatsApp message
         const lines = cart.map((i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
-        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\nDelivery to: ${form.address}`;
+        const deliveryLine = deliveryMethod === "pickup"
+          ? "Pickup: I will pick up from your location"
+          : `Delivery to: ${form.address}`;
+        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
         const waUrl = `https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`;
 
         // Use window.location for guaranteed redirect (not blocked by browsers)
@@ -158,7 +166,10 @@ export default function CartPage() {
                   <span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
-                  <span>Shipping</span><span>₦{shipping.toLocaleString()}</span>
+                  <span>{deliveryMethod === "pickup" ? "Pickup" : "Shipping"}</span>
+                  <span style={{ color: deliveryMethod === "pickup" ? GREEN : "#4a7a5a", fontWeight: deliveryMethod === "pickup" ? 700 : 400 }}>
+                    {deliveryMethod === "pickup" ? "Free" : `₦${shipping.toLocaleString()}`}
+                  </span>
                 </div>
                 <div style={{ borderTop: "1.5px solid rgba(26,58,42,0.15)", paddingTop: 10, display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: DARK }}>Total</span>
@@ -177,6 +188,45 @@ export default function CartPage() {
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
+
+                  {/* DELIVERY METHOD */}
+                  <div>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      {[
+                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦3,000" },
+                        { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
+                          style={{
+                            padding: "14px 10px", borderRadius: 14, cursor: "pointer",
+                            transition: "all 0.2s", textAlign: "center",
+                            background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
+                            border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
+                          }}
+                        >
+                          <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
+                          <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
+                          <div style={{
+                            fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
+                            color: opt.value === "pickup" ? GREEN : "#4a7a5a",
+                          }}>{opt.note}</div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* PICKUP NOTE */}
+                    {deliveryMethod === "pickup" && (
+                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
+                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
+                          📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   {[
                     { name: "name", placeholder: "Full Name", type: "text" },
@@ -201,6 +251,7 @@ export default function CartPage() {
                     />
                   ))}
 
+                  {deliveryMethod === "delivery" && (
                   <textarea
                     name="address"
                     placeholder="Delivery Address"
@@ -216,6 +267,7 @@ export default function CartPage() {
                       fontFamily: "Syne, sans-serif",
                     }}
                   />
+                  )}
 
                   <button
                     onClick={handleCheckout}
