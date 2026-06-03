@@ -166,9 +166,9 @@ export default function CartPage() {
                   <span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
-                  <span>{deliveryMethod === "pickup" ? "Pickup" : "Shipping"}</span>
-                  <span style={{ color: deliveryMethod === "pickup" ? GREEN : "#4a7a5a", fontWeight: deliveryMethod === "pickup" ? 700 : 400 }}>
-                    {deliveryMethod === "pickup" ? "Free" : `₦${shipping.toLocaleString()}`}
+                  <span>{deliveryMethod === "pickup" ? "Pickup" : "Delivery"}</span>
+                  <span style={{ color: GREEN, fontWeight: 700 }}>
+                    {deliveryMethod === "pickup" ? "Free" : "TBD via WhatsApp"}
                   </span>
                 </div>
                 <div style={{ borderTop: "1.5px solid rgba(26,58,42,0.15)", paddingTop: 10, display: "flex", justifyContent: "space-between" }}>
@@ -218,11 +218,18 @@ export default function CartPage() {
                       ))}
                     </div>
 
-                    {/* PICKUP NOTE */}
+                    {/* DELIVERY / PICKUP NOTE */}
                     {deliveryMethod === "pickup" && (
                       <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
                         <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
                           📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
+                        </p>
+                      </div>
+                    )}
+                    {deliveryMethod === "delivery" && (
+                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(26,58,42,0.06)", borderRadius: 10, border: "1px solid rgba(26,58,42,0.15)" }}>
+                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
+                          🚚 <strong>Delivery fee</strong> will be shared via WhatsApp after your order is confirmed.
                         </p>
                       </div>
                     )}

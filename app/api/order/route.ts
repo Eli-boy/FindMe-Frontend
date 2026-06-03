@@ -112,12 +112,12 @@ export async function POST(req: NextRequest) {
                   <td style="padding:6px 0;text-align:right;color:#2a4a2a;font-size:14px;">₦${subtotal.toLocaleString()}</td>
                 </tr>
                 <tr>
-                  <td style="padding:6px 0;color:#4a7a5a;font-size:14px;">Shipping</td>
-                  <td style="padding:6px 0;text-align:right;color:#2a4a2a;font-size:14px;">₦${shipping.toLocaleString()}</td>
+                  <td style="padding:6px 0;color:#4a7a5a;font-size:14px;">${deliveryMethod === "pickup" ? "Pickup" : "Delivery fee"}</td>
+                  <td style="padding:6px 0;text-align:right;color:#1db954;font-size:14px;font-weight:700;">${deliveryMethod === "pickup" ? "Free" : "TBD via WhatsApp"}</td>
                 </tr>
                 <tr>
-                  <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Total</td>
-                  <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">₦${total.toLocaleString()}</td>
+                  <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Subtotal</td>
+                  <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">₦${subtotal.toLocaleString()}</td>
                 </tr>
               </table>
 
