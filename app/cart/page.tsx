@@ -186,7 +186,7 @@ export default function CartPage() {
                     <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       {[
-                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦5,000" },
+                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
                         { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
                       ].map((opt) => (
                         <button
