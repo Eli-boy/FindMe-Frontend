@@ -22,8 +22,7 @@ export default function CartPage() {
   });
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = deliveryMethod === "delivery" ? 5000 : 0;
-  const total = subtotal + shipping;
+  const total = subtotal; // No fixed shipping — fee shared via WhatsApp
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -45,7 +44,7 @@ export default function CartPage() {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, cart, subtotal, shipping, total, deliveryMethod }),
+        body: JSON.stringify({ ...form, cart, subtotal, shipping: 0, total, deliveryMethod }),
       });
 
       const data = await res.json();
@@ -57,7 +56,7 @@ export default function CartPage() {
         const deliveryLine = deliveryMethod === "pickup"
           ? "Pickup: I will pick up from your location"
           : `Delivery to: ${form.address}`;
-        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}\nShipping: ₦${shipping.toLocaleString()}\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
+        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
         const waUrl = `https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`;
 
         // Use window.location for guaranteed redirect (not blocked by browsers)
@@ -162,20 +161,13 @@ export default function CartPage() {
                     <span>₦{(i.price * i.quantity).toLocaleString()}</span>
                   </div>
                 ))}
-                <div style={{ borderTop: "1px solid rgba(26,58,42,0.1)", paddingTop: 10, display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
-                  <span>Subtotal</span><span>₦{subtotal.toLocaleString()}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
-                  <span>{deliveryMethod === "pickup" ? "Pickup" : "Delivery"}</span>
-                  <span style={{ color: GREEN, fontWeight: 700 }}>
-                    {deliveryMethod === "pickup" ? "Free" : "TBD via WhatsApp"}
-                  </span>
-                </div>
                 <div style={{ borderTop: "1.5px solid rgba(26,58,42,0.15)", paddingTop: 10, display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: DARK }}>Total</span>
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, color: GREEN }}>₦{total.toLocaleString()}</span>
                 </div>
-              </div>
+                <div style={{ fontSize: 12, color: "#4a7a5a", marginTop: 6, textAlign: "right" }}>
+                  {deliveryMethod === "delivery" ? "🚚 Delivery fee confirmed via WhatsApp" : "🏪 Self pickup — no delivery fee"}
+                </div>              </div>
 
               {/* CHECKOUT FORM */}
               {!showForm ? (
@@ -194,7 +186,7 @@ export default function CartPage() {
                     <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       {[
-                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
+                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦5,000" },
                         { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
                       ].map((opt) => (
                         <button
@@ -218,18 +210,11 @@ export default function CartPage() {
                       ))}
                     </div>
 
-                    {/* DELIVERY / PICKUP NOTE */}
+                    {/* PICKUP NOTE */}
                     {deliveryMethod === "pickup" && (
                       <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
                         <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
                           📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
-                        </p>
-                      </div>
-                    )}
-                    {deliveryMethod === "delivery" && (
-                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(26,58,42,0.06)", borderRadius: 10, border: "1px solid rgba(26,58,42,0.15)" }}>
-                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
-                          🚚 <strong>Delivery fee</strong> will be shared via WhatsApp after your order is confirmed.
                         </p>
                       </div>
                     )}
