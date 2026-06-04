@@ -69,7 +69,10 @@ export default function ProductPage() {
   }
 
   const images = product.images && product.images.length > 1 ? product.images : [product.image];
-  const currentImage = product.variants?.[selectedVariant]?.image || useCaseImg || images[activeImg] || product.image;
+  // variantClicked tracks if user last clicked a variant (vs a use-case thumb)
+  const currentImage = useCaseImg
+    ? useCaseImg
+    : (product.variants?.[selectedVariant]?.image || images[activeImg] || product.image);
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
   const cases = useCases[product.category] || useCases.sticker;
 
@@ -205,7 +208,7 @@ export default function ProductPage() {
               </div>
               {/* Clear selection */}
               <button
-                onClick={() => setSelectedVariant(0)}
+                onClick={() => { setSelectedVariant(0); setUseCaseImg(null); }}
                 style={{ background: "none", border: "none", color: GREEN, fontSize: 13, cursor: "pointer", marginTop: 8, fontFamily: "Syne, sans-serif" }}
               >
                 Clear
