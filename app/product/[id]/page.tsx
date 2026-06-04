@@ -15,28 +15,28 @@ const GREEN = "#1db954";
 /* ── use-case images shown per product category ── */
 const useCases: Record<string, { image: string; label: string }[]> = {
   sticker: [
-    { image: "/use-book.png", label: "Laptop" },
-    { image: "/use-pass.png", label: "Phone" },
+    { image: "/use-laptop.png", label: "Laptop" },
+    { image: "/use-phone.png", label: "Phone" },
     { image: "/use-airpods.png", label: "AirPods" },
     { image: "/use-bag.png", label: "Backpack" },
-    { image: "/use-gadget.png", label: "Camera" },
+    { image: "/use-camera.png", label: "Camera" },
     { image: "/use-wallet.png", label: "Wallet" },
   ],
   key: [
     { image: "/use-keys.png", label: "Keys" },
-    { image: "/use-carKey.png", label: "Handbag" },
+    { image: "/use-bag.png", label: "Handbag" },
     { image: "/use-luggage.png", label: "Luggage" },
-    { image: "/use-pass.png", label: "Laptop" },
+    { image: "/use-laptop.png", label: "Laptop" },
     { image: "/use-wallet.png", label: "Wallet" },
-    { image: "/use-book.png", label: "Phone" },
+    { image: "/use-phone.png", label: "Phone" },
   ],
   bundle: [
     { image: "/use-luggage.png", label: "Luggage" },
-    { image: "/use-pass.png", label: "Laptop" },
+    { image: "/use-laptop.png", label: "Laptop" },
     { image: "/use-keys.png", label: "Keys" },
-    { image: "/use-book.png", label: "Phone" },
+    { image: "/use-phone.png", label: "Phone" },
     { image: "/use-bag.png", label: "Bag" },
-    { image: "/use-gadget.png", label: "AirPods" },
+    { image: "/use-airpods.png", label: "AirPods" },
   ],
   pet: [
     { image: "/use-dog.png", label: "Dog" },
@@ -69,7 +69,7 @@ export default function ProductPage() {
   }
 
   const images = product.images && product.images.length > 1 ? product.images : [product.image];
-  const currentImage = useCaseImg || product.variants?.[selectedVariant]?.image || images[activeImg] || product.image;
+  const currentImage = product.variants?.[selectedVariant]?.image || useCaseImg || images[activeImg] || product.image;
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
   const cases = useCases[product.category] || useCases.sticker;
 
@@ -187,7 +187,7 @@ export default function ProductPage() {
                 {product.variants.map((v, i) => (
                   <button
                     key={i}
-                    onClick={() => setSelectedVariant(i)}
+                    onClick={() => { setSelectedVariant(i); setUseCaseImg(null); }}
                     style={{
                       width: 120, padding: "12px 8px", borderRadius: 16,
                       border: selectedVariant === i ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.2)",
