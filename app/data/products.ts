@@ -107,8 +107,8 @@ export const products: Product[] = [
     id: 4,
     name: "Luggage Tag",
     price: 10000,
-    image: "/lug4.png",
-    images: ["/lug4.png"],
+    image: "/lugP.png",
+    images: ["/lugP.png"],
     shortDesc: "Travel confidently — smart QR luggage tag that gets your bags back from anywhere in the world.",
     desc: "A smart QR luggage tag for travellers. If your bag goes missing, the finder scans it and you're connected instantly.",
     features: [
@@ -119,7 +119,7 @@ export const products: Product[] = [
       "No battery required — always ready",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/lug4.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/lugP.png" },
       { label: "Two Tags", quantity: 2, price: 18000, image: "/lug5.png" },
     ],
     category: "key",
