@@ -8,306 +8,362 @@ import { useCart } from "../../CartContext";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+const BG = "#c8dfc8";
+const DARK = "#1a3a2a";
+const GREEN = "#1db954";
+
+/* ── use-case examples shown per product category ── */
+const useCases: Record<string, { icon: string; label: string }[]> = {
+  sticker: [
+    { icon: "💻", label: "Laptop" },
+    { icon: "📱", label: "Phone" },
+    { icon: "🎧", label: "AirPods" },
+    { icon: "🎒", label: "Backpack" },
+    { icon: "📷", label: "Camera" },
+    { icon: "📚", label: "Books" },
+  ],
+  key: [
+    { icon: "🔑", label: "Keys" },
+    { icon: "👜", label: "Handbag" },
+    { icon: "🧳", label: "Luggage" },
+    { icon: "🎒", label: "Bag" },
+    { icon: "🛂", label: "Passport Holder" },
+    { icon: "🚗", label: "Car Keys" },
+  ],
+  bundle: [
+    { icon: "🧳", label: "Luggage" },
+    { icon: "💻", label: "Laptop" },
+    { icon: "🔑", label: "Keys" },
+    { icon: "📱", label: "Phone" },
+    { icon: "👜", label: "Bag" },
+    { icon: "🐾", label: "Pet Collar" },
+  ],
+  pet: [
+    { icon: "🐕", label: "Dog" },
+    { icon: "🐈", label: "Cat" },
+    { icon: "🐇", label: "Rabbit" },
+    { icon: "🦜", label: "Bird" },
+  ],
+};
+
 export default function ProductPage() {
   const { addToCart } = useCart();
   const params = useParams();
 
   const id = Number(params?.id);
   const product = products.find((p) => p.id === id);
+
   const [selectedVariant, setSelectedVariant] = useState(0);
-  const activeImage = product?.variants?.[selectedVariant]?.image || product?.image || "";
+  const [qty, setQty] = useState(1);
+  const [activeImg, setActiveImg] = useState(0);
 
   if (!product) {
     return (
-      <div style={{
-        textAlign: "center", padding: "80px 24px",
-        background: "#2c3d30", minHeight: "100vh", color: "#dff0e2",
-      }}>
-        <h1 style={{ fontFamily: "Syne, sans-serif", fontSize: 28, fontWeight: 800, marginBottom: 16 }}>
-          Product not found
-        </h1>
-        <Link href="/shop" style={{ color: "#1db954", textDecoration: "underline" }}>
-          Go back to shop
-        </Link>
+      <div style={{ background: BG, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{ fontFamily: "Syne, sans-serif", fontSize: 28, fontWeight: 800, color: DARK, marginBottom: 16 }}>Product not found</h1>
+          <Link href="/shop" style={{ color: GREEN, textDecoration: "underline", fontFamily: "Syne, sans-serif" }}>Go back to shop</Link>
+        </div>
       </div>
     );
   }
 
+  const images = product.images && product.images.length > 1 ? product.images : [product.image];
+  const currentImage = product.variants?.[selectedVariant]?.image || images[activeImg] || product.image;
+  const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const cases = useCases[product.category] || useCases.sticker;
+
   return (
-    <div style={{ background: "#2c3d30", minHeight: "100vh", padding: "96px 48px", color: "#dff0e2" }}>
+    <div style={{ background: BG, minHeight: "100vh", color: DARK }}>
 
-      {/* ================= PRODUCT ================= */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-        gap: 64, alignItems: "center",
-        maxWidth: 1100, margin: "0 auto",
-      }}>
+      {/* ── BREADCRUMB ── */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "100px 32px 0" }}>
+        <nav style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#4a7a5a", marginBottom: 32, flexWrap: "wrap" }}>
+          <Link href="/" style={{ color: "#4a7a5a", textDecoration: "none" }}>Home</Link>
+          <span style={{ opacity: 0.5 }}>/</span>
+          <Link href="/shop" style={{ color: "#4a7a5a", textDecoration: "none" }}>Shop</Link>
+          <span style={{ opacity: 0.5 }}>/</span>
+          <span style={{ color: DARK, fontWeight: 600 }}>{product.name}</span>
+        </nav>
+      </div>
 
-        {/* IMAGE */}
-        <div style={{
-          background: "#3a4e3d",
-          padding: 40,
-          borderRadius: 28,
-          border: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.3)",
-          transition: "box-shadow 0.3s",
-        }}
-          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 32px 80px rgba(0,0,0,0.45)"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 24px 60px rgba(0,0,0,0.3)"; }}
-        >
-          <Image
-            src={activeImage}
-            alt={product.name}
-            width={450}
-            height={450}
-            style={{ margin: "0 auto", objectFit: "contain", display: "block", transition: "all 0.35s ease" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLImageElement).style.transform = "scale(1)"; }}
-          />
+      {/* ── MAIN PRODUCT ── */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px 80px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 64, alignItems: "start" }}>
+
+        {/* LEFT — IMAGE GALLERY */}
+        <div>
+          {/* Main image */}
+          <div style={{
+            background: "rgba(255,255,255,0.7)", borderRadius: 24,
+            border: "1px solid rgba(26,58,42,0.1)",
+            padding: 32, marginBottom: 16,
+            boxShadow: "0 4px 24px rgba(26,58,42,0.08)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            minHeight: 380,
+          }}>
+            <Image
+              src={currentImage}
+              alt={product.name}
+              width={500}
+              height={420}
+              style={{ objectFit: "contain", width: "100%", height: "auto", maxHeight: 420, transition: "all 0.3s ease" }}
+            />
+          </div>
+
+          {/* Thumbnail strip */}
+          {images.length > 1 && (
+            <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  style={{
+                    flexShrink: 0, width: 80, height: 80,
+                    borderRadius: 12, overflow: "hidden",
+                    border: activeImg === i ? `2px solid ${DARK}` : "2px solid rgba(26,58,42,0.15)",
+                    background: "rgba(255,255,255,0.7)",
+                    cursor: "pointer", padding: 4, transition: "border-color 0.2s",
+                  }}
+                >
+                  <Image src={img} alt="" width={72} height={72} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* DETAILS */}
+        {/* RIGHT — DETAILS */}
         <div>
-          {/* BADGE */}
+          {/* Badge */}
           <span style={{
-            background: "rgba(29,185,84,0.12)", color: "#1db954",
-            padding: "4px 14px", borderRadius: 40,
-            fontSize: 13, fontWeight: 600,
-            border: "1.5px solid rgba(29,185,84,0.35)",
+            background: "rgba(29,185,84,0.12)", color: GREEN,
+            padding: "5px 14px", borderRadius: 40, fontSize: 12,
+            fontWeight: 700, border: "1.5px solid rgba(29,185,84,0.35)",
+            fontFamily: "Syne, sans-serif", letterSpacing: 0.5,
           }}>
-            Best Seller
+            {product.category === "bundle" ? "🔥 Best Value" : "⭐ Best Seller"}
           </span>
 
+          {/* Title */}
           <h1 style={{
-            fontFamily: "Syne, sans-serif",
-            fontSize: "clamp(32px, 4vw, 52px)",
-            fontWeight: 800, letterSpacing: -1,
-            color: "#dff0e2",
-            margin: "16px 0 12px",
+            fontFamily: "Syne, sans-serif", fontWeight: 800,
+            fontSize: "clamp(28px, 4vw, 44px)", letterSpacing: -1,
+            color: DARK, margin: "14px 0 12px", lineHeight: 1.1,
           }}>
             {product.name}
           </h1>
 
-          <p style={{ color: "#9dbfa0", marginBottom: 24, lineHeight: 1.8, fontSize: 16 }}>
-            {product.desc}
+          {/* Price */}
+          <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 32, color: GREEN, margin: "0 0 16px" }}>
+            ₦{(currentPrice * qty).toLocaleString()}
           </p>
 
-          {/* PRICE */}
-          <p style={{
-            fontSize: 36, fontWeight: 700,
-            color: "#1db954", marginBottom: 24,
-            fontFamily: "Syne, sans-serif",
-          }}>
-            ₦{(product.variants ? product.variants[selectedVariant].price : product.price).toLocaleString()}
-          </p>
+          {/* Short desc — bold like Tagiz */}
+          {product.shortDesc && (
+            <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, color: DARK, lineHeight: 1.65, marginBottom: 20, borderLeft: `3px solid ${GREEN}`, paddingLeft: 14 }}>
+              {product.shortDesc}
+            </p>
+          )}
 
-          {/* FEATURES */}
-          {product.features && product.features.length > 0 && (
-            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 28px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Features — green checkmarks like Tagiz */}
+          {product.features && (
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10 }}>
               {product.features.map((f, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#9dbfa0", lineHeight: 1.6 }}>
-                  <span style={{
-                    width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-                    background: "rgba(29,185,84,0.12)", border: "1px solid rgba(29,185,84,0.4)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    color: "#1db954", fontSize: 10, fontWeight: 800,
-                  }}>✓</span>
+                <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 14, color: "#2a4a2a", lineHeight: 1.6 }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>✅</span>
                   {f}
                 </li>
               ))}
             </ul>
           )}
 
-          {/* VARIANTS */}
+          {/* VARIANTS — like Tagiz image cards */}
           {product.variants && product.variants.length > 0 && (
-            <div style={{ marginBottom: 28 }}>
-              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#9dbfa0", letterSpacing: 1, textTransform: "uppercase", marginBottom: 14 }}>
-                Select Pack
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#4a7a5a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>
+                Sets: <span style={{ color: DARK }}>{product.variants[selectedVariant].label}</span>
               </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {product.variants.map((v, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedVariant(i)}
                     style={{
-                      width: 130,
-                      padding: "14px 10px",
-                      borderRadius: 16,
-                      fontFamily: "Syne, sans-serif",
-                      fontWeight: 700,
-                      fontSize: 12,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                      background: selectedVariant === i ? "rgba(29,185,84,0.15)" : "rgba(255,255,255,0.04)",
-                      color: selectedVariant === i ? "#1db954" : "#9dbfa0",
-                      border: selectedVariant === i ? "2px solid #1db954" : "1.5px solid rgba(255,255,255,0.1)",
-                      display: "flex", flexDirection: "column",
-                      alignItems: "center", gap: 10,
-                      boxShadow: selectedVariant === i ? "0 4px 16px rgba(29,185,84,0.2)" : "none",
+                      width: 120, padding: "12px 8px", borderRadius: 16,
+                      border: selectedVariant === i ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.2)",
+                      background: selectedVariant === i ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.5)",
+                      cursor: "pointer", transition: "all 0.2s",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                      boxShadow: selectedVariant === i ? "0 4px 16px rgba(26,58,42,0.15)" : "none",
                     }}
                   >
-                    <Image
-                      src={v.image}
-                      alt={v.label}
-                      width={70}
-                      height={60}
-                      style={{ objectFit: "contain", width: 70, height: 60 }}
-                    />
-                    <span style={{ textAlign: "center", lineHeight: 1.4 }}>{v.label}</span>
-                    <span style={{
-                      fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 13,
-                      color: selectedVariant === i ? "#1db954" : "#dff0e2",
-                    }}>
-                      ₦{v.price.toLocaleString()}
-                    </span>
+                    <Image src={v.image} alt={v.label} width={70} height={60} style={{ objectFit: "contain", width: 70, height: 60 }} />
+                    <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 11, color: DARK, textAlign: "center", lineHeight: 1.3 }}>{v.label}</span>
+                    <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 12, color: GREEN }}>₦{v.price.toLocaleString()}</span>
                   </button>
                 ))}
+              </div>
+              {/* Clear selection */}
+              <button
+                onClick={() => setSelectedVariant(0)}
+                style={{ background: "none", border: "none", color: GREEN, fontSize: 13, cursor: "pointer", marginTop: 8, fontFamily: "Syne, sans-serif" }}
+              >
+                Clear
+              </button>
+            </div>
+          )}
+
+          {/* QUANTITY — like Tagiz */}
+          {!product.comingSoon && (
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: "#4a7a5a", letterSpacing: 1, textTransform: "uppercase", marginBottom: 12 }}>Quantity</p>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 0, border: `1.5px solid rgba(26,58,42,0.2)`, borderRadius: 40, overflow: "hidden", background: "rgba(255,255,255,0.6)" }}>
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  style={{ width: 44, height: 44, background: "none", border: "none", cursor: "pointer", fontSize: 20, color: DARK, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}
+                >−</button>
+                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 16, color: DARK, minWidth: 40, textAlign: "center" }}>{qty}</span>
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  style={{ width: 44, height: 44, background: "none", border: "none", cursor: "pointer", fontSize: 20, color: DARK, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}
+                >+</button>
               </div>
             </div>
           )}
 
           {/* BUTTONS */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
-            <button
-              onClick={() => {
-                const cartProduct = product.variants
-                  ? { ...product, price: product.variants[selectedVariant].price, name: `${product.name} (${product.variants[selectedVariant].label})` }
-                  : product;
-                addToCart(cartProduct);
-                toast.success(`${cartProduct.name} added to cart 🛒`);
-              }}
-              style={{
-                background: "#1db954", color: "#000",
-                padding: "14px 32px", borderRadius: 40,
-                fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15,
-                border: "none", cursor: "pointer",
-                boxShadow: "0 4px 20px rgba(29,185,84,0.3)",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#25e668"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#1db954"; e.currentTarget.style.transform = "translateY(0)"; }}
-            >
-              Add to Cart
-            </button>
-
-            <button
-              onClick={() => {
-                const variantLabel = product.variants ? ` — ${product.variants[selectedVariant].label}` : "";
-                const price = product.variants ? product.variants[selectedVariant].price : product.price;
-                const msg = `Hello, I want to buy ${product.name}${variantLabel} (₦${price.toLocaleString()})`;
-                window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
-              }}
-              style={{
-                background: "transparent", color: "#1db954",
-                padding: "14px 32px", borderRadius: 40,
-                border: "1.5px solid rgba(29,185,84,0.5)",
-                fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 15,
-                cursor: "pointer", transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(29,185,84,0.1)"; e.currentTarget.style.borderColor = "#1db954"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(29,185,84,0.5)"; }}
-            >
-              Buy Now via WhatsApp
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ================= REVIEWS ================= */}
-      <div style={{ marginTop: 96, maxWidth: 1100, margin: "96px auto 0" }}>
-        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 12 }}>
-          Reviews
-        </p>
-        <h2 style={{
-          fontFamily: "Syne, sans-serif", fontSize: "clamp(24px, 3vw, 36px)",
-          fontWeight: 800, letterSpacing: -0.5, color: "#dff0e2", marginBottom: 32,
-        }}>
-          Customer Reviews
-        </h2>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {product.reviews && product.reviews.length > 0 ? (
-            product.reviews.map((review, i) => (
-              <div
-                key={i}
-                style={{
-                  background: "#3a4e3d",
-                  padding: "20px 24px",
-                  borderRadius: 16,
-                  border: "1px solid rgba(255,255,255,0.07)",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, color: "#dff0e2" }}>
-                    {review.name}
-                  </p>
-                  <div style={{ color: "#f59e0b", letterSpacing: 2, fontSize: 15 }}>
-                    {"★".repeat(review.rating)}
-                    <span style={{ color: "#334538" }}>{"★".repeat(5 - review.rating)}</span>
-                  </div>
-                </div>
-                <p style={{ color: "#9dbfa0", fontSize: 14, lineHeight: 1.7 }}>
-                  {review.comment}
-                </p>
-              </div>
-            ))
+          {product.comingSoon ? (
+            <div style={{ background: "rgba(26,58,42,0.08)", borderRadius: 16, padding: "16px 20px", textAlign: "center" }}>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, color: DARK, margin: 0 }}>🚀 Coming Soon</p>
+              <p style={{ color: "#4a7a5a", fontSize: 13, margin: "6px 0 0" }}>We&apos;ll notify you when this is available</p>
+            </div>
           ) : (
-            <p style={{ color: "#9dbfa0" }}>No reviews yet.</p>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <button
+                onClick={() => {
+                  const cartProduct = product.variants
+                    ? { ...product, price: product.variants[selectedVariant].price * qty, name: `${product.name} (${product.variants[selectedVariant].label})` }
+                    : { ...product, price: product.price * qty };
+                  addToCart(cartProduct);
+                  toast.success(`${product.name} added to cart 🛒`);
+                }}
+                style={{
+                  flex: 1, minWidth: 160, padding: "15px 24px",
+                  background: DARK, color: "#fff", border: "none",
+                  borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15,
+                  cursor: "pointer", transition: "all 0.2s",
+                  boxShadow: "0 4px 20px rgba(26,58,42,0.25)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#2d5a30"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = DARK; e.currentTarget.style.transform = "translateY(0)"; }}
+              >
+                Add to Cart
+              </button>
+              <button
+                onClick={() => {
+                  const variantLabel = product.variants ? ` — ${product.variants[selectedVariant].label}` : "";
+                  const price = (product.variants ? product.variants[selectedVariant].price : product.price) * qty;
+                  const msg = `Hello, I want to buy ${product.name}${variantLabel} x${qty} (₦${price.toLocaleString()})`;
+                  window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
+                }}
+                style={{
+                  flex: 1, minWidth: 160, padding: "15px 24px",
+                  background: GREEN, color: "#000", border: "none",
+                  borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15,
+                  cursor: "pointer", transition: "all 0.2s",
+                  boxShadow: "0 4px 20px rgba(29,185,84,0.3)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "#25e668"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = GREEN; e.currentTarget.style.transform = "translateY(0)"; }}
+              >
+                Buy via WhatsApp →
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ================= RELATED PRODUCTS ================= */}
-      <div style={{ marginTop: 96, maxWidth: 1100, margin: "96px auto 0" }}>
-        <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: 3, textTransform: "uppercase", color: "#1db954", marginBottom: 12 }}>
-          Explore More
-        </p>
-        <h2 style={{
-          fontFamily: "Syne, sans-serif", fontSize: "clamp(24px, 3vw, 36px)",
-          fontWeight: 800, letterSpacing: -0.5, color: "#dff0e2", marginBottom: 32,
-        }}>
-          You may also like
-        </h2>
+      {/* ── USE CASES ── */}
+      <div style={{ background: "rgba(255,255,255,0.4)", borderTop: "1px solid rgba(26,58,42,0.08)", borderBottom: "1px solid rgba(26,58,42,0.08)", padding: "56px 32px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#4a7a5a", marginBottom: 8 }}>Works on</p>
+          <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(22px, 3vw, 32px)", color: DARK, marginBottom: 32, letterSpacing: -0.5 }}>
+            Protect anything you own
+          </h2>
+          <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {cases.map((c, i) => (
+              <div key={i} style={{
+                flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+                background: "rgba(255,255,255,0.7)", borderRadius: 20, padding: "20px 24px",
+                border: "1px solid rgba(26,58,42,0.1)", minWidth: 100,
+                boxShadow: "0 2px 12px rgba(26,58,42,0.06)",
+              }}>
+                <span style={{ fontSize: 32 }}>{c.icon}</span>
+                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13, color: DARK, whiteSpace: "nowrap" }}>{c.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gap: 20,
-        }}>
-          {products
-            .filter((p) => p.id !== product.id)
-            .slice(0, 4)
-            .map((p) => (
-              <Link key={p.id} href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
-                <div
-                  style={{
-                    background: "#3a4e3d",
-                    padding: 16,
-                    borderRadius: 16,
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    cursor: "pointer",
-                    transition: "transform 0.25s, border-color 0.25s",
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = "rgba(29,185,84,0.35)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}
+      {/* ── REVIEWS ── */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>
+        <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", color: GREEN, marginBottom: 8 }}>Reviews</p>
+        <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(24px, 3vw, 36px)", color: DARK, marginBottom: 32, letterSpacing: -0.5 }}>
+          Customer Reviews
+        </h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {product.reviews && product.reviews.length > 0 ? product.reviews.map((r, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.7)", borderRadius: 16, padding: "20px 24px", border: "1px solid rgba(26,58,42,0.1)" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: DARK, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 14 }}>
+                    {r.name[0]}
+                  </div>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, color: DARK, margin: 0 }}>{r.name}</p>
+                </div>
+                <div style={{ color: "#f59e0b", fontSize: 15, letterSpacing: 2 }}>
+                  {"★".repeat(r.rating)}<span style={{ color: "rgba(26,58,42,0.2)" }}>{"★".repeat(5 - r.rating)}</span>
+                </div>
+              </div>
+              <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, margin: 0 }}>{r.comment}</p>
+            </div>
+          )) : <p style={{ color: "#4a7a5a" }}>No reviews yet.</p>}
+        </div>
+      </div>
+
+      {/* ── YOU MAY ALSO LIKE ── */}
+      <div style={{ background: "rgba(255,255,255,0.3)", borderTop: "1px solid rgba(26,58,42,0.08)", padding: "80px 32px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <p style={{ fontFamily: "Syne, sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", color: GREEN, marginBottom: 8 }}>Explore More</p>
+          <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(24px, 3vw, 36px)", color: DARK, marginBottom: 32, letterSpacing: -0.5 }}>
+            You may also like
+          </h2>
+          <div style={{ display: "flex", gap: 20, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {products.filter((p) => p.id !== product.id).slice(0, 5).map((p) => (
+              <Link key={p.id} href={`/product/${p.id}`} style={{ textDecoration: "none", flexShrink: 0 }}>
+                <div style={{
+                  width: 200, background: "rgba(255,255,255,0.7)", borderRadius: 20,
+                  border: "1px solid rgba(26,58,42,0.1)", overflow: "hidden",
+                  transition: "transform 0.25s, box-shadow 0.25s",
+                  boxShadow: "0 2px 12px rgba(26,58,42,0.06)",
+                }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(26,58,42,0.15)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(26,58,42,0.06)"; }}
                 >
-                  <Image
-                    src={p.image}
-                    alt={p.name}
-                    width={200}
-                    height={150}
-                    style={{ objectFit: "contain", width: "100%", height: "auto" }}
-                  />
-                  <p style={{ marginTop: 10, fontSize: 13, fontWeight: 700, color: "#dff0e2", fontFamily: "Syne, sans-serif" }}>
-                    {p.name}
-                  </p>
-                  <p style={{ color: "#1db954", fontSize: 13, fontWeight: 600, marginTop: 4 }}>
-                    ₦{p.price.toLocaleString()}
-                  </p>
+                  <div style={{ background: DARK, padding: "16px", display: "flex", alignItems: "center", justifyContent: "center", height: 140 }}>
+                    <Image src={p.image} alt={p.name} width={120} height={100} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
+                  </div>
+                  <div style={{ padding: "14px 16px" }}>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK, margin: "0 0 6px" }}>{p.name}</p>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 15, color: GREEN, margin: 0 }}>
+                      {p.comingSoon ? "Coming Soon" : `₦${p.price.toLocaleString()}`}
+                    </p>
+                  </div>
                 </div>
               </Link>
             ))}
+          </div>
         </div>
       </div>
 
