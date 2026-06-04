@@ -12,37 +12,36 @@ const BG = "#c8dfc8";
 const DARK = "#1a3a2a";
 const GREEN = "#1db954";
 
-/* ── use-case examples shown per product category ── */
-const useCases: Record<string, { icon: string; label: string }[]> = {
+/* ── use-case images shown per product category ── */
+const useCases: Record<string, { image: string; label: string }[]> = {
   sticker: [
-    { icon: "💻", label: "Laptop" },
-    { icon: "📱", label: "Phone" },
-    { icon: "🎧", label: "AirPods" },
-    { icon: "🎒", label: "Backpack" },
-    { icon: "📷", label: "Camera" },
-    { icon: "📚", label: "Books" },
+    { image: "/use-book.png", label: "Laptop" },
+    { image: "/use-pass.png", label: "Phone" },
+    { image: "/use-airpods.png", label: "AirPods" },
+    { image: "/use-bag.png", label: "Backpack" },
+    { image: "/use-gadget.png", label: "Camera" },
+    { image: "/use-wallet.png", label: "Wallet" },
   ],
   key: [
-    { icon: "🔑", label: "Keys" },
-    { icon: "👜", label: "Handbag" },
-    { icon: "🧳", label: "Luggage" },
-    { icon: "🎒", label: "Bag" },
-    { icon: "🛂", label: "Passport Holder" },
-    { icon: "🚗", label: "Car Keys" },
+    { image: "/use-keys.png", label: "Keys" },
+    { image: "/use-carKey.png", label: "Handbag" },
+    { image: "/use-luggage.png", label: "Luggage" },
+    { image: "/use-pass.png", label: "Laptop" },
+    { image: "/use-wallet.png", label: "Wallet" },
+    { image: "/use-book.png", label: "Phone" },
   ],
   bundle: [
-    { icon: "🧳", label: "Luggage" },
-    { icon: "💻", label: "Laptop" },
-    { icon: "🔑", label: "Keys" },
-    { icon: "📱", label: "Phone" },
-    { icon: "👜", label: "Bag" },
-    { icon: "🐾", label: "Pet Collar" },
+    { image: "/use-luggage.png", label: "Luggage" },
+    { image: "/use-pass.png", label: "Laptop" },
+    { image: "/use-keys.png", label: "Keys" },
+    { image: "/use-book.png", label: "Phone" },
+    { image: "/use-bag.png", label: "Bag" },
+    { image: "/use-gadget.png", label: "AirPods" },
   ],
   pet: [
-    { icon: "🐕", label: "Dog" },
-    { icon: "🐈", label: "Cat" },
-    { icon: "🐇", label: "Rabbit" },
-    { icon: "🦜", label: "Bird" },
+    { image: "/use-dog.png", label: "Dog" },
+    { image: "/use-cat.png", label: "Cat" },
+    { image: "/use-bag.png", label: "Pet Bag" },
   ],
 };
 
@@ -56,6 +55,7 @@ export default function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState(0);
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [useCaseImg, setUseCaseImg] = useState<string | null>(null);
 
   if (!product) {
     return (
@@ -69,7 +69,7 @@ export default function ProductPage() {
   }
 
   const images = product.images && product.images.length > 1 ? product.images : [product.image];
-  const currentImage = product.variants?.[selectedVariant]?.image || images[activeImg] || product.image;
+  const currentImage = useCaseImg || product.variants?.[selectedVariant]?.image || images[activeImg] || product.image;
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
   const cases = useCases[product.category] || useCases.sticker;
 
@@ -116,7 +116,7 @@ export default function ProductPage() {
               {images.map((img, i) => (
                 <button
                   key={i}
-                  onClick={() => setActiveImg(i)}
+                  onClick={() => { setActiveImg(i); setUseCaseImg(null); }}
                   style={{
                     flexShrink: 0, width: 80, height: 80,
                     borderRadius: 12, overflow: "hidden",
@@ -290,19 +290,43 @@ export default function ProductPage() {
           <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(22px, 3vw, 32px)", color: DARK, marginBottom: 32, letterSpacing: -0.5 }}>
             Protect anything you own
           </h2>
-          <div style={{ display: "flex", gap: 16, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
-            {cases.map((c, i) => (
-              <div key={i} style={{
-                flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-                background: "rgba(255,255,255,0.7)", borderRadius: 20, padding: "20px 24px",
-                border: "1px solid rgba(26,58,42,0.1)", minWidth: 100,
-                boxShadow: "0 2px 12px rgba(26,58,42,0.06)",
-              }}>
-                <span style={{ fontSize: 32 }}>{c.icon}</span>
-                <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13, color: DARK, whiteSpace: "nowrap" }}>{c.label}</span>
-              </div>
-            ))}
+          <style>{`#use-scroll::-webkit-scrollbar { display: none; }`}</style>
+          <div id="use-scroll" style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
+            {cases.map((c, i) => {
+              const isActive = useCaseImg === c.image;
+              return (
+                <button
+                  key={i}
+                  onClick={() => { setUseCaseImg(isActive ? null : c.image); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  style={{
+                    flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+                    background: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.7)",
+                    borderRadius: 20, padding: "16px 20px",
+                    border: isActive ? `2px solid ${DARK}` : "1px solid rgba(26,58,42,0.1)",
+                    minWidth: 110, cursor: "pointer",
+                    boxShadow: isActive ? "0 8px 24px rgba(26,58,42,0.15)" : "0 2px 12px rgba(26,58,42,0.06)",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  <div style={{ width: 70, height: 70, borderRadius: 14, overflow: "hidden", background: "rgba(26,58,42,0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Image
+                      src={c.image}
+                      alt={c.label}
+                      width={70}
+                      height={70}
+                      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                    />
+                  </div>
+                  <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: DARK, whiteSpace: "nowrap" }}>{c.label}</span>
+                </button>
+              );
+            })}
           </div>
+          {useCaseImg && (
+            <p style={{ marginTop: 14, fontSize: 13, color: "#4a7a5a", fontFamily: "Syne, sans-serif" }}>
+              👆 Click again to go back to product image
+            </p>
+          )}
         </div>
       </div>
 
