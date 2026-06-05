@@ -171,8 +171,8 @@ export default function ShopPage({
                   <p style={{ color: "#4a6a4a", fontSize: 13, marginBottom: 6 }}>
                     Smart recovery tag
                   </p>
-                  <p style={{ color: "#1db954", fontWeight: 700, fontSize: 18, fontFamily: "Syne, sans-serif" }}>
-                    ₦{p.price.toLocaleString()}
+                  <p style={{ color: p.comingSoon ? "#888" : "#1db954", fontWeight: 700, fontSize: 18, fontFamily: "Syne, sans-serif" }}>
+                    {p.comingSoon ? "Coming Soon" : `₦${p.price.toLocaleString()}`}
                   </p>
                 </div>
               </Link>
@@ -181,20 +181,26 @@ export default function ShopPage({
               <div style={{ padding: "0 20px 20px" }}>
                 <button
                   onClick={() => {
-                    addToCart(p);
-                    toast.success(`${p.name} added to cart 🛒`);
+                    if (!p.comingSoon) {
+                      addToCart(p);
+                      toast.success(`${p.name} added to cart 🛒`);
+                    }
                   }}
+                  disabled={!!p.comingSoon}
                   style={{
                     width: "100%", padding: "11px",
-                    background: "#1a3a2a", color: "#fff",
-                    border: "none", borderRadius: 40,
+                    background: p.comingSoon ? "rgba(26,58,42,0.12)" : "#1a3a2a",
+                    color: p.comingSoon ? "#888" : "#fff",
+                    border: p.comingSoon ? "1.5px dashed rgba(26,58,42,0.25)" : "none",
+                    borderRadius: 40,
                     fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14,
-                    cursor: "pointer", transition: "all 0.2s",
+                    cursor: p.comingSoon ? "not-allowed" : "pointer",
+                    transition: "all 0.2s",
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#2d5a30"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.transform = "translateY(0)"; }}
+                  onMouseEnter={(e) => { if (!p.comingSoon) { e.currentTarget.style.background = "#2d5a30"; e.currentTarget.style.transform = "translateY(-1px)"; } }}
+                  onMouseLeave={(e) => { if (!p.comingSoon) { e.currentTarget.style.background = "#1a3a2a"; e.currentTarget.style.transform = "translateY(0)"; } }}
                 >
-                  Add to Cart
+                  {p.comingSoon ? "Coming Soon" : "Add to Cart"}
                 </button>
               </div>
             </motion.div>

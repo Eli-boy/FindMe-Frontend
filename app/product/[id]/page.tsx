@@ -37,10 +37,10 @@ const useCases: Record<string, { image: string; label: string }[]> = {
     { image: "/use-bag.png", label: "Bag" },
     { image: "/use-airpod.png", label: "AirPods" },
   ],
-  pet: [
-    { image: "/use-dog.png", label: "Dog" },
-    { image: "/use-cat.png", label: "Cat" },
-    { image: "/use-bag.png", label: "Pet Bag" },
+  luggage: [
+    { image: "/use-bag.png", label: "bag" },
+    { image: "/use-luggage.png", label: "lug" },
+    { image: "/lug4.png", label: "lug" },
   ],
 };
 
@@ -73,7 +73,8 @@ export default function ProductPage() {
     ? useCaseImg
     : (product.variants?.[selectedVariant]?.image || images[activeImg] || product.image);
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
-  const cases = useCases[product.category] || useCases.sticker;
+  const cat = product.id === 4 ? "luggage" : product.category;
+  const cases = useCases[cat] || useCases.sticker;
 
   return (
     <div style={{ background: BG, minHeight: "100vh", color: DARK }}>
