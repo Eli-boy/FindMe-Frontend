@@ -40,6 +40,7 @@ const tabs = ["📊 Overview", "📦 Orders", "👥 Customers", "⚙️ Settings
 export default function AdminDashboard() {
   const [authed, setAuthed]     = useState(false);
   const [pass, setPass]         = useState("");
+  const [adminPass, setAdminPass] = useState("");
   const [passErr, setPassErr]   = useState(false);
   const [tab, setTab]           = useState(0);
   const [orders, setOrders]     = useState<Order[]>([]);
@@ -56,6 +57,7 @@ export default function AdminDashboard() {
   const login = () => {
     if (pass === (process.env.NEXT_PUBLIC_ADMIN_PASS || "findme2026")) {
       setAuthed(true);
+      setAdminPass(pass);
       sessionStorage.setItem("fm_admin", "1");
       sessionStorage.setItem("fm_admin_pass", pass);
     } else {
@@ -65,25 +67,29 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("fm_admin")) setAuthed(true);
+    if (sessionStorage.getItem("fm_admin")) {
+      setAuthed(true);
+      setAdminPass(sessionStorage.getItem("fm_admin_pass") || "findme2026");
+    }
   }, []);
 
   /* ── fetch orders via API (uses service role key — bypasses RLS) ── */
   useEffect(() => {
     if (!authed) return;
     setLoading(true);
-    const savedPass = sessionStorage.getItem("fm_admin_pass") || pass;
     fetch("/api/admin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "get_orders", password: savedPass }),
+      body: JSON.stringify({ action: "get_orders", password: sessionStorage.getItem("fm_admin_pass") || "findme2026" }),
     })
       .then((r) => r.json())
       .then((data) => {
+        console.log("Admin fetch response:", data);
+        if (data.error) console.error("Admin error:", data.error);
         setOrders(data.orders || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => { console.error("Fetch error:", err); setLoading(false); });
   }, [authed]);
 
   const showToast = (msg: string) => {
@@ -94,11 +100,10 @@ export default function AdminDashboard() {
   /* ── update order status via API ── */
   const updateStatus = async (id: string, status: string) => {
     setSaving(true);
-    const savedPass = sessionStorage.getItem("fm_admin_pass") || pass;
     await fetch("/api/admin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "update_status", password: savedPass, id, status }),
+      body: JSON.stringify({ action: "update_status", password: sessionStorage.getItem("fm_admin_pass") || "findme2026", id, status }),
     });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
     if (selected?.id === id) setSelected((s) => s ? { ...s, status } : s);
