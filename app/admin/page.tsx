@@ -2,13 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { createClient } from "@supabase/supabase-js";
-
-/* ── Supabase client (anon key fine for reading — service role via API for writes) ── */
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const ADMIN_PASS = typeof window !== "undefined"
+  ? sessionStorage.getItem("fm_admin_pass") || ""
+  : "";
 
 /* ── palette ── */
 const D = "#0d1a0f";
@@ -61,6 +57,7 @@ export default function AdminDashboard() {
     if (pass === (process.env.NEXT_PUBLIC_ADMIN_PASS || "findme2026")) {
       setAuthed(true);
       sessionStorage.setItem("fm_admin", "1");
+      sessionStorage.setItem("fm_admin_pass", pass);
     } else {
       setPassErr(true);
       setTimeout(() => setPassErr(false), 1200);
@@ -71,18 +68,22 @@ export default function AdminDashboard() {
     if (sessionStorage.getItem("fm_admin")) setAuthed(true);
   }, []);
 
-  /* ── fetch orders ── */
+  /* ── fetch orders via API (uses service role key — bypasses RLS) ── */
   useEffect(() => {
     if (!authed) return;
     setLoading(true);
-    supabase
-      .from("orders")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setOrders(data || []);
+    const savedPass = sessionStorage.getItem("fm_admin_pass") || pass;
+    fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "get_orders", password: savedPass }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setOrders(data.orders || []);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
   }, [authed]);
 
   const showToast = (msg: string) => {
@@ -90,10 +91,15 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(""), 3000);
   };
 
-  /* ── update order status ── */
+  /* ── update order status via API ── */
   const updateStatus = async (id: string, status: string) => {
     setSaving(true);
-    await supabase.from("orders").update({ status }).eq("id", id);
+    const savedPass = sessionStorage.getItem("fm_admin_pass") || pass;
+    await fetch("/api/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "update_status", password: savedPass, id, status }),
+    });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
     if (selected?.id === id) setSelected((s) => s ? { ...s, status } : s);
     showToast(`Order status updated to ${status}`);
