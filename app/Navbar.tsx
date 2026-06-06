@@ -86,10 +86,9 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* SHOP DROPDOWN — hover to open, click to go to /shop */}
+          {/* SHOP DROPDOWN — hover entire wrapper to keep open */}
           <div
-            style={{ position: "relative" }}
-            ref={dropdownRef}
+            style={{ position: "relative", display: "flex", alignItems: "center" }}
             onMouseEnter={() => setOpenShop(true)}
             onMouseLeave={() => setOpenShop(false)}
           >
@@ -97,31 +96,38 @@ export default function Navbar() {
               href="/shop"
               style={{
                 display: "flex", alignItems: "center", gap: 4,
-                background: "none", border: "none", cursor: "pointer",
                 color: "#4a6a4a", fontSize: 14, fontWeight: 600,
                 textDecoration: "none", transition: "color 0.2s",
-                paddingBottom: 8,
+                lineHeight: 1,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
             >
               Shop
               <span style={{
-                fontSize: 10, transition: "transform 0.2s",
-                transform: openShop ? "rotate(180deg)" : "rotate(0deg)",
+                fontSize: 10,
                 display: "inline-block",
+                transition: "transform 0.2s",
+                transform: openShop ? "rotate(180deg)" : "rotate(0deg)",
               }}>▾</span>
             </Link>
+
+            {/* Invisible bridge — prevents gap between link and dropdown */}
+            <div style={{
+              position: "absolute", top: "100%", left: 0,
+              width: "100%", height: 16,
+              background: "transparent",
+              display: openShop ? "block" : "none",
+            }} />
+
             {openShop && (
               <div
                 style={{
-                  position: "absolute", top: "100%", left: 0, width: 210,
+                  position: "absolute", top: "calc(100% + 16px)", left: 0, width: 210,
                   background: "#ffffff", border: "1px solid rgba(26,58,42,0.1)",
                   borderRadius: 16, padding: 8,
                   boxShadow: "0 20px 60px rgba(26,58,42,0.15)",
                   zIndex: 200,
-                  paddingTop: 8,
-                  marginTop: 8,
                 }}
               >
                 {[
