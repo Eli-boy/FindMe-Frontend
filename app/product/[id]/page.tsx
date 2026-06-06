@@ -16,7 +16,7 @@ const GREEN = "#1db954";
 const useCases: Record<string, { image: string; label: string }[]> = {
   sticker: [
     { image: "/use-airpod.png", label: "airpod" },
-    { image: "/sticker.png", label: "sticker" },
+    { image: "/stick1.png", label: "sticker" },
     { image: "/use-gadget.png", label: "gadget" },
     { image: "/use-pass.png", label: "pass" },
     { image: "/use-book.png", label: "book" },
@@ -27,7 +27,7 @@ const useCases: Record<string, { image: string; label: string }[]> = {
     { image: "/use-benz.png", label: "car" },
     { image: "/elo1.png", label: "key" },
     { image: "/use-carKey.png", label: "car key" },
-    { image: "/elo4.png", label: "key" },
+    { image: "/key1.png", label: "key" },
   ],
   bundle: [
     { image: "/use-luggage.png", label: "Luggage" },
@@ -40,7 +40,7 @@ const useCases: Record<string, { image: string; label: string }[]> = {
   luggage: [
     { image: "/use-bag.png", label: "bag" },
     { image: "/use-luggage.png", label: "lug" },
-    { image: "/lug4.png", label: "lug" },
+    { image: "/lug2.png", label: "lug" },
   ],
 };
 

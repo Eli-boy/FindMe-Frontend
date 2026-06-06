@@ -31,8 +31,8 @@ export const products: Product[] = [
     id: 1,
     name: "Sticker Pack",
     price: 8000,
-    image: "/sticker.png",
-    images: ["/sticker.png"],
+    image: "/stick1.png",
+    images: ["/sticke1.png"],
     shortDesc: "Smart QR sticker for any personal item — if it gets lost, anyone can scan it and contact you instantly via WhatsApp.",
     desc: "A slim QR sticker for phones, laptops and gadgets. Scan if found — you get an instant WhatsApp alert. No app required.",
     features: [
@@ -43,9 +43,9 @@ export const products: Product[] = [
       "Water-resistant and tamper-evident",
     ],
     variants: [
-      { label: "One Pack (4 Stickers)", quantity: 5, price: 8000, image: "/sticker.png" },
-      { label: "Two Packs (8 Stickers)", quantity: 10, price: 14000, image: "/sticker2.png" },
-      { label: "Three Packs (12 Stickers)", quantity: 15, price: 20000, image: "/sticker3.png" },
+      { label: "One Pack (4 Stickers)", quantity: 5, price: 8000, image: "/stick1.png" },
+      { label: "Two Packs (8 Stickers)", quantity: 10, price: 14000, image: "/stick2.png" },
+      { label: "Three Packs (12 Stickers)", quantity: 15, price: 20000, image: "/stick3.png" },
     ],
     category: "sticker",
     reviews: [
@@ -58,8 +58,8 @@ export const products: Product[] = [
     id: 2,
     name: "Smart Keychain Tag",
     price: 10000,
-    image: "/elo2.png",
-    images: ["/elo2.png"],
+    image: "/key1.png",
+    images: ["/key1.png"],
     shortDesc: "Premium QR keychain tag for your keys and bags — lost items find their way back instantly.",
     desc: "A premium QR keychain for your keys and bags. Lost? The finder scans it and reaches you on WhatsApp instantly.",
     features: [
@@ -70,9 +70,9 @@ export const products: Product[] = [
       "No battery, no charging — always active",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/elo1.png" },
-      { label: "Two Tags", quantity: 2, price: 18000, image: "/elo3.png" },
-      { label: "Three Tags", quantity: 3, price: 25000, image: "/elo4.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/key1.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, image: "/key2.png" },
+      { label: "Three Tags", quantity: 3, price: 25000, image: "/key3.png" },
     ],
     category: "key",
     reviews: [
@@ -107,8 +107,8 @@ export const products: Product[] = [
     id: 4,
     name: "Luggage Tag",
     price: 10000,
-    image: "/lugP.png",
-    images: ["/lugP.png"],
+    image: "/lug1.png",
+    images: ["/lug1.png"],
     shortDesc: "Travel confidently — smart QR luggage tag that gets your bags back from anywhere in the world.",
     desc: "A smart QR luggage tag for travellers. If your bag goes missing, the finder scans it and you're connected instantly.",
     features: [
@@ -119,8 +119,8 @@ export const products: Product[] = [
       "No battery required — always ready",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/lugP.png" },
-      { label: "Two Tags", quantity: 2, price: 18000, image: "/lug5.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, image: "/lug1.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, image: "/lug2.png" },
     ],
     category: "key",
     reviews: [
@@ -154,8 +154,8 @@ export const products: Product[] = [
     id: 6,
     name: "Family Pack",
     price: 40000,
-    image: "/fam.png",
-    images: ["/fam.png"],
+    image: "/fam1.png",
+    images: ["/fam1.png"],
     shortDesc: "The complete FindMe bundle for your whole family — protect everyone and everything you love.",
     desc: "The complete FindMe bundle — sticker tags, keychain tags and luggage tags to protect your whole family.",
     features: [
@@ -176,8 +176,8 @@ export const products: Product[] = [
     id: 7,
     name: "Travel Pack",
     price: 25000,
-    image: "/travel1.png",
-    images: ["/travel1.png"],
+    image: "/trav1.png",
+    images: ["/trav1.png"],
     shortDesc: "The ultimate travel companion — luggage and sticker tags for frequent travellers worldwide.",
     desc: "Luggage tags and sticker tags for frequent travellers. Protect your bags and gadgets anywhere in the world.",
     features: [

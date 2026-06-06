@@ -86,38 +86,53 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* SHOP DROPDOWN */}
-          <div style={{ position: "relative" }} ref={dropdownRef}>
-            <button
-              onClick={(e) => { e.stopPropagation(); setOpenShop(!openShop); }}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#4a6a4a", fontSize: 14, fontWeight: 600 }}
+          {/* SHOP DROPDOWN — hover to open, click to go to /shop */}
+          <div
+            style={{ position: "relative" }}
+            ref={dropdownRef}
+            onMouseEnter={() => setOpenShop(true)}
+            onMouseLeave={() => setOpenShop(false)}
+          >
+            <Link
+              href="/shop"
+              style={{
+                display: "flex", alignItems: "center", gap: 4,
+                background: "none", border: "none", cursor: "pointer",
+                color: "#4a6a4a", fontSize: 14, fontWeight: 600,
+                textDecoration: "none", transition: "color 0.2s",
+              }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
             >
-              Shop ▾
-            </button>
+              Shop
+              <span style={{
+                fontSize: 10, transition: "transform 0.2s",
+                transform: openShop ? "rotate(180deg)" : "rotate(0deg)",
+                display: "inline-block",
+              }}>▾</span>
+            </Link>
             {openShop && (
               <div
                 style={{
-                  position: "absolute", top: 44, left: 0, width: 200,
+                  position: "absolute", top: 28, left: 0, width: 210,
                   background: "#ffffff", border: "1px solid rgba(26,58,42,0.1)",
                   borderRadius: 16, padding: 8,
                   boxShadow: "0 20px 60px rgba(26,58,42,0.15)",
+                  zIndex: 200,
                 }}
-                onClick={(e) => e.stopPropagation()}
-                className="animate-fadeIn"
               >
                 {[
-                  { name: "All Products", link: "/shop" },
-                  { name: "Key Tags", link: "/shop?category=key" },
-                  { name: "Pet Tags", link: "/shop?category=pet" },
-                  { name: "Stickers", link: "/shop?category=sticker" },
+                  { name: "All Products", link: "/shop", icon: "🏷️" },
+                  { name: "Key Tags", link: "/shop?category=key", icon: "🔑" },
+                  { name: "Stickers", link: "/shop?category=sticker", icon: "📦" },
+                  { name: "Bundles", link: "/shop?category=bundle", icon: "🎁" },
                 ].map((item) => (
                   <Link
                     key={item.link}
                     href={item.link}
                     style={{
-                      display: "block", padding: "10px 14px", borderRadius: 10,
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "10px 14px", borderRadius: 10,
                       color: "#4a6a4a", textDecoration: "none", fontSize: 14,
                       transition: "background 0.2s, color 0.2s",
                     }}
@@ -130,6 +145,7 @@ export default function Navbar() {
                       e.currentTarget.style.color = "#4a6a4a";
                     }}
                   >
+                    <span>{item.icon}</span>
                     {item.name}
                   </Link>
                 ))}
