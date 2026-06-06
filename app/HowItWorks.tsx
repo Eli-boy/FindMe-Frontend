@@ -19,7 +19,7 @@ const steps = [
     icon: "🔔",
     num: "03",
     title: "Get notified",
-    desc: "When someone finds your item and scans the tag, you get an instant WhatsApp message.",
+    desc: "If someone finds your item, they scan the QR code and chat with you instantly via WhatsApp —both phone numbers remain completely hidden and private.",
   },
   {
     icon: "💬",

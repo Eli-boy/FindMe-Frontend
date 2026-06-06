@@ -100,6 +100,7 @@ export default function Navbar() {
                 background: "none", border: "none", cursor: "pointer",
                 color: "#4a6a4a", fontSize: 14, fontWeight: 600,
                 textDecoration: "none", transition: "color 0.2s",
+                paddingBottom: 8,
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
@@ -114,11 +115,13 @@ export default function Navbar() {
             {openShop && (
               <div
                 style={{
-                  position: "absolute", top: 28, left: 0, width: 210,
+                  position: "absolute", top: "100%", left: 0, width: 210,
                   background: "#ffffff", border: "1px solid rgba(26,58,42,0.1)",
                   borderRadius: 16, padding: 8,
                   boxShadow: "0 20px 60px rgba(26,58,42,0.15)",
                   zIndex: 200,
+                  paddingTop: 8,
+                  marginTop: 8,
                 }}
               >
                 {[
