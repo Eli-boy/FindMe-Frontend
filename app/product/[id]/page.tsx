@@ -73,6 +73,9 @@ export default function ProductPage() {
     ? useCaseImg
     : (product.variants?.[selectedVariant]?.image || images[activeImg] || product.image);
   const currentPrice = product.variants ? product.variants[selectedVariant].price : product.price;
+  const currentOldPrice = product.variants
+    ? product.variants[selectedVariant].oldPrice
+    : product.oldPrice;
   const cat = product.id === 4 ? "luggage" : product.category;
   const cases = useCases[cat] || useCases.sticker;
 
@@ -93,13 +96,13 @@ export default function ProductPage() {
       {/* ── MAIN PRODUCT ── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px 80px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 64, alignItems: "start" }}>
 
-        {/* LEFT — IMAGE GALLERY */}
+        {/* LEFT — IMAGE GALLERY + USE CASES */}
         <div>
           {/* Main image */}
           <div style={{
             background: "rgba(255,255,255,0.7)", borderRadius: 24,
             border: "1px solid rgba(26,58,42,0.1)",
-            padding: 32, marginBottom: 16,
+            padding: 32, marginBottom: 12,
             boxShadow: "0 4px 24px rgba(26,58,42,0.08)",
             display: "flex", alignItems: "center", justifyContent: "center",
             minHeight: 380,
@@ -113,26 +116,48 @@ export default function ProductPage() {
             />
           </div>
 
-          {/* Thumbnail strip */}
-          {images.length > 1 && (
-            <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
-              {images.map((img, i) => (
+          {/* USE CASE THUMBNAILS — scrollable below large image, click to swap */}
+          <style>{`.use-scroll::-webkit-scrollbar{display:none}`}</style>
+          <div className="use-scroll" style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none", marginBottom: 12 }}>
+            {/* Product image thumbnails first */}
+            {images.map((img, i) => (
+              <button
+                key={"img-" + i}
+                onClick={() => { setActiveImg(i); setUseCaseImg(null); }}
+                style={{
+                  flexShrink: 0, width: 80, height: 80, borderRadius: 12, overflow: "hidden",
+                  border: (!useCaseImg && activeImg === i) ? `2px solid ${DARK}` : "2px solid rgba(26,58,42,0.15)",
+                  background: "rgba(255,255,255,0.8)", cursor: "pointer", padding: 4, transition: "border-color 0.2s",
+                }}
+              >
+                <Image src={img} alt="" width={72} height={72} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
+              </button>
+            ))}
+            {/* Use-case thumbnails */}
+            {cases.map((c, i) => {
+              const isActive = useCaseImg === c.image;
+              return (
                 <button
-                  key={i}
-                  onClick={() => { setActiveImg(i); setUseCaseImg(null); }}
+                  key={"uc-" + i}
+                  onClick={() => setUseCaseImg(isActive ? null : c.image)}
                   style={{
-                    flexShrink: 0, width: 80, height: 80,
-                    borderRadius: 12, overflow: "hidden",
-                    border: activeImg === i ? `2px solid ${DARK}` : "2px solid rgba(26,58,42,0.15)",
-                    background: "rgba(255,255,255,0.7)",
-                    cursor: "pointer", padding: 4, transition: "border-color 0.2s",
+                    flexShrink: 0, width: 80, height: 80, borderRadius: 12, overflow: "hidden",
+                    border: isActive ? `2px solid ${GREEN}` : "2px solid rgba(26,58,42,0.12)",
+                    background: "rgba(255,255,255,0.7)", cursor: "pointer", padding: 0,
+                    transition: "all 0.2s", position: "relative",
                   }}
                 >
-                  <Image src={img} alt="" width={72} height={72} style={{ objectFit: "contain", width: "100%", height: "100%" }} />
+                  <Image src={c.image} alt={c.label} width={80} height={80} style={{ objectFit: "cover", width: "100%", height: "100%" }} />
+                  <div style={{
+                    position: "absolute", bottom: 0, left: 0, right: 0,
+                    background: "rgba(26,58,42,0.75)", padding: "3px 4px",
+                    fontSize: 9, color: "#fff", fontWeight: 600, textAlign: "center",
+                    fontFamily: "Syne, sans-serif",
+                  }}>{c.label}</div>
                 </button>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
 
         {/* RIGHT — DETAILS */}
@@ -157,9 +182,21 @@ export default function ProductPage() {
           </h1>
 
           {/* Price */}
-          <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 32, color: GREEN, margin: "0 0 16px" }}>
-            ₦{(currentPrice * qty).toLocaleString()}
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "0 0 16px", flexWrap: "wrap" }}>
+            {currentOldPrice && (
+              <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 22, color: "#9dbfa0", textDecoration: "line-through" }}>
+                ₦{(currentOldPrice * qty).toLocaleString()}
+              </span>
+            )}
+            <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 32, color: GREEN }}>
+              ₦{(currentPrice * qty).toLocaleString()}
+            </span>
+            {currentOldPrice && (
+              <span style={{ background: "rgba(239,68,68,0.1)", color: "#ef4444", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 700, border: "1px solid rgba(239,68,68,0.2)" }}>
+                Save ₦{((currentOldPrice - currentPrice) * qty).toLocaleString()}
+              </span>
+            )}
+          </div>
 
           {/* Short desc — bold like Tagiz */}
           {product.shortDesc && (
@@ -286,52 +323,7 @@ export default function ProductPage() {
         </div>
       </div>
 
-      {/* ── USE CASES ── */}
-      <div style={{ background: "rgba(255,255,255,0.4)", borderTop: "1px solid rgba(26,58,42,0.08)", borderBottom: "1px solid rgba(26,58,42,0.08)", padding: "56px 32px" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "#4a7a5a", marginBottom: 8 }}>Works on</p>
-          <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: "clamp(22px, 3vw, 32px)", color: DARK, marginBottom: 32, letterSpacing: -0.5 }}>
-            Protect anything you own
-          </h2>
-          <style>{`#use-scroll::-webkit-scrollbar { display: none; }`}</style>
-          <div id="use-scroll" style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 8, scrollbarWidth: "none" }}>
-            {cases.map((c, i) => {
-              const isActive = useCaseImg === c.image;
-              return (
-                <button
-                  key={i}
-                  onClick={() => { setUseCaseImg(isActive ? null : c.image); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-                  style={{
-                    flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-                    background: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.7)",
-                    borderRadius: 20, padding: "16px 20px",
-                    border: isActive ? `2px solid ${DARK}` : "1px solid rgba(26,58,42,0.1)",
-                    minWidth: 110, cursor: "pointer",
-                    boxShadow: isActive ? "0 8px 24px rgba(26,58,42,0.15)" : "0 2px 12px rgba(26,58,42,0.06)",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  <div style={{ width: 70, height: 70, borderRadius: 14, overflow: "hidden", background: "rgba(26,58,42,0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Image
-                      src={c.image}
-                      alt={c.label}
-                      width={70}
-                      height={70}
-                      style={{ objectFit: "cover", width: "100%", height: "100%" }}
-                    />
-                  </div>
-                  <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: DARK, whiteSpace: "nowrap" }}>{c.label}</span>
-                </button>
-              );
-            })}
-          </div>
-          {useCaseImg && (
-            <p style={{ marginTop: 14, fontSize: 13, color: "#4a7a5a", fontFamily: "Syne, sans-serif" }}>
-              👆 Click again to go back to product image
-            </p>
-          )}
-        </div>
-      </div>
+
 
       {/* ── REVIEWS ── */}
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "80px 32px" }}>

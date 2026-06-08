@@ -8,6 +8,7 @@ export type Variant = {
   label: string;
   quantity: number;
   price: number;
+  oldPrice?: number;
   image: string;
 };
 
@@ -15,6 +16,7 @@ export type Product = {
   id: number;
   name: string;
   price: number;
+  oldPrice?: number;
   comingSoon?: boolean;
   image: string;
   images?: string[];
@@ -43,9 +45,9 @@ export const products: Product[] = [
       "Water-resistant and tamper-evident",
     ],
     variants: [
-      { label: "One Pack (4 Stickers)", quantity: 5, price: 8000, image: "/stick1.png" },
-      { label: "Two Packs (8 Stickers)", quantity: 10, price: 14000, image: "/stick2.png" },
-      { label: "Three Packs (12 Stickers)", quantity: 15, price: 20000, image: "/stick3.png" },
+      { label: "One Pack (4 Stickers)", quantity: 5, price: 8000, oldPrice: 10000, image: "/stick1.png" },
+      { label: "Two Packs (8 Stickers)", quantity: 10, price: 14000, oldPrice: 18000, image: "/stick2.png" },
+      { label: "Three Packs (12 Stickers)", quantity: 15, price: 20000, oldPrice: 26000, image: "/stick3.png" },
     ],
     category: "sticker",
     reviews: [
@@ -70,9 +72,9 @@ export const products: Product[] = [
       "No battery, no charging — always active",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/key1.png" },
-      { label: "Two Tags", quantity: 2, price: 18000, image: "/key2.png" },
-      { label: "Three Tags", quantity: 3, price: 25000, image: "/key3.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, oldPrice: 13000, image: "/key1.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, oldPrice: 24000, image: "/key2.png" },
+      { label: "Three Tags", quantity: 3, price: 25000, oldPrice: 33000, image: "/key3.png" },
     ],
     category: "key",
     reviews: [
@@ -119,8 +121,8 @@ export const products: Product[] = [
       "No battery required — always ready",
     ],
     variants: [
-      { label: "Single Tag", quantity: 1, price: 10000, image: "/lug1.png" },
-      { label: "Two Tags", quantity: 2, price: 18000, image: "/lug2.png" },
+      { label: "Single Tag", quantity: 1, price: 10000, oldPrice: 14000, image: "/lug1.png" },
+      { label: "Two Tags", quantity: 2, price: 18000, oldPrice: 24000, image: "/lug2.png" },
     ],
     category: "key",
     reviews: [
@@ -154,6 +156,7 @@ export const products: Product[] = [
     id: 6,
     name: "Family Pack",
     price: 40000,
+    oldPrice: 52000,
     image: "/fam1.png",
     images: ["/fam1.png"],
     shortDesc: "The complete FindMe bundle for your whole family — protect everyone and everything you love.",
@@ -176,6 +179,7 @@ export const products: Product[] = [
     id: 7,
     name: "Travel Pack",
     price: 25000,
+    oldPrice: 34000,
     image: "/trav1.png",
     images: ["/trav1.png"],
     shortDesc: "The ultimate travel companion — luggage and sticker tags for frequent travellers worldwide.",
