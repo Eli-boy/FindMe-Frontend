@@ -12,7 +12,7 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, phone, address, cart, subtotal, shipping, total, deliveryMethod } = await req.json();
+    const { name, email, phone, address, cart, subtotal, shipping, total, deliveryMethod, couponCode, discountAmount } = await req.json();
 
     /* ── 1. Save order to Supabase ── */
     const { data: order, error } = await supabase
@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
         items: cart,
         subtotal,
         shipping: 0,
+        discount_amount: discountAmount || 0,
+        coupon_code: couponCode || null,
         total,
         status: "pending",
       })

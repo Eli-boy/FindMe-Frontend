@@ -20,9 +20,46 @@ export default function CartPage() {
   const [form, setForm] = useState({
     name: "", email: "", phone: "", address: "",
   });
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  // Valid coupons — FINDME10 = 10% off
+  const COUPONS: Record<string, number> = {
+    "FINDME10": 10,
+    "FINDME15": 15,
+    "LAUNCH20": 20,
+  };
+
+  const applyCoupon = () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    if (appliedCoupon === code) {
+      setCouponMsg({ text: "Coupon already applied!", ok: false });
+      return;
+    }
+    if (COUPONS[code]) {
+      const pct = COUPONS[code];
+      setAppliedCoupon(code);
+      setCouponDiscount(pct);
+      setCouponMsg({ text: `✓ ${code} applied — ${pct}% off!`, ok: true });
+    } else {
+      setCouponMsg({ text: "Invalid coupon code.", ok: false });
+      setTimeout(() => setCouponMsg(null), 3000);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponInput("");
+    setCouponMsg(null);
+  };
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-  const total = subtotal; // No fixed shipping — fee shared via WhatsApp
+  const discountAmount = appliedCoupon ? Math.round(subtotal * couponDiscount / 100) : 0;
+  const total = subtotal - discountAmount; // No fixed shipping — fee shared via WhatsApp
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,7 +81,7 @@ export default function CartPage() {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, cart, subtotal, shipping: 0, total, deliveryMethod }),
+        body: JSON.stringify({ ...form, cart, subtotal, shipping: 0, total, deliveryMethod, couponCode: appliedCoupon, discountAmount }),
       });
 
       const data = await res.json();
@@ -56,7 +93,8 @@ export default function CartPage() {
         const deliveryLine = deliveryMethod === "pickup"
           ? "Pickup: I will pick up from your location"
           : `Delivery to: ${form.address}`;
-        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
+        const discountLine = appliedCoupon ? `\nDiscount (${appliedCoupon}): −₦${discountAmount.toLocaleString()}` : "";
+        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}${discountLine}\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
         const waUrl = `https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`;
 
         // Use window.location for guaranteed redirect (not blocked by browsers)
@@ -186,7 +224,7 @@ export default function CartPage() {
                     <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                       {[
-                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
+                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦5,000" },
                         { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
                       ].map((opt) => (
                         <button
