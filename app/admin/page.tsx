@@ -202,7 +202,9 @@ export default function AdminDashboard() {
             </div>
             <button
               onClick={() => {
-                const phone = (selected.customer_phone || "").replace(/\D/g, "");
+                let phone = (selected.customer_phone || "").replace(/\D/g, "");
+                if (phone.startsWith("0")) phone = "234" + phone.slice(1);
+                if (!phone.startsWith("234")) phone = "234" + phone;
                 const msg = "Hello " + selected.customer_name + ", regarding your FindMe order #" + selected.order_number;
                 window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
               }}
@@ -413,7 +415,9 @@ export default function AdminDashboard() {
                         <p style={{ color: "#4a7a5a", fontSize: 11, margin: 0 }}>{co.length} order{co.length !== 1 ? "s" : ""}</p>
                       </div>
                       <button onClick={() => {
-                        const phone = (c.customer_phone || "").replace(/\D/g, "");
+                        let phone = (c.customer_phone || "").replace(/\D/g, "");
+                        if (phone.startsWith("0")) phone = "234" + phone.slice(1);
+                        if (!phone.startsWith("234")) phone = "234" + phone;
                         const msg = "Hello " + c.customer_name + ", this is FindMe Nigeria!";
                         window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
                       }}
