@@ -204,7 +204,7 @@ export default function AdminDashboard() {
               onClick={() => {
                 const phone = (selected.customer_phone || "").replace(/\D/g, "");
                 const msg = "Hello " + selected.customer_name + ", regarding your FindMe order #" + selected.order_number;
-                window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(msg), "_blank");
+                window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
               }}
               style={{ width: "100%", padding: 12, background: "#25D366", color: "#000", border: "none", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
               💬 Message on WhatsApp
@@ -415,7 +415,7 @@ export default function AdminDashboard() {
                       <button onClick={() => {
                         const phone = (c.customer_phone || "").replace(/\D/g, "");
                         const msg = "Hello " + c.customer_name + ", this is FindMe Nigeria!";
-                        window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(msg), "_blank");
+                        window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
                       }}
                         style={{ padding: "7px 14px", background: "#25D366", border: "none", borderRadius: 40, color: "#000", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
                         💬 WhatsApp
