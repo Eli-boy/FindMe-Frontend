@@ -41,7 +41,19 @@ export async function POST(req: NextRequest) {
 
     const orderNumber = order.order_number;
 
-    /* ── 2. Build item rows for email ── */
+    /* ── 2. Fetch a next-order coupon to include in email ── */
+    const { data: couponData } = await supabase
+      .from("coupons")
+      .select("code, discount")
+      .eq("active", true)
+      .neq("code", couponCode || "")   // don't repeat the same code they just used
+      .order("discount", { ascending: false })
+      .limit(1)
+      .single();
+
+    const nextCoupon = couponData || { code: "FINDME10", discount: 10 };
+
+    /* ── 3. Build item rows for email ── */
     const itemRows = cart.map((item: any) => `
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#2a4a2a;">${item.name}</td>
@@ -49,7 +61,7 @@ export async function POST(req: NextRequest) {
         <td style="padding:12px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#1a3a2a;font-weight:700;text-align:right;">&#8358;${(item.price * item.quantity).toLocaleString()}</td>
       </tr>`).join("");
 
-    /* ── 3. Send confirmation email ── */
+    /* ── 4. Send confirmation email ── */
     await resend.emails.send({
       from: "FindMe <orders@findme.com.ng>",
       to: email,
@@ -104,9 +116,10 @@ export async function POST(req: NextRequest) {
           </div>
 
           <div style="border:2px dashed #1db954;border-radius:16px;padding:24px;text-align:center;margin-bottom:32px;background:#f8fff8;">
-            <p style="margin:0 0 6px;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:2px;font-weight:700;">&#x1F389; 10% Off Your Next Order</p>
-            <p style="margin:0 0 16px;font-size:13px;color:#4a7a5a;">Use this code at checkout:</p>
-            <div style="background:#1a3a2a;color:#ffffff;padding:12px 28px;border-radius:8px;display:inline-block;font-size:18px;font-weight:800;letter-spacing:3px;">FINDME10</div>
+            <p style="margin:0 0 6px;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:2px;font-weight:700;">&#x1F389; ${nextCoupon.discount}% Off Your Next Order</p>
+            <p style="margin:0 0 16px;font-size:13px;color:#4a7a5a;">Use this code on your next purchase:</p>
+            <div style="background:#1a3a2a;color:#ffffff;padding:12px 28px;border-radius:8px;display:inline-block;font-size:18px;font-weight:800;letter-spacing:3px;">${nextCoupon.code}</div>
+            <p style="margin:12px 0 0;font-size:12px;color:#4a7a5a;">Valid on all FindMe products at findme.com.ng</p>
           </div>
 
           <div style="text-align:center;">
@@ -127,7 +140,7 @@ export async function POST(req: NextRequest) {
 </html>`,
     });
 
-    // Increment coupon used_count if a coupon was applied
+    /* ── 5. Increment coupon used_count if a coupon was applied ── */
     if (couponCode) {
       try {
         await supabase.rpc("increment_coupon_usage", { coupon_code: couponCode });

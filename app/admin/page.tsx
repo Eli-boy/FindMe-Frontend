@@ -449,6 +449,43 @@ export default function AdminDashboard() {
                         <p style={{ fontWeight: 800, color: G, fontSize: 15, margin: "0 0 1px" }}>₦{spent.toLocaleString()}</p>
                         <p style={{ color: "#4a7a5a", fontSize: 11, margin: 0 }}>{co.length} order{co.length !== 1 ? "s" : ""}</p>
                       </div>
+                      {/* Send Coupon dropdown */}
+                      <div style={{ position: "relative" }}>
+                        <button
+                          onClick={() => {
+                            const el = document.getElementById("coupon-menu-" + i);
+                            if (el) el.style.display = el.style.display === "none" ? "block" : "none";
+                          }}
+                          style={{ padding: "7px 14px", background: "rgba(29,185,84,0.12)", border: `1px solid ${BORDER}`, borderRadius: 40, color: G, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                          🎟️ Send Coupon
+                        </button>
+                        <div id={"coupon-menu-" + i} style={{ display: "none", position: "absolute", top: "calc(100% + 8px)", right: 0, background: CARD, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 10, zIndex: 100, minWidth: 210, boxShadow: "0 12px 32px rgba(0,0,0,0.4)" }}>
+                          <p style={{ margin: "0 0 8px", fontSize: 11, color: "#4a7a5a", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1, padding: "0 4px" }}>Pick a coupon to send</p>
+                          {coupons.filter((cp) => cp.active).map((cp) => (
+                            <button
+                              key={cp.id}
+                              onClick={() => {
+                                let phone = (c.customer_phone || "").replace(/\D/g, "");
+                                if (phone.startsWith("0")) phone = "234" + phone.slice(1);
+                                if (!phone.startsWith("234")) phone = "234" + phone;
+                                const msg = "Hello " + c.customer_name + "! 🎉 Here's a special discount just for you:\n\n*" + cp.code + "* — " + cp.discount + "% off your next FindMe order\n\nShop now: https://findme.com.ng/shop";
+                                window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
+                                const el = document.getElementById("coupon-menu-" + i);
+                                if (el) el.style.display = "none";
+                              }}
+                              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "9px 12px", background: "transparent", border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "Syne, sans-serif", marginBottom: 4 }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(29,185,84,0.08)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                            >
+                              <span style={{ fontWeight: 700, color: G, fontSize: 13, letterSpacing: 1 }}>{cp.code}</span>
+                              <span style={{ color: "#4a7a5a", fontSize: 12 }}>{cp.discount}% off</span>
+                            </button>
+                          ))}
+                          {coupons.filter((cp) => cp.active).length === 0 && (
+                            <p style={{ color: "#4a7a5a", fontSize: 12, padding: "4px 8px", margin: 0 }}>No active coupons. Create one in the Coupons tab.</p>
+                          )}
+                        </div>
+                      </div>
                       <button onClick={() => {
                         let phone = (c.customer_phone || "").replace(/\D/g, "");
                         if (phone.startsWith("0")) phone = "234" + phone.slice(1);
