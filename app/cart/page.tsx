@@ -192,20 +192,74 @@ export default function CartPage() {
               <h2 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 20, color: DARK, marginBottom: 20, marginTop: 0 }}>Order Summary</h2>
 
               {/* PRICE BREAKDOWN */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 {cart.map((i) => (
                   <div key={i.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
                     <span>{i.name} x{i.quantity}</span>
                     <span>₦{(i.price * i.quantity).toLocaleString()}</span>
                   </div>
                 ))}
+
+                {/* Discount row */}
+                {appliedCoupon && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                    <span style={{ color: GREEN, fontWeight: 600 }}>🎟️ {appliedCoupon} ({couponDiscount}% off)</span>
+                    <span style={{ color: GREEN, fontWeight: 700 }}>−₦{discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+
                 <div style={{ borderTop: "1.5px solid rgba(26,58,42,0.15)", paddingTop: 10, display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: DARK }}>Total</span>
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, color: GREEN }}>₦{total.toLocaleString()}</span>
                 </div>
-                <div style={{ fontSize: 12, color: "#4a7a5a", marginTop: 6, textAlign: "right" }}>
+                <div style={{ fontSize: 12, color: "#4a7a5a", textAlign: "right" }}>
                   {deliveryMethod === "delivery" ? "🚚 Delivery fee confirmed via WhatsApp" : "🏪 Self pickup — no delivery fee"}
-                </div>              </div>
+                </div>
+              </div>
+
+              {/* COUPON CODE */}
+              {!appliedCoupon ? (
+                <div style={{ marginBottom: 16 }}>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 8px" }}>Have a coupon?</p>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      placeholder="Enter code"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
+                      style={{
+                        flex: 1, padding: "10px 14px",
+                        background: "rgba(26,58,42,0.05)",
+                        border: "1.5px solid rgba(26,58,42,0.15)",
+                        borderRadius: 10, fontSize: 13, color: DARK,
+                        outline: "none", fontFamily: "Syne, sans-serif",
+                        letterSpacing: 1, textTransform: "uppercase" as const,
+                        boxSizing: "border-box" as const,
+                      }}
+                    />
+                    <button
+                      onClick={applyCoupon}
+                      style={{
+                        padding: "10px 16px", background: DARK, color: "#fff",
+                        border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif",
+                        fontWeight: 700, fontSize: 13, cursor: "pointer", flexShrink: 0,
+                      }}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponMsg && (
+                    <p style={{ fontSize: 12, marginTop: 6, fontWeight: 600, margin: "6px 0 0", color: couponMsg.ok ? GREEN : "#e57373" }}>
+                      {couponMsg.text}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(29,185,84,0.08)", borderRadius: 10, padding: "10px 14px", border: "1px solid rgba(29,185,84,0.2)" }}>
+                  <span style={{ fontSize: 13, color: GREEN, fontWeight: 700 }}>🎟️ {appliedCoupon} applied</span>
+                  <button onClick={removeCoupon} style={{ background: "none", border: "none", color: "#e57373", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Remove</button>
+                </div>
+              )}
 
               {/* CHECKOUT FORM */}
               {!showForm ? (
