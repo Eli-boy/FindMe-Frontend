@@ -24,7 +24,7 @@ export default function CartPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(null);
+  const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(true); // show banner by default, hide after email check if returning
   const [checkingEmail, setCheckingEmail] = useState(false);
 
   const applyCoupon = async (overrideCode?: string) => {
@@ -239,8 +239,8 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* COUPON CODE — show first order promo only if first time */}
-              {!appliedCoupon && isFirstOrder === true && (
+              {/* COUPON CODE — show promo banner unless confirmed returning customer */}
+              {!appliedCoupon && isFirstOrder !== false && (
                 <div style={{
                   marginBottom: 12, padding: "10px 14px",
                   background: "rgba(29,185,84,0.08)",
