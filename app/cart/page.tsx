@@ -218,6 +218,45 @@ export default function CartPage() {
               </div>
 
               {/* COUPON CODE */}
+              {!appliedCoupon && (
+                <div style={{
+                  marginBottom: 12, padding: "10px 14px",
+                  background: "rgba(29,185,84,0.08)",
+                  border: "1px dashed rgba(29,185,84,0.4)",
+                  borderRadius: 10, display: "flex", alignItems: "center",
+                  justifyContent: "space-between", gap: 8, flexWrap: "wrap",
+                }}>
+                  <p style={{ margin: 0, fontSize: 13, color: "#2a4a2a", fontFamily: "Syne, sans-serif" }}>
+                    🎉 First order? Use code{" "}
+                    <strong
+                      onClick={() => { setCouponInput("FINDME10"); }}
+                      style={{ color: GREEN, cursor: "pointer", letterSpacing: 1, textDecoration: "underline dotted" }}
+                      title="Click to apply"
+                    >
+                      FINDME10
+                    </strong>
+                    {" "}for 10% off
+                  </p>
+                  <button
+                    onClick={() => {
+                      const code = "FINDME10";
+                      const pct = 10;
+                      setAppliedCoupon(code);
+                      setCouponDiscount(pct);
+                      setCouponInput(code);
+                      setCouponMsg({ text: `✓ ${code} applied — ${pct}% off!`, ok: true });
+                    }}
+                    style={{
+                      background: GREEN, color: "#000", border: "none",
+                      padding: "5px 12px", borderRadius: 20,
+                      fontFamily: "Syne, sans-serif", fontWeight: 700,
+                      fontSize: 12, cursor: "pointer", flexShrink: 0,
+                    }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
               {!appliedCoupon ? (
                 <div style={{ marginBottom: 16 }}>
                   <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 8px" }}>Have a coupon?</p>
