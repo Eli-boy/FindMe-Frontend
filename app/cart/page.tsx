@@ -24,28 +24,33 @@ export default function CartPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(null);
+  const [checkingEmail, setCheckingEmail] = useState(false);
 
-  // Valid coupons — FINDME10 = 10% off
-  const COUPONS: Record<string, number> = {
-    "FINDME10": 10,
-    "FINDME15": 15,
-    "LAUNCH20": 20,
-  };
-
-  const applyCoupon = () => {
-    const code = couponInput.trim().toUpperCase();
+  const applyCoupon = async (overrideCode?: string) => {
+    const code = (overrideCode || couponInput).trim().toUpperCase();
     if (!code) return;
     if (appliedCoupon === code) {
       setCouponMsg({ text: "Coupon already applied!", ok: false });
       return;
     }
-    if (COUPONS[code]) {
-      const pct = COUPONS[code];
-      setAppliedCoupon(code);
-      setCouponDiscount(pct);
-      setCouponMsg({ text: `✓ ${code} applied — ${pct}% off!`, ok: true });
-    } else {
-      setCouponMsg({ text: "Invalid coupon code.", ok: false });
+    try {
+      const res = await fetch("/api/check-first-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ validateCoupon: true, couponCode: code }),
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setAppliedCoupon(data.code);
+        setCouponDiscount(data.discount);
+        setCouponMsg({ text: `✓ ${data.code} applied — ${data.discount}% off!`, ok: true });
+      } else {
+        setCouponMsg({ text: data.message || "Invalid coupon code.", ok: false });
+        setTimeout(() => setCouponMsg(null), 3000);
+      }
+    } catch {
+      setCouponMsg({ text: "Could not validate coupon. Try again.", ok: false });
       setTimeout(() => setCouponMsg(null), 3000);
     }
   };
@@ -55,6 +60,23 @@ export default function CartPage() {
     setCouponDiscount(0);
     setCouponInput("");
     setCouponMsg(null);
+  };
+
+  const checkFirstOrder = async (email: string) => {
+    if (!email || !email.includes("@")) return;
+    setCheckingEmail(true);
+    try {
+      const res = await fetch("/api/check-first-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      setIsFirstOrder(data.isFirstOrder);
+    } catch {
+      setIsFirstOrder(null);
+    }
+    setCheckingEmail(false);
   };
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -217,8 +239,8 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {/* COUPON CODE */}
-              {!appliedCoupon && (
+              {/* COUPON CODE — show first order promo only if first time */}
+              {!appliedCoupon && isFirstOrder === true && (
                 <div style={{
                   marginBottom: 12, padding: "10px 14px",
                   background: "rgba(29,185,84,0.08)",
@@ -227,24 +249,20 @@ export default function CartPage() {
                   justifyContent: "space-between", gap: 8, flexWrap: "wrap",
                 }}>
                   <p style={{ margin: 0, fontSize: 13, color: "#2a4a2a", fontFamily: "Syne, sans-serif" }}>
-                    🎉 First order? Use code{" "}
+                    🎉 Welcome! Use code{" "}
                     <strong
-                      onClick={() => { setCouponInput("FINDME10"); }}
+                      onClick={() => setCouponInput("FINDME10")}
                       style={{ color: GREEN, cursor: "pointer", letterSpacing: 1, textDecoration: "underline dotted" }}
-                      title="Click to apply"
+                      title="Click to fill"
                     >
                       FINDME10
                     </strong>
-                    {" "}for 10% off
+                    {" "}for 10% off your first order
                   </p>
                   <button
                     onClick={() => {
-                      const code = "FINDME10";
-                      const pct = 10;
-                      setAppliedCoupon(code);
-                      setCouponDiscount(pct);
-                      setCouponInput(code);
-                      setCouponMsg({ text: `✓ ${code} applied — ${pct}% off!`, ok: true });
+                      setCouponInput("FINDME10");
+                      applyCoupon("FINDME10");
                     }}
                     style={{
                       background: GREEN, color: "#000", border: "none",
@@ -255,6 +273,11 @@ export default function CartPage() {
                   >
                     Apply
                   </button>
+                </div>
+              )}
+              {!appliedCoupon && isFirstOrder === false && (
+                <div style={{ marginBottom: 12, padding: "8px 12px", background: "rgba(26,58,42,0.05)", borderRadius: 10, fontSize: 12, color: "#4a7a5a" }}>
+                  Welcome back! 👋 Enter a coupon code below if you have one.
                 </div>
               )}
               {!appliedCoupon ? (
@@ -277,7 +300,7 @@ export default function CartPage() {
                       }}
                     />
                     <button
-                      onClick={applyCoupon}
+                      onClick={() => applyCoupon()}
                       style={{
                         padding: "10px 16px", background: DARK, color: "#fff",
                         border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif",
@@ -363,6 +386,7 @@ export default function CartPage() {
                       placeholder={f.placeholder}
                       value={(form as any)[f.name]}
                       onChange={handleChange}
+                      onBlur={f.name === "email" ? (e) => checkFirstOrder(e.target.value) : undefined}
                       style={{
                         width: "100%", padding: "12px 16px",
                         background: "rgba(26,58,42,0.05)",

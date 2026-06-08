@@ -83,5 +83,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
+  /* ── COUPONS ── */
+  if (action === "get_coupons") {
+    const { data, error } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ coupons: data });
+  }
+
+  if (action === "save_coupon") {
+    const { id, ...fields } = body.coupon;
+    const { error } = await supabase.from("coupons").update(fields).eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === "create_coupon") {
+    const { data, error } = await supabase
+      .from("coupons")
+      .insert({ code: body.coupon.code, discount: body.coupon.discount, active: true, used_count: 0 })
+      .select().single();
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ coupon: data });
+  }
+
+  if (action === "delete_coupon") {
+    const { error } = await supabase.from("coupons").delete().eq("id", body.id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  }
+
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

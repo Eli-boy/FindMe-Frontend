@@ -21,8 +21,9 @@ type CMSField = { key: string; value: string; type: string };
 type Product  = { id: number; name: string; price: number; coming_soon: boolean; image: string; short_desc: string; description: string; features: string[]; category: string; active: boolean };
 type Testimonial = { id: number; name: string; text: string; active: boolean };
 type FAQ = { id: number; question: string; answer: string; active: boolean };
+type Coupon = { id: number; code: string; discount: number; active: boolean; used_count: number; created_at: string };
 
-const tabs = ["📊 Overview","📦 Orders","👥 Customers","🎨 CMS","🏷️ Products","💬 Testimonials","❓ FAQ","⚙️ Settings"];
+const tabs = ["📊 Overview","📦 Orders","👥 Customers","🎨 CMS","🏷️ Products","💬 Testimonials","❓ FAQ","🎟️ Coupons","⚙️ Settings"];
 
 const api = (action: string, extra = {}) =>
   fetch("/api/admin", {
@@ -52,10 +53,43 @@ export default function AdminDashboard() {
   const [editFaq, setEditFaq] = useState<FAQ | null>(null);
   const [waNum, setWaNum]     = useState("2348073238118");
   const [discCode, setDiscCode] = useState("FINDME10");
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [editCoupon, setEditCoupon] = useState<Coupon | null>(null);
+  const [newCoupon, setNewCoupon] = useState({ code: "", discount: 10 });
+  const [showNewCoupon, setShowNewCoupon] = useState(false);
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
-  const pw = () => sessionStorage.getItem("fm_admin_pass") || "findme2026";
 
+  const saveCoupon = async (c: Coupon) => {
+    await api("save_coupon", { coupon: c });
+    setCoupons((prev) => prev.map((x) => x.id === c.id ? c : x));
+    setEditCoupon(null);
+    showToast("Coupon saved!");
+  };
+
+  const createCoupon = async () => {
+    if (!newCoupon.code.trim()) return;
+    const res = await api("create_coupon", { coupon: { code: newCoupon.code.trim().toUpperCase(), discount: newCoupon.discount } });
+    if (res.coupon) {
+      setCoupons((prev) => [res.coupon, ...prev]);
+      setNewCoupon({ code: "", discount: 10 });
+      setShowNewCoupon(false);
+      showToast("Coupon created!");
+    }
+  };
+
+  const toggleCoupon = async (c: Coupon) => {
+    const updated = { ...c, active: !c.active };
+    await api("save_coupon", { coupon: updated });
+    setCoupons((prev) => prev.map((x) => x.id === c.id ? updated : x));
+    showToast(updated.active ? "Coupon enabled" : "Coupon disabled");
+  };
+
+  const deleteCoupon = async (id: number) => {
+    await api("delete_coupon", { id });
+    setCoupons((prev) => prev.filter((x) => x.id !== id));
+    showToast("Coupon deleted");
+  };
   const login = () => {
     if (pass === (process.env.NEXT_PUBLIC_ADMIN_PASS || "findme2026")) {
       setAuthed(true);
@@ -76,6 +110,7 @@ export default function AdminDashboard() {
     api("get_products").then((d) => setProducts(d.products || []));
     api("get_testimonials").then((d) => setTestimonials(d.testimonials || []));
     api("get_faqs").then((d) => setFaqs(d.faqs || []));
+    api("get_coupons").then((d) => setCoupons(d.coupons || []));
   }, [authed]);
 
   const updateStatus = async (id: string, status: string) => {
@@ -630,8 +665,125 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          {/* ── SETTINGS ── */}
+          {/* ── COUPONS ── */}
           {tab === 7 && (
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+                <div>
+                  <h2 style={{ fontWeight: 800, fontSize: 26, margin: "0 0 4px" }}>🎟️ Coupons</h2>
+                  <p style={{ color: "#4a7a5a", fontSize: 13, margin: 0 }}>{coupons.length} codes · {coupons.reduce((s, c) => s + (c.used_count || 0), 0)} total uses</p>
+                </div>
+                <button onClick={() => setShowNewCoupon(!showNewCoupon)}
+                  style={{ padding: "10px 20px", background: G, color: "#000", border: "none", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  + New Coupon
+                </button>
+              </div>
+
+              {/* CREATE NEW */}
+              {showNewCoupon && (
+                <div style={{ background: CARD, border: `1px solid ${G}`, borderRadius: 18, padding: 24, marginBottom: 20 }}>
+                  <p style={{ fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: G }}>Create New Coupon</p>
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+                    <div style={{ flex: 2, minWidth: 160 }}>
+                      <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4a7a5a", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Code</p>
+                      <input
+                        placeholder="e.g. SUMMER25"
+                        value={newCoupon.code}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
+                        style={{ width: "100%", padding: "11px 14px", background: "rgba(255,255,255,0.05)", border: `1.5px solid ${BORDER}`, borderRadius: 10, color: "#e8f5e8", fontSize: 14, outline: "none", fontFamily: "Syne, sans-serif", boxSizing: "border-box" as const, letterSpacing: 1 }}
+                      />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 120 }}>
+                      <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4a7a5a", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Discount %</p>
+                      <input
+                        type="number" min={1} max={100}
+                        value={newCoupon.discount}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, discount: Number(e.target.value) })}
+                        style={{ width: "100%", padding: "11px 14px", background: "rgba(255,255,255,0.05)", border: `1.5px solid ${BORDER}`, borderRadius: 10, color: "#e8f5e8", fontSize: 14, outline: "none", fontFamily: "Syne, sans-serif", boxSizing: "border-box" as const }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={createCoupon}
+                        style={{ padding: "11px 20px", background: G, color: "#000", border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                        Create
+                      </button>
+                      <button onClick={() => setShowNewCoupon(false)}
+                        style={{ padding: "11px 16px", background: "rgba(255,255,255,0.06)", color: "#4a7a5a", border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* COUPON LIST */}
+              {coupons.length === 0 ? (
+                <div style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "48px 24px", textAlign: "center" }}>
+                  <p style={{ color: "#4a7a5a" }}>No coupons yet. Create your first one above.</p>
+                </div>
+              ) : coupons.map((c) => (
+                editCoupon?.id === c.id ? (
+                  /* EDIT MODE */
+                  <div key={c.id} style={{ background: CARD, border: `1.5px solid ${G}`, borderRadius: 18, padding: 20, marginBottom: 10 }}>
+                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+                      <div style={{ flex: 2, minWidth: 160 }}>
+                        <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4a7a5a", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Code</p>
+                        <input value={editCoupon.code}
+                          onChange={(e) => setEditCoupon({ ...editCoupon, code: e.target.value.toUpperCase() })}
+                          style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: `1.5px solid ${BORDER}`, borderRadius: 10, color: "#e8f5e8", fontSize: 14, outline: "none", fontFamily: "Syne, sans-serif", boxSizing: "border-box" as const, letterSpacing: 1 }} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 120 }}>
+                        <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4a7a5a", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>Discount %</p>
+                        <input type="number" min={1} max={100} value={editCoupon.discount}
+                          onChange={(e) => setEditCoupon({ ...editCoupon, discount: Number(e.target.value) })}
+                          style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: `1.5px solid ${BORDER}`, borderRadius: 10, color: "#e8f5e8", fontSize: 14, outline: "none", fontFamily: "Syne, sans-serif", boxSizing: "border-box" as const }} />
+                      </div>
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={() => saveCoupon(editCoupon)}
+                          style={{ padding: "10px 18px", background: G, color: "#000", border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Save</button>
+                        <button onClick={() => setEditCoupon(null)}
+                          style={{ padding: "10px 14px", background: "rgba(255,255,255,0.06)", color: "#4a7a5a", border: "none", borderRadius: 10, fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 13, cursor: "pointer" }}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* VIEW MODE */
+                  <div key={c.id} style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 18, padding: "16px 20px", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      {/* Code badge */}
+                      <div style={{ background: "rgba(29,185,84,0.1)", border: `1px dashed ${G}`, borderRadius: 10, padding: "8px 16px" }}>
+                        <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 16, color: G, margin: 0, letterSpacing: 2 }}>{c.code}</p>
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 800, fontSize: 22, color: "#e8f5e8", margin: "0 0 2px" }}>{c.discount}% off</p>
+                        <p style={{ color: "#4a7a5a", fontSize: 12, margin: 0 }}>Used {c.used_count || 0} time{c.used_count !== 1 ? "s" : ""} · Created {new Date(c.created_at).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {/* Active toggle */}
+                      <button onClick={() => toggleCoupon(c)}
+                        style={{ padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12,
+                          background: c.active ? "rgba(29,185,84,0.12)" : "rgba(255,255,255,0.06)",
+                          color: c.active ? G : "#4a7a5a" }}>
+                        {c.active ? "● Active" : "○ Disabled"}
+                      </button>
+                      <button onClick={() => setEditCoupon({ ...c })}
+                        style={{ padding: "6px 14px", background: "rgba(255,255,255,0.06)", color: "#e8f5e8", border: "none", borderRadius: 20, fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
+                        Edit
+                      </button>
+                      <button onClick={() => deleteCoupon(c.id)}
+                        style={{ padding: "6px 14px", background: "rgba(239,68,68,0.08)", color: "#f87171", border: "none", borderRadius: 20, fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )
+              ))}
+            </div>
+          )}
+
+          {/* ── SETTINGS ── */}
+          {tab === 8 && (
             <div>
               <h2 style={{ fontWeight: 800, fontSize: 26, margin: "0 0 6px" }}>⚙️ Settings</h2>
               <p style={{ color: "#4a7a5a", marginBottom: 28, fontSize: 13 }}>Global configuration for FindMe</p>

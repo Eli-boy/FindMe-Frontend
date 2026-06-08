@@ -127,6 +127,13 @@ export async function POST(req: NextRequest) {
 </html>`,
     });
 
+    // Increment coupon used_count if a coupon was applied
+    if (couponCode) {
+      try {
+        await supabase.rpc("increment_coupon_usage", { coupon_code: couponCode });
+      } catch (_) {}
+    }
+
     return NextResponse.json({ orderNumber });
 
   } catch (err) {
