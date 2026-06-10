@@ -34,6 +34,34 @@ export default function CartPage() {
       setCouponMsg({ text: "Coupon already applied!", ok: false });
       return;
     }
+
+    // For FINDME10 (first-order coupon), require email to be entered first
+    if (code === "FINDME10") {
+      if (!form.email || !form.email.includes("@")) {
+        setCouponMsg({ text: "Please enter your email first so we can verify this code.", ok: false });
+        setTimeout(() => setCouponMsg(null), 4000);
+        return;
+      }
+      // Check if actually a first-time customer
+      try {
+        const checkRes = await fetch("/api/check-first-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email }),
+        });
+        const checkData = await checkRes.json();
+        if (!checkData.isFirstOrder) {
+          setIsFirstOrder(false);
+          setCouponMsg({ text: "FINDME10 is for first-time orders only. Enter a different code.", ok: false });
+          setTimeout(() => setCouponMsg(null), 4000);
+          return;
+        }
+        setIsFirstOrder(true);
+      } catch {
+        // continue if check fails
+      }
+    }
+
     try {
       const res = await fetch("/api/check-first-order", {
         method: "POST",
@@ -44,7 +72,7 @@ export default function CartPage() {
       if (data.valid) {
         setAppliedCoupon(data.code);
         setCouponDiscount(data.discount);
-        setCouponMsg({ text: `✓ ${data.code} applied — ${data.discount}% off!`, ok: true });
+        setCouponMsg({ text: "✓ " + data.code + " applied — " + data.discount + "% off!", ok: true });
       } else {
         setCouponMsg({ text: data.message || "Invalid coupon code.", ok: false });
         setTimeout(() => setCouponMsg(null), 3000);
@@ -73,6 +101,14 @@ export default function CartPage() {
       });
       const data = await res.json();
       setIsFirstOrder(data.isFirstOrder);
+      // If returning customer had FINDME10 applied, remove it
+      if (!data.isFirstOrder && appliedCoupon === "FINDME10") {
+        setAppliedCoupon(null);
+        setCouponDiscount(0);
+        setCouponInput("");
+        setCouponMsg({ text: "FINDME10 is for first-time orders only. Code removed.", ok: false });
+        setTimeout(() => setCouponMsg(null), 4000);
+      }
     } catch {
       setIsFirstOrder(null);
     }

@@ -39,8 +39,8 @@ const useCases: Record<string, { image: string; label: string }[]> = {
   ],
   luggage: [
     { image: "/use-bag.png", label: "bag" },
-    { image: "/use-luggage.png", label: "lug" },
-    { image: "/lug2.png", label: "lug" },
+    { image: "/use-luggage.png", label: "luggage" },
+    { image: "/lug2.png", label: "luggage" },
   ],
 };
 
