@@ -25,7 +25,7 @@ const useCases: Record<string, { image: string; label: string }[]> = {
     { image: "/use-benz.png", label: "car" },
     { image: "/use-purse.png", label: "purse" },
     { image: "/use-carKey.png", label: "car key" },
-    { image: "/key1.png", label: "key" },
+    
   ],
   bundle: [
     { image: "/use-luggage.png", label: "Luggage" },
