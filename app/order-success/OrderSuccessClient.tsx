@@ -9,7 +9,7 @@ const BG = "#c8dfc8";
 const DARK = "#1a3a2a";
 const GREEN = "#1db954";
 
-export default function OrderSuccessPage() {
+export default function OrderSuccessClient() {
   const params = useSearchParams();
   const ref = params?.get("ref");
   const orderNumber = params?.get("order");
@@ -17,7 +17,6 @@ export default function OrderSuccessPage() {
 
   useEffect(() => {
     if (!ref) { setStatus("pending"); return; }
-    // Poll for payment status
     const check = async () => {
       try {
         const res = await fetch(`/api/monnify/verify?ref=${ref}`);
@@ -57,16 +56,11 @@ export default function OrderSuccessPage() {
               A confirmation email has been sent to you with your order details.
             </p>
             <p style={{ color: GREEN, fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
-              We will contact you via WhatsApp to arrange {" "}
-              delivery / pickup.
+              We will contact you via WhatsApp to arrange delivery / pickup.
             </p>
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <a
-                href="https://wa.me/2348073238118"
-                target="_blank"
-                rel="noreferrer"
-                style={{ background: "#25D366", color: "#000", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}
-              >
+              <a href="https://wa.me/2348073238118" target="_blank" rel="noreferrer"
+                style={{ background: "#25D366", color: "#000", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}>
                 💬 Chat on WhatsApp
               </a>
               <Link href="/shop" style={{ background: DARK, color: "#fff", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}>
@@ -84,15 +78,11 @@ export default function OrderSuccessPage() {
               <p style={{ color: "#4a7a5a", fontSize: 15, marginBottom: 8 }}>Order <strong style={{ color: DARK }}>#{orderNumber}</strong> has been created.</p>
             )}
             <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, marginBottom: 32 }}>
-              If you completed payment, it may take a few minutes to reflect. Check your email for confirmation or contact us on WhatsApp.
+              If you completed payment, it may take a few minutes to reflect. Check your email or contact us on WhatsApp.
             </p>
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-              <a
-                href="https://wa.me/2348073238118"
-                target="_blank"
-                rel="noreferrer"
-                style={{ background: "#25D366", color: "#000", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}
-              >
+              <a href="https://wa.me/2348073238118" target="_blank" rel="noreferrer"
+                style={{ background: "#25D366", color: "#000", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}>
                 💬 Contact Us
               </a>
               <Link href="/shop" style={{ background: DARK, color: "#fff", padding: "12px 24px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14 }}>
