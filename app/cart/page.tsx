@@ -14,8 +14,6 @@ export default function CartPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
-  const [orderNum, setOrderNum] = useState<number | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [form, setForm] = useState({
     name: "", email: "", phone: "", address: "",
@@ -24,7 +22,7 @@ export default function CartPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(true); // show banner by default, hide after email check if returning
+  const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(true);
   const [checkingEmail, setCheckingEmail] = useState(false);
 
   const applyCoupon = async (overrideCode?: string) => {
@@ -136,36 +134,22 @@ export default function CartPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/order", {
+      const res = await fetch("/api/monnify/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, cart, subtotal, shipping: 0, total, deliveryMethod, couponCode: appliedCoupon, discountAmount }),
+        body: JSON.stringify({
+          ...form, cart, subtotal, shipping: 0, total,
+          deliveryMethod, couponCode: appliedCoupon, discountAmount,
+        }),
       });
 
       const data = await res.json();
-      console.log("Order response:", data);
 
-      if (data.orderNumber) {
-        // Build WhatsApp message
-        const lines = cart.map((i) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
-        const deliveryLine = deliveryMethod === "pickup"
-          ? "Pickup: I will pick up from your location"
-          : `Delivery to: ${form.address}`;
-        const discountLine = appliedCoupon ? `\nDiscount (${appliedCoupon}): −₦${discountAmount.toLocaleString()}` : "";
-        const msg = `Hello! I just placed an order on FindMe.\n\nOrder #${data.orderNumber}\n\n${lines}\n\nSubtotal: ₦${subtotal.toLocaleString()}${discountLine}\nTotal: ₦${total.toLocaleString()}\n\n${deliveryLine}`;
-        const waUrl = `https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`;
-
-        // Use window.location for guaranteed redirect (not blocked by browsers)
-        setOrderNum(data.orderNumber);
-        setDone(true);
+      if (data.checkoutUrl) {
         clearCart();
-
-        // Small delay so state updates render, then redirect
-        setTimeout(() => {
-          window.location.href = waUrl;
-        }, 1500);
+        window.location.href = data.checkoutUrl;
       } else {
-        alert(`Order failed: ${data.error || "Unknown error. Check console."}`);
+        alert(`Payment initiation failed: ${data.error || "Unknown error."}`);
       }
     } catch (err: any) {
       console.error("Checkout error:", err);
@@ -175,29 +159,7 @@ export default function CartPage() {
     setLoading(false);
   };
 
-  /* ── ORDER SUCCESS ── */
-  if (done) {
-    return (
-      <div style={{ background: BG, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-        <div style={{ background: "#fff", borderRadius: 24, padding: "56px 40px", maxWidth: 480, width: "100%", textAlign: "center", boxShadow: "0 8px 40px rgba(26,58,42,0.12)" }}>
-          <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(29,185,84,0.12)", border: "2px solid #1db954", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, margin: "0 auto 24px" }}>✓</div>
-          <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 28, color: DARK, marginBottom: 12 }}>Order Placed!</h1>
-          <p style={{ color: "#4a7a5a", fontSize: 15, lineHeight: 1.7, marginBottom: 8 }}>
-            Thank you, <strong>{form.name}</strong>! Your order <strong>#{orderNum}</strong> has been received.
-          </p>
-          <p style={{ color: "#4a7a5a", fontSize: 14, lineHeight: 1.7, marginBottom: 8 }}>
-            A confirmation email has been sent to <strong>{form.email}</strong>.
-          </p>
-          <p style={{ color: "#1db954", fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
-            Redirecting you to WhatsApp to complete your order...
-          </p>
-          <Link href="/shop" style={{ display: "inline-block", background: DARK, color: "#fff", padding: "14px 32px", borderRadius: 40, textDecoration: "none", fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15 }}>
-            Continue Shopping
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div style={{ background: BG, minHeight: "100vh", width: "100%", padding: "100px 24px 60px", boxSizing: "border-box" }}>
@@ -462,7 +424,7 @@ export default function CartPage() {
                       fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
                     }}
                   >
-                    {loading ? "Placing Order..." : "Place Order & Chat on WhatsApp →"}
+                    {loading ? "Redirecting to Payment..." : "Pay Now →"}
                   </button>
 
                   <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#aaa", fontSize: 13, cursor: "pointer" }}>
