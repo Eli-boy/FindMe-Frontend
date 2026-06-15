@@ -24,7 +24,8 @@ async function getToken(): Promise<string> {
   });
   const data = await res.json();
   if (!data.responseBody?.accessToken) {
-    throw new Error("Monnify auth failed: " + JSON.stringify(data));
+    console.error("Monnify auth failed:", JSON.stringify(data));
+    throw new Error("Monnify auth failed: " + (data.responseMessage || JSON.stringify(data)));
   }
   return data.responseBody.accessToken;
 }
@@ -94,8 +95,13 @@ export async function POST(req: NextRequest) {
     const monnifyData = await monnifyRes.json();
 
     if (!monnifyData.responseBody?.checkoutUrl) {
-      console.error("Monnify error:", monnifyData);
-      return NextResponse.json({ error: "Payment initiation failed", details: monnifyData }, { status: 500 });
+      console.error("Monnify error:", JSON.stringify(monnifyData));
+      return NextResponse.json({
+        error: "Payment initiation failed",
+        monnifyMessage: monnifyData.responseMessage || monnifyData.error || "Unknown",
+        monnifyCode: monnifyData.responseCode,
+        details: monnifyData
+      }, { status: 500 });
     }
 
     /* ── 4. Save payment reference to order ── */

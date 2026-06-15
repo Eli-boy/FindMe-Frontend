@@ -149,7 +149,9 @@ export default function CartPage() {
         clearCart();
         window.location.href = data.checkoutUrl;
       } else {
-        alert(`Payment initiation failed: ${data.error || "Unknown error."}`);
+        const msg = data.monnifyMessage || data.error || "Unknown error.";
+        alert(`Payment failed: ${msg}`);
+        console.error("Payment error details:", data);
       }
     } catch (err: any) {
       console.error("Checkout error:", err);
