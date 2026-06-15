@@ -180,8 +180,8 @@ export const products: Product[] = [
     name: "Travel Pack",
     price: 25000,
     oldPrice: 34000,
-    image: "/trav2.png",
-    images: ["/trav2.png"],
+    image: "/trav1.png",
+    images: ["/trav1.png"],
     shortDesc: "The ultimate travel companion — luggage and sticker tags for frequent travellers worldwide.",
     desc: "Luggage tags and sticker tags for frequent travellers. Protect your bags and gadgets anywhere in the world.",
     features: [
