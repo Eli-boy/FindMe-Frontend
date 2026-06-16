@@ -15,7 +15,7 @@ const GREEN = "#1db954";
 /* ── use-case images shown per product category ── */
 const useCases: Record<string, { image: string; label: string }[]> = {
   sticker: [
-    { image: "/use-gaddget.png", label: "gadget" },
+    { image: "/use-gad.png", label: "gadget" },
     { image: "/use-nig.png", label: "passport" },
     { image: "/use-book.png", label: "book" },
     { image: "/use-wallet.png", label: "Wallet" },
@@ -32,6 +32,7 @@ const useCases: Record<string, { image: string; label: string }[]> = {
     { image: "/use-nig.png", label: "passport" },
     { image: "/use-keys.png", label: "Keys" },
     { image: "/use-bag.png", label: "Bag" },
+    { image: "/use-case.png", label: "" },
     { image: "/use-gad.png", label: "" },
   ],
   luggage: [

@@ -158,7 +158,7 @@ export const products: Product[] = [
     price: 40000,
     oldPrice: 52000,
     image: "/fam1.png",
-    images: ["/fam1.png"],
+    //images: ["/fam1.png"],
     shortDesc: "The complete FindMe bundle for your whole family — protect everyone and everything you love.",
     desc: "The complete FindMe bundle — sticker tags, keychain tags and luggage tags to protect your whole family.",
     features: [
