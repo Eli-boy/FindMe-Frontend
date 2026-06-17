@@ -22,7 +22,7 @@ const useCases: Record<string, { image: string; label: string }[]> = {
   ],
   key: [
     { image: "/use-keys.png", label: "Keys" },
-    { image: "/use-benz.png", label: "car" },
+    { image: "/use-pet.png", label: "pet" },
     { image: "/use-purse.png", label: "purse" },
     { image: "/use-carKey.png", label: "car key" },
     
