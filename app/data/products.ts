@@ -162,7 +162,7 @@ export const products: Product[] = [
     shortDesc: "The complete FindMe bundle for your whole family — protect everyone and everything you love.",
     desc: "The complete FindMe bundle — sticker tags, keychain tags and luggage tags to protect your whole family.",
     features: [
-      "Includes sticker tags, keychain tags and luggage tags",
+      "Includes 1 sticker pack, 2 keychain tags and 2 luggage tags",
       "Covers phones, laptops, keys, bags and luggage",
       "Instant WhatsApp alerts for every item in the pack",
       "Best value — save more than buying individually",
@@ -185,7 +185,7 @@ export const products: Product[] = [
     shortDesc: "The ultimate travel companion — luggage and sticker tags for frequent travellers worldwide.",
     desc: "Luggage tags and sticker tags for frequent travellers. Protect your bags and gadgets anywhere in the world.",
     features: [
-      "Includes luggage tags and sticker tags for all your gear",
+      "Includes 1 luggage tag, 1 sticker pack and 1 keychain tag for all your gear",
       "Works at every airport and hotel worldwide",
       "Instant WhatsApp notification when any item is found",
       "Anonymous relay chat — your privacy is protected",
