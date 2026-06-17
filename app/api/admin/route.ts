@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { createClient } from "@supabase/supabase-js";
+import { webcrypto as crypto } from "crypto";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -110,6 +111,34 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from("coupons").delete().eq("id", body.id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
+  }
+
+  /* ── GENERATE QR BATCH ── */
+  if (action === "generate_qr_batch") {
+    const count = Math.min(Number(body.count) || 100, 300); // max 300 per call
+
+    // Generate all codes at once
+    const now = new Date().toISOString();
+    const rows = Array.from({ length: count }, () => {
+      const code = Array.from(crypto.getRandomValues(new Uint8Array(6)))
+        .map((b: number) => b.toString(16).padStart(2, "0"))
+        .join("");
+      return { code, is_linked: false, created_at: now };
+    });
+
+    // Bulk insert in one Supabase call — much faster than one by one
+    const { data, error } = await supabase
+      .from("qr_codes")
+      .insert(rows)
+      .select("code");
+
+    if (error) {
+      console.error("Bulk insert error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const codes = (data || []).map((r: any) => r.code);
+    return NextResponse.json({ codes, count: codes.length });
   }
 
   return NextResponse.json({ error: "Unknown action" }, { status: 400 });
