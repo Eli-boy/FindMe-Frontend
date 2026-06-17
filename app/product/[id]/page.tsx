@@ -15,30 +15,30 @@ const GREEN = "#1db954";
 /* ── use-case images shown per product category ── */
 const useCases: Record<string, { image: string; label: string }[]> = {
   sticker: [
-    { image: "/use-gad.png", label: "gadget" },
-    { image: "/use-nig.png", label: "passport" },
-    { image: "/use-book.png", label: "book" },
+    { image: "/use-gad.png", label: "Gadget" },
+    { image: "/use-nig.png", label: "Passport" },
+    { image: "/use-book.png", label: "Book" },
     { image: "/use-wallet.png", label: "Wallet" },
   ],
   key: [
     { image: "/use-keys.png", label: "Keys" },
-    { image: "/use-pet.png", label: "pet" },
-    { image: "/use-purse.png", label: "purse" },
-    { image: "/use-carKey.png", label: "car key" },
+    { image: "/use-pet.png", label: "Pet" },
+    { image: "/use-purse.png", label: "Purse" },
+    { image: "/use-carKey.png", label: "Car key" },
     
   ],
   bundle: [
     { image: "/use-luggage.png", label: "Luggage" },
-    { image: "/use-nig.png", label: "passport" },
+    { image: "/use-nig.png", label: "Passport" },
     { image: "/use-keys.png", label: "Keys" },
     { image: "/use-bag.png", label: "Bag" },
-    { image: "/use-case.png", label: "" },
-    { image: "/use-gad.png", label: "" },
+    { image: "/use-gad.png", label: "Gadget" },
+    
   ],
   luggage: [
-    { image: "/use-bag.png", label: "bag" },
-    { image: "/use-luggage.png", label: "luggage" },
-    { image: "/lug2.png", label: "luggage" },
+    { image: "/use-bag.png", label: "Bag" },
+    { image: "/use-luggage.png", label: "Luggage" },
+    { image: "/use-lug.png", label: "Bag" },
   ],
 };
 
