@@ -37,7 +37,6 @@ export default function CartPage() {
     if (code === "FINDME10") {
       if (!form.email || !form.email.includes("@")) {
         setCouponMsg({ text: "Please enter your email first so we can verify this code.", ok: false });
-        setTimeout(() => setCouponMsg(null), 4000);
         return;
       }
       // Check if actually a first-time customer
@@ -51,7 +50,6 @@ export default function CartPage() {
         if (!checkData.isFirstOrder) {
           setIsFirstOrder(false);
           setCouponMsg({ text: "FINDME10 is for first-time orders only. Enter a different code.", ok: false });
-          setTimeout(() => setCouponMsg(null), 4000);
           return;
         }
         setIsFirstOrder(true);
@@ -73,11 +71,9 @@ export default function CartPage() {
         setCouponMsg({ text: "✓ " + data.code + " applied — " + data.discount + "% off!", ok: true });
       } else {
         setCouponMsg({ text: data.message || "Invalid coupon code.", ok: false });
-        setTimeout(() => setCouponMsg(null), 3000);
       }
     } catch {
       setCouponMsg({ text: "Could not validate coupon. Try again.", ok: false });
-      setTimeout(() => setCouponMsg(null), 3000);
     }
   };
 
@@ -105,7 +101,6 @@ export default function CartPage() {
         setCouponDiscount(0);
         setCouponInput("");
         setCouponMsg({ text: "FINDME10 is for first-time orders only. Code removed.", ok: false });
-        setTimeout(() => setCouponMsg(null), 4000);
       }
     } catch {
       setIsFirstOrder(null);
@@ -387,6 +382,7 @@ export default function CartPage() {
                       value={(form as any)[f.name]}
                       onChange={handleChange}
                       onBlur={f.name === "email" ? (e) => checkFirstOrder(e.target.value) : undefined}
+                      onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
                       style={{
                         width: "100%", padding: "12px 16px",
                         background: "rgba(26,58,42,0.05)",
