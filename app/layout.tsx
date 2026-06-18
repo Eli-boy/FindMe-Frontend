@@ -13,10 +13,35 @@ export const metadata: Metadata = {
   },
   description:
     "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
+  metadataBase: new URL("https://findme.com.ng"),
   icons: {
     icon: "/iconL.png",
     apple: "/iconL.png",
     shortcut: "/iconL.png",
+  },
+  openGraph: {
+    title: "FindMe — Never Lose Your Things Again",
+    description:
+      "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
+    url: "https://findme.com.ng",
+    siteName: "FindMe Nigeria",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "FindMe Nigeria — Never Lose Your Things Again",
+      },
+    ],
+    type: "website",
+    locale: "en_NG",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FindMe — Never Lose Your Things Again",
+    description:
+      "Attach a FindMe QR tag to anything you own. If it's ever lost, the finder scans it and you're connected instantly — anonymously via WhatsApp.",
+    images: ["/og-image.png"],
   },
 };
 
