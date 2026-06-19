@@ -11,10 +11,25 @@ const STATUS_COLORS: Record<string, string> = {
   pending: "#f59e0b", packed: "#3b82f6", delivered: "#1db954", cancelled: "#ef4444",
 };
 
+const PaymentBadge = ({ status }: { status?: string }) => {
+  const paid = status === "paid";
+  return (
+    <span style={{
+      background: paid ? "rgba(29,185,84,0.15)" : "rgba(239,68,68,0.12)",
+      color: paid ? "#1db954" : "#f87171",
+      padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 700,
+      display: "inline-flex", alignItems: "center", gap: 4,
+    }}>
+      {paid ? "✅ Paid" : "⏳ Unpaid"}
+    </span>
+  );
+};
+
 type Order = {
   id: string; order_number: number; customer_name: string; customer_email: string;
   customer_phone: string; delivery_address: string; delivery_method: string;
   items: any[]; subtotal: number; total: number; status: string; created_at: string;
+  payment_status?: string; paid_at?: string;
 };
 
 type CMSField = { key: string; value: string; type: string };
@@ -228,8 +243,14 @@ export default function AdminDashboard() {
           <div onClick={(e) => e.stopPropagation()} style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 32, maxWidth: 560, width: "100%", maxHeight: "85vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
               <div>
-                <h2 style={{ margin: 0, fontWeight: 800, fontSize: 22 }}>Order #{selected.order_number}</h2>
-                <p style={{ margin: "4px 0 0", color: "#4a7a5a", fontSize: 13 }}>{new Date(selected.created_at).toLocaleString()}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                  <h2 style={{ margin: 0, fontWeight: 800, fontSize: 22 }}>Order #{selected.order_number}</h2>
+                  <PaymentBadge status={selected.payment_status} />
+                </div>
+                <p style={{ margin: 0, color: "#4a7a5a", fontSize: 13 }}>{new Date(selected.created_at).toLocaleString()}</p>
+                {selected.paid_at && (
+                  <p style={{ margin: "2px 0 0", color: "#1db954", fontSize: 12 }}>Paid on {new Date(selected.paid_at).toLocaleString()}</p>
+                )}
               </div>
               <button onClick={() => setSelected(null)} style={{ background: "rgba(255,255,255,0.06)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#4a7a5a", fontSize: 18, cursor: "pointer" }}>✕</button>
             </div>
@@ -367,7 +388,7 @@ export default function AdminDashboard() {
                 {[
                   { label: "Total Revenue", value: `₦${totalRevenue.toLocaleString()}`, icon: "💰", color: G },
                   { label: "Total Orders", value: orders.length, icon: "📦", color: "#3b82f6" },
-                  { label: "Pending", value: orders.filter((o) => o.status === "pending").length, icon: "⏳", color: "#f59e0b" },
+                  { label: "Unpaid Orders", value: orders.filter((o) => o.payment_status !== "paid").length, icon: "⏳", color: "#f87171" },
                   { label: "Delivered", value: orders.filter((o) => o.status === "delivered").length, icon: "✅", color: G },
                 ].map((s, i) => (
                   <div key={i} style={card()}>
@@ -388,6 +409,7 @@ export default function AdminDashboard() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontWeight: 800, color: G, fontSize: 14 }}>₦{(o.total || o.subtotal || 0).toLocaleString()}</span>
+                    <PaymentBadge status={o.payment_status} />
                     <span style={{ background: STATUS_COLORS[o.status] || "#4a7a5a", color: "#000", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700 }}>{o.status || "pending"}</span>
                   </div>
                 </div>
@@ -427,6 +449,7 @@ export default function AdminDashboard() {
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <span style={{ color: "#4a7a5a", fontSize: 12 }}>{new Date(o.created_at).toLocaleDateString()}</span>
                       <span style={{ fontWeight: 800, color: G, fontSize: 15 }}>₦{(o.total || o.subtotal || 0).toLocaleString()}</span>
+                      <PaymentBadge status={o.payment_status} />
                       <span style={{ background: STATUS_COLORS[o.status || "pending"], color: "#000", padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
                         {(o.status || "pending").charAt(0).toUpperCase() + (o.status || "pending").slice(1)}
                       </span>
