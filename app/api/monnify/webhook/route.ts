@@ -59,6 +59,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    /* ── Generate pickup code if this is a self-pickup order ── */
+    const pickupCode = order.delivery_method === "pickup"
+      ? Math.floor(100000 + Math.random() * 900000).toString()
+      : null;
+
     /* ── Update order to paid ── */
     await supabase
       .from("orders")
@@ -66,6 +71,7 @@ export async function POST(req: NextRequest) {
         payment_status: "paid",
         paid_at: paidOn || new Date().toISOString(),
         status: "pending", // now ready to fulfil
+        ...(pickupCode ? { pickup_code: pickupCode } : {}),
       })
       .eq("payment_reference", paymentReference);
 

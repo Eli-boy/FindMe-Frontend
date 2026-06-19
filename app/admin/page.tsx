@@ -29,7 +29,7 @@ type Order = {
   id: string; order_number: number; customer_name: string; customer_email: string;
   customer_phone: string; delivery_address: string; delivery_method: string;
   items: any[]; subtotal: number; total: number; status: string; created_at: string;
-  payment_status?: string; paid_at?: string;
+  payment_status?: string; paid_at?: string; pickup_code?: string; ready_notified_at?: string;
 };
 
 type CMSField = { key: string; value: string; type: string };
@@ -168,7 +168,27 @@ export default function AdminDashboard() {
     await api("update_status", { id, status });
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o));
     if (selected?.id === id) setSelected((s) => s ? { ...s, status } : s);
-    showToast("Status updated"); setSaving(false);
+
+    if (status === "packed") {
+      try {
+        const res = await fetch("/api/order-ready", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: id, password: sessionStorage.getItem("fm_admin_pass") || "findme2026" }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Status updated — Ready email sent! 📧");
+        } else {
+          showToast("Status updated, but email failed: " + (data.error || "unknown"));
+        }
+      } catch {
+        showToast("Status updated, but email failed to send");
+      }
+    } else {
+      showToast("Status updated");
+    }
+    setSaving(false);
   };
 
   const saveCms = async (key: string, value: string) => {
@@ -200,7 +220,10 @@ export default function AdminDashboard() {
   const customers = Array.from(new Map(orders.map((o) => [o.customer_email, o])).values());
   const filtered = orders.filter((o) => {
     const ms = !search || o.customer_name?.toLowerCase().includes(search.toLowerCase()) || String(o.order_number).includes(search);
-    return ms && (filter === "all" || o.status === filter);
+    if (filter === "all") return ms;
+    if (filter === "paid") return ms && o.payment_status === "paid";
+    if (filter === "unpaid") return ms && o.payment_status !== "paid";
+    return ms && o.status === filter;
   });
   const cmsVal = (key: string) => cms.find((c) => c.key === key)?.value || "";
 
@@ -271,6 +294,15 @@ export default function AdminDashboard() {
             <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}>
               <p style={{ margin: "0 0 4px", color: "#4a7a5a", fontSize: 11, textTransform: "uppercase", letterSpacing: 1 }}>{selected.delivery_method === "pickup" ? "Pickup" : "Delivery"}</p>
               <p style={{ margin: 0, fontSize: 14 }}>{selected.delivery_method === "pickup" ? "🏪 Self Pickup" : `🚚 ${selected.delivery_address}`}</p>
+              {selected.delivery_method === "pickup" && selected.pickup_code && (
+                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ color: "#4a7a5a", fontSize: 12 }}>Pickup Code:</span>
+                  <span style={{ background: "rgba(29,185,84,0.15)", color: G, padding: "3px 10px", borderRadius: 8, fontWeight: 800, fontSize: 14, letterSpacing: 2 }}>{selected.pickup_code}</span>
+                </div>
+              )}
+              {selected.ready_notified_at && (
+                <p style={{ margin: "8px 0 0", color: G, fontSize: 12 }}>✅ Ready email sent {new Date(selected.ready_notified_at).toLocaleString()}</p>
+              )}
             </div>
             <p style={{ margin: "0 0 10px", fontWeight: 700, color: G, fontSize: 11, letterSpacing: 1, textTransform: "uppercase" }}>Update Status</p>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
@@ -635,6 +667,14 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+              <div style={card()}>
+                <p style={{ fontWeight: 700, fontSize: 15, margin: "0 0 16px", color: G }}>📍 Pickup Location</p>
+                <p style={{ color: "#4a7a5a", fontSize: 12, margin: "0 0 12px" }}>Shown in the "Order Ready" email for self-pickup orders.</p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input defaultValue={cmsVal("pickup_location")} id="cms-pickup_location" style={inp()} placeholder="e.g. FindMe Office, 12 Example Street, Lagos" />
+                  <button onClick={() => { const el = document.getElementById("cms-pickup_location") as HTMLInputElement; saveCms("pickup_location", el.value); }} style={btn()}>Save</button>
                 </div>
               </div>
               <div style={card()}>
