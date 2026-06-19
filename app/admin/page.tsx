@@ -461,6 +461,8 @@ export default function AdminDashboard() {
                   <input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ ...inp({ width: 200, borderRadius: 40 }) }} />
                   <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ ...inp({ width: "auto", borderRadius: 40, cursor: "pointer" }) }}>
                     <option value="all">All</option>
+                    <option value="paid">✅ Paid</option>
+                    <option value="unpaid">⏳ Unpaid</option>
                     {["pending","packed","delivered","cancelled"].map((s) => <option key={s} value={s}>{s.charAt(0).toUpperCase()+s.slice(1)}</option>)}
                   </select>
                 </div>
