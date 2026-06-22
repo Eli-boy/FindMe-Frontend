@@ -67,7 +67,7 @@ export default function Navbar() {
         <div className="hidden md:flex" style={{ alignItems: "center", gap: 32 }}>
           {[
             { label: "Home", href: "/" },
-            { label: "How It Works", href: "/#how" },
+            { label: "How It Works", href: "/how-it-works" },
             { label: "FAQ", href: "/faq" },
             { label: "About", href: "/#about" },
           ].map((l) => (
@@ -86,62 +86,38 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* SHOP DROPDOWN — hover entire wrapper to keep open */}
-          <div
-            style={{ position: "relative", display: "flex", alignItems: "center" }}
-            onMouseEnter={() => setOpenShop(true)}
-            onMouseLeave={() => setOpenShop(false)}
-          >
-            <Link
-              href="/shop"
-              style={{
-                display: "flex", alignItems: "center", gap: 4,
-                color: "#4a6a4a", fontSize: 14, fontWeight: 600,
-                textDecoration: "none", transition: "color 0.2s",
-                lineHeight: 1,
-              }}
+          {/* SHOP DROPDOWN */}
+          <div style={{ position: "relative" }} ref={dropdownRef}>
+            <button
+              onClick={(e) => { e.stopPropagation(); setOpenShop(!openShop); }}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#4a6a4a", fontSize: 14, fontWeight: 600 }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
             >
-              Shop
-              <span style={{
-                fontSize: 10,
-                display: "inline-block",
-                transition: "transform 0.2s",
-                transform: openShop ? "rotate(180deg)" : "rotate(0deg)",
-              }}>▾</span>
-            </Link>
-
-            {/* Invisible bridge — prevents gap between link and dropdown */}
-            <div style={{
-              position: "absolute", top: "100%", left: 0,
-              width: "100%", height: 16,
-              background: "transparent",
-              display: openShop ? "block" : "none",
-            }} />
-
+              Shop ▾
+            </button>
             {openShop && (
               <div
                 style={{
-                  position: "absolute", top: "calc(100% + 16px)", left: 0, width: 210,
+                  position: "absolute", top: 44, left: 0, width: 200,
                   background: "#ffffff", border: "1px solid rgba(26,58,42,0.1)",
                   borderRadius: 16, padding: 8,
                   boxShadow: "0 20px 60px rgba(26,58,42,0.15)",
-                  zIndex: 200,
                 }}
+                onClick={(e) => e.stopPropagation()}
+                className="animate-fadeIn"
               >
                 {[
-                  { name: "All Products", link: "/shop", icon: "🏷️" },
-                  { name: "Key Tags", link: "/shop?category=key", icon: "🔑" },
-                  { name: "Stickers", link: "/shop?category=sticker", icon: "📦" },
-                  { name: "Bundles", link: "/shop?category=bundle", icon: "🎁" },
+                  { name: "All Products", link: "/shop" },
+                  { name: "Key Tags", link: "/shop?category=key" },
+                  { name: "Pet Tags", link: "/shop?category=pet" },
+                  { name: "Stickers", link: "/shop?category=sticker" },
                 ].map((item) => (
                   <Link
                     key={item.link}
                     href={item.link}
                     style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "10px 14px", borderRadius: 10,
+                      display: "block", padding: "10px 14px", borderRadius: 10,
                       color: "#4a6a4a", textDecoration: "none", fontSize: 14,
                       transition: "background 0.2s, color 0.2s",
                     }}
@@ -154,7 +130,6 @@ export default function Navbar() {
                       e.currentTarget.style.color = "#4a6a4a";
                     }}
                   >
-                    <span>{item.icon}</span>
                     {item.name}
                   </Link>
                 ))}
@@ -231,7 +206,7 @@ export default function Navbar() {
           {[
             { label: "Home", href: "/" },
             { label: "Shop", href: "/shop" },
-            { label: "How It Works", href: "/#how" },
+            { label: "How It Works", href: "/how-it-works" },
             { label: "FAQ", href: "/faq" },
             { label: "About", href: "/#about" },
           ].map((l) => (

@@ -57,7 +57,7 @@ export default function Footer() {
                 {[
                   { label: "Home", href: "/" },
                   { label: "Shop", href: "/shop" },
-                  { label: "How It Works", href: "/#how" },
+                  { label: "How It Works", href: "/how-it-works" },
                   { label: "About Us", href: "/#about" },
                   { label: "FAQ", href: "/faq" },
                 ].map((l) => (

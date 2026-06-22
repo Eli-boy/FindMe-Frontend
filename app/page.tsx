@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import HowItWorks from "./HowItWorks";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -106,13 +105,13 @@ export default function Home() {
               boxShadow: "0 4px 20px rgba(26,58,42,0.4)" }}>
               Get Your Tags →
             </Link>
-            <a href="#how" style={{
+            <Link href="/how-it-works" style={{
               background: "rgba(255,255,255,0.5)", color: "#1a3a2a",
               padding: "16px 34px", borderRadius: 14,
               textDecoration: "none", fontWeight: 700, fontSize: 15,
               border: "1.5px solid rgba(255,255,255,0.75)" }}>
               How It Works
-            </a>
+            </Link>
           </motion.div>
         </div>
 
@@ -286,7 +285,6 @@ export default function Home() {
       
 
       {/* ===================== HOW IT WORKS ===================== */}
-      <div id="how"><HowItWorks /></div>
 
       {/* ===================== FEATURES ===================== */}
       <section style={{ padding: isMobile ? "80px 24px" : "120px 48px", background: BG }}>
