@@ -6,26 +6,26 @@ const steps = [
   {
     icon: "📦",
     num: "01",
-    title: "Order your tags",
-    desc: "Get your FindMe QR tags delivered. Each tag has a unique code tied only to your WhatsApp — nothing else.",
+    title: "Get your tags",
+    desc: "Order your FindMe QR tags. Each one has its own unique code that only connects to your WhatsApp number — nothing else.",
   },
   {
     icon: "🔗",
     num: "02",
-    title: "Link & attach",
-    desc: "Stick the tag to your item, scan it with your phone camera, and send the auto-filled WhatsApp message to activate it.",
+    title: "Stick it & set it up",
+    desc: "Stick the tag on your item. Scan it with your phone's camera, then send the WhatsApp message it shows you. Takes less than a minute.",
   },
   {
     icon: "🔔",
     num: "03",
-    title: "Get notified",
-    desc: "If someone finds your item, they scan the QR code and chat with you instantly via WhatsApp —both phone numbers remain completely hidden and private.",
+    title: "Get notified if it's lost",
+    desc: "If your item goes missing and someone finds it, they scan the tag and you get a message on WhatsApp right away. Neither of you sees the other's phone number.",
   },
   {
     icon: "💬",
     num: "04",
-    title: "Chat & recover",
-    desc: "A private relay chat is created between you and the finder.",
+    title: "Chat and get it back",
+    desc: "You and the finder chat directly inside WhatsApp to arrange how to get your item back — safely and privately.",
   },
 ];
 
@@ -112,7 +112,7 @@ function ChatHeader() {
         FM
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>FindMe Support</div>
+        <div style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>FindMe</div>
         <div style={{ color: "#1db954", fontSize: 11, fontWeight: 500 }}>online</div>
       </div>
       <span style={{ color: "#8696a0", cursor: "pointer", fontSize: 18 }}>📞</span>
@@ -349,7 +349,7 @@ export default function HowItWorks() {
             How it works
           </p>
           <h2 style={{ fontSize: "clamp(30px, 4vw, 46px)", fontWeight: 800, letterSpacing: -1, margin: 0 }}>
-            Four steps to peace of mind
+            How FindMe works, step by step
           </h2>
         </motion.div>
 
@@ -387,8 +387,8 @@ export default function HowItWorks() {
           {/* FLOW 1: LINKING AN ITEM */}
           <div>
             <div style={{ textAlign: "center", marginBottom: 50 }}>
-              <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 10px 0" }}>Activating Your Tag</h3>
-              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", maxWidth: 500, margin: "0 auto" }}>Setup takes less than a minute with no clumsy user registration required.</p>
+              <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 10px 0" }}>How to Set Up Your Tag</h3>
+              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", maxWidth: 500, margin: "0 auto" }}>Three simple steps. No app to download, no account to create.</p>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 60 }}>
@@ -399,24 +399,34 @@ export default function HowItWorks() {
                     <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Scan the QR Tag</h4>
                   </div>
                   <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    Affix the robust protective tag to your keys, laptop bag, or valuable possessions. Use your native smartphone camera tool to snap the embedded matrix token and follow the landing gateway link.
+                    Stick the tag on your phone, keys, bag, or anything else you don't want to lose. Then open your phone's camera and point it at the QR code on the tag. A link will pop up on your screen — tap it.
                   </p>
                 </div>
                 <div><ScanPageMockup /></div>
               </div>
 
+              <div style={{ maxWidth: 640, marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 14 }}>
+                  <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>2</span>
+                  <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Agree & Open WhatsApp</h4>
+                </div>
+                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 18px" }}>
+                  On the page that opens, tick the box to agree to our terms and privacy policy, then tap the <strong style={{ color: "#fff" }}>"Link on WhatsApp"</strong> button. This automatically opens WhatsApp with a message already typed out for you — all you have to do is hit send.
+                </p>
+                <div style={{ background: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.2)", borderRadius: 10, padding: "12px 16px", fontSize: 12.5, color: "rgba(255,255,255,0.8)", textAlign: "left", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
+                  ⏱️ <strong style={{ color: "#1db954" }}>Heads up:</strong> our WhatsApp assistant can take a few seconds to reply after you hit send. Wait for its message before typing your item's name in the next step.
+                </div>
+              </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, alignItems: "center" }}>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 2 : 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>2</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Name & Secure Asset</h4>
+                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>3</span>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Name your item</h4>
                   </div>
                   <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    Our secure dynamic registry creates an immediate session routing system. Simply declare the label identity parameters (e.g., "My iPhone 14 Pro") directly into the prompt conversation console line.
+                    FindMe will ask what you're protecting. Just reply with a simple name, like "My iPhone 14 Pro" or "My house keys." That's it — your tag is now linked and ready.
                   </p>
-                  <div style={{ marginTop: 16, background: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.2)", borderRadius: 10, padding: "12px 14px", fontSize: 12.5, color: "rgba(255,255,255,0.8)" }}>
-                    💡 <strong style={{ color: "#1db954" }}>WhatsApp Support Line:</strong> Connect anytime directly at +234-80-732-381-18 for priority assistance.
-                  </div>
                 </div>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 1 : 2 }}><WhatsAppMockup /></div>
               </div>
@@ -426,8 +436,8 @@ export default function HowItWorks() {
           {/* FLOW 2: RECOVERING AN ITEM */}
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 60 }}>
             <div style={{ textAlign: "center", marginBottom: 50 }}>
-              <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 10px 0" }}>When Your Item is Found</h3>
-              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", maxWidth: 500, margin: "0 auto" }}>See how the instant, completely anonymous messaging tunnel connects both ends.</p>
+              <h3 style={{ fontSize: 28, fontWeight: 800, color: "#fff", margin: "0 0 10px 0" }}>If You Ever Lose It</h3>
+              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", maxWidth: 500, margin: "0 auto" }}>Here's exactly what happens when someone finds your item and scans the tag.</p>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 60 }}>
@@ -435,10 +445,10 @@ export default function HowItWorks() {
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>3</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Good Samaritan Scans Token</h4>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Someone finds your item</h4>
                   </div>
                   <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    When someone scans your tag, they are greeted by a web page tailored to help them hand it back. They do not see your private number or personal details. One simple button lets them initiate contact.
+                    Whoever finds it scans the QR code on the tag with their phone camera. A page opens up letting them know someone is looking for this item — they don't see your phone number or any of your personal details. They just tap one button to reach you.
                   </p>
                 </div>
                 <div><FoundScanPageMockup /></div>
@@ -448,10 +458,10 @@ export default function HowItWorks() {
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 2 : 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                     <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>4</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Safe Relay Recovery Chat</h4>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>You chat on WhatsApp, safely</h4>
                   </div>
                   <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    An encrypted proxy chat handles the connection. Both parties coordinate collection terms in real-time. Throughout the exchange, phone tracking IDs stay concealed to safeguard your privacy.
+                    You and the finder get connected on WhatsApp to talk and arrange how to get your item back. Your real phone numbers are never shown to each other — the whole conversation stays private and anonymous.
                   </p>
                 </div>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 1 : 2 }}><FoundItMockup /></div>
@@ -462,10 +472,10 @@ export default function HowItWorks() {
         </div>
 
         <div style={{ marginTop: 80, paddingTop: 30, borderTop: "1px solid rgba(255,255,255,0.05)", textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.5)", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "20px" }}>
-          <span><strong style={{ color: "#1db954" }}>✓</strong> No app download required</span>
-          <span><strong style={{ color: "#1db954" }}>✓</strong> Privacy protected masking</span>
-          <span><strong style={{ color: "#1db954" }}>✓</strong> Zero battery dependence</span>
-          <span><strong style={{ color: "#1db954" }}>✓</strong> Fast setup</span>
+          <span><strong style={{ color: "#1db954" }}>✓</strong> No app to download</span>
+          <span><strong style={{ color: "#1db954" }}>✓</strong> Your number stays private</span>
+          <span><strong style={{ color: "#1db954" }}>✓</strong> No battery needed</span>
+          <span><strong style={{ color: "#1db954" }}>✓</strong> Set up in under a minute</span>
         </div>
 
       </div>
