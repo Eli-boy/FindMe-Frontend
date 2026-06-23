@@ -392,41 +392,66 @@ export default function HowItWorks() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 60 }}>
+              {/* MERGED STEP 1: Scan & Activate */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, alignItems: "center" }}>
                 <div style={{ paddingRight: "10px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>1</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Scan the QR Tag</h4>
+                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>1</span>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Scan the Tag & Open WhatsApp</h4>
                   </div>
-                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    Stick the tag on your phone, keys, bag, or anything else you don't want to lose. Then open your phone's camera and point it at the QR code on the tag. A link will pop up on your screen — tap it.
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    Stick the tag on your item, scan the code, and you'll land on WhatsApp ready to activate it. Here's exactly what to do:
                   </p>
+                  <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      "Stick the tag on your phone, keys, bag, or anything else you don't want to lose.",
+                      "Open your phone's camera and point it at the QR code on the tag.",
+                      "A link will pop up on your screen — tap it to open the page.",
+                      "Tick the box to agree to our terms and privacy policy.",
+                      "Tap the \"Link on WhatsApp\" button — this opens WhatsApp with a message already typed out for you.",
+                      "Hit send. Our WhatsApp assistant can take a few seconds to reply, so wait for its message before moving to the next step.",
+                    ].map((t, idx) => (
+                      <li key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: "50%", background: "rgba(29,185,84,0.15)", color: "#1db954",
+                          border: "1px solid rgba(29,185,84,0.4)", display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+                        }}>{idx + 1}</span>
+                        <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}>{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
                 <div><ScanPageMockup /></div>
               </div>
 
-              <div style={{ maxWidth: 640, marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 14 }}>
-                  <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>2</span>
-                  <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Agree & Open WhatsApp</h4>
-                </div>
-                <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 18px" }}>
-                  On the page that opens, tick the box to agree to our terms and privacy policy, then tap the <strong style={{ color: "#fff" }}>"Link on WhatsApp"</strong> button. This automatically opens WhatsApp with a message already typed out for you — all you have to do is hit send.
-                </p>
-                <div style={{ background: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.2)", borderRadius: 10, padding: "12px 16px", fontSize: 12.5, color: "rgba(255,255,255,0.8)", textAlign: "left", maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
-                  ⏱️ <strong style={{ color: "#1db954" }}>Heads up:</strong> our WhatsApp assistant can take a few seconds to reply after you hit send. Wait for its message before typing your item's name in the next step.
-                </div>
-              </div>
-
+              {/* STEP 2: Name your item */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, alignItems: "center" }}>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 2 : 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>3</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Name your item</h4>
+                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>2</span>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Name Your Item & You're Done</h4>
                   </div>
-                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    FindMe will ask what you're protecting. Just reply with a simple name, like "My iPhone 14 Pro" or "My house keys." That's it — your tag is now linked and ready.
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    Last step — tell FindMe what you're protecting and your tag is fully active. Here's how:
                   </p>
+                  <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      "FindMe will ask what item you're linking, right inside the WhatsApp chat.",
+                      "Reply with a simple name, like \"My iPhone 14 Pro\" or \"My house keys.\"",
+                      "You'll get a message confirming the item is now linked and protected.",
+                      "That's it — no further setup needed. Your tag is ready to go.",
+                    ].map((t, idx) => (
+                      <li key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: "50%", background: "rgba(29,185,84,0.15)", color: "#1db954",
+                          border: "1px solid rgba(29,185,84,0.4)", display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+                        }}>{idx + 1}</span>
+                        <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}>{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 1 : 2 }}><WhatsAppMockup /></div>
               </div>
@@ -444,12 +469,29 @@ export default function HowItWorks() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, alignItems: "center" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>3</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Someone finds your item</h4>
+                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>1</span>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>Someone Finds Your Item</h4>
                   </div>
-                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    Whoever finds it scans the QR code on the tag with their phone camera. A page opens up letting them know someone is looking for this item — they don't see your phone number or any of your personal details. They just tap one button to reach you.
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    Whoever picks it up scans the tag and sees a simple page asking if they'd like to help return it. Here's what happens on their end:
                   </p>
+                  <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      "They scan the QR code on the tag with their phone's camera — no app needed on their side either.",
+                      "A page opens letting them know someone is looking for this item.",
+                      "They see the item's name, but never your phone number or any personal details.",
+                      "They tick a box to agree to the terms, then tap one button to reach you.",
+                    ].map((t, idx) => (
+                      <li key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: "50%", background: "rgba(29,185,84,0.15)", color: "#1db954",
+                          border: "1px solid rgba(29,185,84,0.4)", display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+                        }}>{idx + 1}</span>
+                        <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}>{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
                 <div><FoundScanPageMockup /></div>
               </div>
@@ -457,12 +499,29 @@ export default function HowItWorks() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 40, alignItems: "center" }}>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 2 : 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>4</span>
-                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>You chat on WhatsApp, safely</h4>
+                    <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#1db954", color: "#000", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0 }}>2</span>
+                    <h4 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>You Chat on WhatsApp, Safely</h4>
                   </div>
-                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: 0 }}>
-                    You and the finder get connected on WhatsApp to talk and arrange how to get your item back. Your real phone numbers are never shown to each other — the whole conversation stays private and anonymous.
+                  <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, margin: "0 0 16px" }}>
+                    You and the finder get connected to arrange the return — without either of you seeing the other's real number. Here's how it plays out:
                   </p>
+                  <ol style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      "You get a WhatsApp message letting you know your item has been found — wait a few seconds for it to arrive.",
+                      "The finder sends their first message, and you can reply right there in the same chat.",
+                      "Agree on a time and place to meet, or how they can send it back to you.",
+                      "Your real phone numbers stay hidden from each other the entire time.",
+                    ].map((t, idx) => (
+                      <li key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                        <span style={{
+                          width: 20, height: 20, borderRadius: "50%", background: "rgba(29,185,84,0.15)", color: "#1db954",
+                          border: "1px solid rgba(29,185,84,0.4)", display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+                        }}>{idx + 1}</span>
+                        <span style={{ fontSize: 13.5, color: "rgba(255,255,255,0.75)", lineHeight: 1.6 }}>{t}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
                 <div style={{ order: typeof window !== "undefined" && window.innerWidth > 768 ? 1 : 2 }}><FoundItMockup /></div>
               </div>
