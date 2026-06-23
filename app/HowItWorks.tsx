@@ -13,7 +13,7 @@ const steps = [
     icon: "🔗",
     num: "02",
     title: "Link & attach",
-    desc: "Scan the tag with your phone, send a quick WhatsApp message to activate it.",
+    desc: "Stick the tag to your item, scan it with your phone camera, and send the auto-filled WhatsApp message to activate it.",
   },
   {
     icon: "🔔",
@@ -30,30 +30,47 @@ const steps = [
 ];
 
 /* ── WHATSAPP CHAT MOCKUP — shows the real linking flow ── */
-function ChatBubble({ from, text, time, ticks = true }: { from: "user" | "findme" | "relay"; text: string; time: string; ticks?: boolean }) {
+function ChatBubble({ from, text, time, label }: { from: "user" | "findme" | "relay"; text: string; time: string; label?: string }) {
   const isUser = from === "user";
-  const isRelay = from === "relay";
   return (
-    <div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", marginBottom: 6, padding: "0 2px" }}>
+    <div style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start", marginBottom: 10, padding: "0 14px" }}>
       <div style={{
-        maxWidth: "80%",
-        background: isUser ? "#005c4b" : isRelay ? "#202c33" : "#202c33",
+        maxWidth: "78%",
+        background: isUser ? "#1f6e4f" : "#1f2c24",
         color: "#e9edef",
-        padding: "6px 9px 6px 9px",
-        borderRadius: isUser ? "8px 8px 2px 8px" : "8px 8px 8px 2px",
-        fontSize: 14.5,
-        lineHeight: 1.4,
+        padding: "8px 10px 6px 10px",
+        borderRadius: 10,
+        fontSize: 13.5,
+        lineHeight: 1.45,
         whiteSpace: "pre-line",
-        boxShadow: "0 1px 1px rgba(0,0,0,0.3)",
-        position: "relative",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
       }}>
-        {isRelay && (
-          <div style={{ fontSize: 12.5, fontWeight: 700, color: "#53bdeb", marginBottom: 2 }}>Anonymous Owner</div>
+        {label && (
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#7fd3a0", marginBottom: 3 }}>{label}</div>
         )}
         <span>{text}</span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, float: "right", marginLeft: 8, marginTop: 4, fontSize: 11, color: "rgba(233,237,239,0.6)" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 3, float: "right", marginLeft: 10, marginTop: 4, fontSize: 10.5, color: "rgba(233,237,239,0.55)" }}>
           {time}
-          {isUser && ticks && <span style={{ color: "#53bdeb", fontSize: 13, marginLeft: 1 }}>✓✓</span>}
+          {isUser && <span style={{ color: "#53bdeb", fontSize: 12, marginLeft: 1 }}>✓✓</span>}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function EncryptionNotice() {
+  return (
+    <div style={{ display: "flex", justifyContent: "center", marginBottom: 14, padding: "0 24px" }}>
+      <div style={{
+        background: "rgba(255,212,84,0.08)", color: "#e8c468", fontSize: 11.5,
+        padding: "10px 16px", borderRadius: 8, textAlign: "center", lineHeight: 1.5,
+        display: "flex", gap: 6, alignItems: "flex-start",
+      }}>
+        <span style={{ fontSize: 12, marginTop: 1 }}>🔒</span>
+        <span>
+          Messages and calls are end-to-end encrypted.
+          No one outside of this chat, not even WhatsApp, can read or listen to them.{" "}
+          <span style={{ textDecoration: "underline", cursor: "pointer" }}>Learn more.</span>
         </span>
       </div>
     </div>
@@ -64,32 +81,51 @@ function PhoneShell({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
       width: "100%",
-      maxWidth: 300,
+      maxWidth: 280,
       margin: "0 auto",
-      borderRadius: 38,
-      background: "#000",
-      padding: 10,
-      boxShadow: "0 30px 70px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+      position: "relative",
     }}>
-      <div style={{ borderRadius: 28, overflow: "hidden", position: "relative", background: "#0b141a" }}>
-        {/* Notch */}
-        <div style={{
-          position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-          width: 110, height: 22, background: "#000", borderRadius: "0 0 16px 16px", zIndex: 10,
-        }} />
-        {/* Status bar */}
-        <div style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "14px 20px 4px", fontSize: 12.5, fontWeight: 600, color: "#fff",
-        }}>
-          <span>9:41</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <span style={{ fontSize: 11 }}>●●●●</span>
-            <span style={{ fontSize: 11 }}>📶</span>
-            <span style={{ fontSize: 11 }}>🔋</span>
+      {/* Outer frame */}
+      <div style={{
+        borderRadius: 46,
+        background: "linear-gradient(145deg, #3a3a3c, #1c1c1e)",
+        padding: 12,
+        boxShadow: "0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.08)",
+        position: "relative",
+      }}>
+        {/* Side button — left */}
+        <div style={{ position: "absolute", left: -2, top: 95, width: 4, height: 50, background: "#1c1c1e", borderRadius: 2 }} />
+        <div style={{ position: "absolute", left: -2, top: 155, width: 4, height: 32, background: "#1c1c1e", borderRadius: 2 }} />
+        {/* Side button — right */}
+        <div style={{ position: "absolute", right: -2, top: 130, width: 4, height: 70, background: "#1c1c1e", borderRadius: 2 }} />
+
+        <div style={{ borderRadius: 36, overflow: "hidden", position: "relative", background: "#0b141a" }}>
+          {/* Notch */}
+          <div style={{
+            position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+            width: 120, height: 26, background: "#000", borderRadius: "0 0 18px 18px", zIndex: 10,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#1c1c1e" }} />
           </div>
+          {/* Status bar */}
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "16px 22px 6px", fontSize: 13, fontWeight: 600, color: "#fff",
+          }}>
+            <span>9:41</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <svg width="16" height="11" viewBox="0 0 16 11" fill="none"><rect x="0" y="6" width="2.5" height="5" fill="#fff"/><rect x="4.5" y="4" width="2.5" height="7" fill="#fff"/><rect x="9" y="2" width="2.5" height="9" fill="#fff"/><rect x="13.5" y="0" width="2.5" height="11" fill="#fff"/></svg>
+              <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><path d="M7.5 10.5C3.5 10.5 1 7.8 1 7.8C1 7.8 3.7 3.5 7.5 3.5C11.3 3.5 14 7.8 14 7.8C14 7.8 11.5 10.5 7.5 10.5Z" stroke="#fff" strokeWidth="1.1"/><circle cx="7.5" cy="7.5" r="1.3" fill="#fff"/></svg>
+              <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff"/><rect x="2" y="2" width="17" height="7" rx="1.3" fill="#fff"/><rect x="21.5" y="3.5" width="1.5" height="4" rx="0.7" fill="#fff"/></svg>
+            </div>
+          </div>
+          {children}
         </div>
-        {children}
+      </div>
+      {/* Home indicator */}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 6 }}>
+        <div style={{ width: 110, height: 4, borderRadius: 4, background: "rgba(255,255,255,0.25)" }} />
       </div>
     </div>
   );
@@ -98,21 +134,20 @@ function PhoneShell({ children }: { children: React.ReactNode }) {
 function ChatHeader() {
   return (
     <div style={{
-      background: "#202c33", padding: "8px 14px", display: "flex", alignItems: "center", gap: 10,
+      background: "#1a2329", padding: "8px 12px 10px", display: "flex", alignItems: "center", gap: 8,
       borderBottom: "1px solid rgba(255,255,255,0.06)",
     }}>
-      <span style={{ color: "#8696a0", fontSize: 20, marginRight: 2 }}>‹</span>
+      <span style={{ color: "#8696a0", fontSize: 20, marginRight: 0 }}>‹</span>
       <div style={{
-        width: 36, height: 36, borderRadius: "50%", background: "#fff",
+        width: 34, height: 34, borderRadius: "50%", background: "#0d1f15",
         display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden",
+        border: "1px solid rgba(29,185,84,0.4)",
       }}>
-        <svg viewBox="0 0 24 24" width="22" height="22">
-          <path d="M12 2a7 7 0 0 0-7 7c0 1.6.5 3 1.5 4.2L5 18l5-1.3c.6.2 1.3.3 2 .3a7 7 0 0 0 0-14z" fill="none" stroke="#1db954" strokeWidth="1.8"/>
-        </svg>
+        <span style={{ fontSize: 9, fontWeight: 800 }}><span style={{ color: "#1db954" }}>F</span><span style={{ color: "#fff" }}>M</span></span>
       </div>
       <div style={{ flex: 1 }}>
-        <p style={{ color: "#e9edef", fontSize: 15.5, fontWeight: 600, margin: 0 }}>FindMe</p>
-        <p style={{ color: "#8696a0", fontSize: 11.5, margin: 0 }}>online</p>
+        <p style={{ color: "#e9edef", fontSize: 15, fontWeight: 700, margin: 0 }}>FindMe</p>
+        <p style={{ color: "#8696a0", fontSize: 11, margin: 0 }}>Business Account</p>
       </div>
       <div style={{ display: "flex", gap: 16, color: "#8696a0", fontSize: 16 }}>
         <span>📹</span><span>📞</span>
@@ -121,16 +156,41 @@ function ChatHeader() {
   );
 }
 
+function ChatInputBar() {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+      background: "#1a2329", borderTop: "1px solid rgba(255,255,255,0.06)",
+    }}>
+      <span style={{ color: "#8696a0", fontSize: 20 }}>+</span>
+      <div style={{ flex: 1, background: "#202c33", borderRadius: 20, padding: "7px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }} />
+        <span style={{ color: "#8696a0", fontSize: 15 }}>😊</span>
+      </div>
+      <span style={{ color: "#8696a0", fontSize: 17 }}>📷</span>
+      <span style={{ color: "#8696a0", fontSize: 17 }}>🎤</span>
+    </div>
+  );
+}
+
 function ChatBg({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      padding: "14px 10px 16px",
-      minHeight: 360,
+      padding: "14px 0 16px",
+      minHeight: 380,
       backgroundColor: "#0b141a",
-      backgroundImage: "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)",
-      backgroundSize: "16px 16px",
+      backgroundImage: "radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px)",
+      backgroundSize: "18px 18px",
     }}>
       {children}
+    </div>
+  );
+}
+
+function TodayPill() {
+  return (
+    <div style={{ textAlign: "center", marginBottom: 12 }}>
+      <span style={{ background: "#182229", color: "#8696a0", fontSize: 11, padding: "4px 14px", borderRadius: 8, fontWeight: 500 }}>Today</span>
     </div>
   );
 }
@@ -140,16 +200,168 @@ function WhatsAppMockup() {
     <PhoneShell>
       <ChatHeader />
       <ChatBg>
-        <div style={{ textAlign: "center", marginBottom: 12 }}>
-          <span style={{ background: "#182229", color: "#8696a0", fontSize: 11, padding: "4px 12px", borderRadius: 8, fontWeight: 500 }}>TODAY</span>
-        </div>
-
+        <TodayPill />
+        <EncryptionNotice />
         <ChatBubble from="user" text="LINK_1a28bf834fa8" time="3:39 PM" />
+        <ChatBubble from="findme" text={"\uD83D\uDC4B Hi! Thanks for choosing FindMe.\nLet's link your tag to get started."} time="3:39 PM" />
         <ChatBubble from="findme" text={'What is the name of the item you are linking?\nFor example: "Headphones"'} time="3:40 PM" />
         <ChatBubble from="user" text="My iPhone 14 Pro" time="3:40 PM" />
-        <ChatBubble from="findme" text={'The item is now successfully linked as "My iPhone 14 Pro"! ✅'} time="3:40 PM" />
+        <ChatBubble from="findme" text={'✅ The item is now successfully linked as "My iPhone 14 Pro"!'} time="3:40 PM" />
+        <ChatBubble from="findme" text={"If someone finds it, they can scan the tag and chat with you anonymously via WhatsApp."} time="3:40 PM" />
       </ChatBg>
+      <ChatInputBar />
     </PhoneShell>
+  );
+}
+
+/* ── BROWSER MOCKUP — the scan page that opens before WhatsApp ── */
+function ScanPageMockup() {
+  return (
+    <div style={{
+      width: "100%",
+      maxWidth: 270,
+      margin: "0 auto",
+      borderRadius: 38,
+      background: "linear-gradient(145deg, #3a3a3c, #1c1c1e)",
+      padding: 12,
+      boxShadow: "0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.08)",
+      position: "relative",
+    }}>
+      <div style={{ position: "absolute", left: -2, top: 95, width: 4, height: 50, background: "#1c1c1e", borderRadius: 2 }} />
+      <div style={{ position: "absolute", left: -2, top: 155, width: 4, height: 32, background: "#1c1c1e", borderRadius: 2 }} />
+      <div style={{ position: "absolute", right: -2, top: 130, width: 4, height: 70, background: "#1c1c1e", borderRadius: 2 }} />
+
+      <div style={{ borderRadius: 28, overflow: "hidden", position: "relative", background: "linear-gradient(180deg, #1a2440 0%, #0d1326 100%)" }}>
+        <div style={{
+          position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+          width: 120, height: 26, background: "#000", borderRadius: "0 0 18px 18px", zIndex: 10,
+        }} />
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: "16px 22px 6px", fontSize: 13, fontWeight: 600, color: "#fff",
+        }}>
+          <span>9:44</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="none"><rect x="0" y="6" width="2.5" height="5" fill="#fff"/><rect x="4.5" y="4" width="2.5" height="7" fill="#fff"/><rect x="9" y="2" width="2.5" height="9" fill="#fff"/><rect x="13.5" y="0" width="2.5" height="11" fill="#fff"/></svg>
+            <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff"/><rect x="2" y="2" width="17" height="7" rx="1.3" fill="#fff"/><rect x="21.5" y="3.5" width="1.5" height="4" rx="0.7" fill="#fff"/></svg>
+          </div>
+        </div>
+
+        <div style={{ padding: "44px 24px 36px", minHeight: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{
+            width: 64, height: 64, borderRadius: 16, background: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
+          }}>
+            <svg viewBox="0 0 24 24" width="34" height="34">
+              <path d="M12 2a7 7 0 0 0-7 7c0 1.6.5 3 1.5 4.2L5 18l5-1.3c.6.2 1.3.3 2 .3a7 7 0 0 0 0-14z" fill="none" stroke="#1db954" strokeWidth="1.8"/>
+            </svg>
+          </div>
+          <p style={{ color: "#fff", fontSize: 22, fontWeight: 800, fontFamily: "Syne, sans-serif", margin: "0 0 8px", textAlign: "center" }}>
+            Thanks for scanning!
+          </p>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13.5, margin: "0 0 28px", textAlign: "center", lineHeight: 1.5 }}>
+            Tap below to protect your item via WhatsApp
+          </p>
+          <div style={{
+            width: "100%", background: "rgba(255,255,255,0.08)", borderRadius: 40,
+            padding: "14px 0", textAlign: "center", marginBottom: 18,
+          }}>
+            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 15, fontWeight: 700 }}>Link on WhatsApp</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <div style={{ width: 16, height: 16, borderRadius: 4, border: "1.5px solid rgba(255,255,255,0.4)", flexShrink: 0, marginTop: 1 }} />
+            <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+              I agree to the <span style={{ color: "#5b9bf5" }}>terms</span> & <span style={{ color: "#5b9bf5" }}>privacy policy</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        padding: "10px 14px", background: "#d8e0f0", borderRadius: "0 0 28px 28px", marginTop: -1,
+      }}>
+        <span style={{ color: "#444", fontSize: 12 }}>🖥️ app.findme.com.ng</span>
+        <span style={{ color: "#666", fontSize: 12 }}>↻</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── BROWSER MOCKUP — scan page shown to the FINDER ── */
+function FoundScanPageMockup() {
+  return (
+    <div style={{
+      width: "100%",
+      maxWidth: 270,
+      margin: "0 auto",
+      borderRadius: 38,
+      background: "linear-gradient(145deg, #3a3a3c, #1c1c1e)",
+      padding: 12,
+      boxShadow: "0 30px 80px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.08)",
+      position: "relative",
+    }}>
+      <div style={{ position: "absolute", left: -2, top: 95, width: 4, height: 50, background: "#1c1c1e", borderRadius: 2 }} />
+      <div style={{ position: "absolute", left: -2, top: 155, width: 4, height: 32, background: "#1c1c1e", borderRadius: 2 }} />
+      <div style={{ position: "absolute", right: -2, top: 130, width: 4, height: 70, background: "#1c1c1e", borderRadius: 2 }} />
+
+      <div style={{ borderRadius: 28, overflow: "hidden", position: "relative", background: "linear-gradient(180deg, #1a2440 0%, #0d1326 100%)" }}>
+        <div style={{
+          position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+          width: 120, height: 26, background: "#000", borderRadius: "0 0 18px 18px", zIndex: 10,
+        }} />
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+          padding: "16px 22px 6px", fontSize: 13, fontWeight: 600, color: "#fff",
+        }}>
+          <span>10:05</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <svg width="16" height="11" viewBox="0 0 16 11" fill="none"><rect x="0" y="6" width="2.5" height="5" fill="#fff"/><rect x="4.5" y="4" width="2.5" height="7" fill="#fff"/><rect x="9" y="2" width="2.5" height="9" fill="#fff"/><rect x="13.5" y="0" width="2.5" height="11" fill="#fff"/></svg>
+            <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#fff"/><rect x="2" y="2" width="17" height="7" rx="1.3" fill="#fff"/><rect x="21.5" y="3.5" width="1.5" height="4" rx="0.7" fill="#fff"/></svg>
+          </div>
+        </div>
+
+        <div style={{ padding: "40px 22px 36px", minHeight: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{
+            width: 60, height: 60, borderRadius: 16, background: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.3)",
+          }}>
+            <svg viewBox="0 0 24 24" width="32" height="32">
+              <path d="M12 2a7 7 0 0 0-7 7c0 1.6.5 3 1.5 4.2L5 18l5-1.3c.6.2 1.3.3 2 .3a7 7 0 0 0 0-14z" fill="none" stroke="#1db954" strokeWidth="1.8"/>
+            </svg>
+          </div>
+          <p style={{ color: "#fff", fontSize: 20, fontWeight: 800, fontFamily: "Syne, sans-serif", margin: "0 0 10px", textAlign: "center" }}>
+            Someone is looking for that!
+          </p>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, margin: "0 0 16px", textAlign: "center", lineHeight: 1.5 }}>
+            Start an anonymous chat with the owner on WhatsApp
+          </p>
+          <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 13.5, margin: "0 0 20px", textAlign: "center" }}>
+            Item: <strong style={{ color: "#fff" }}>My iPhone 14 Pro</strong>
+          </p>
+          <div style={{
+            width: "100%", background: "rgba(255,255,255,0.08)", borderRadius: 40,
+            padding: "13px 0", textAlign: "center", marginBottom: 18,
+          }}>
+            <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, fontWeight: 700 }}>Start an anonymous chat</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <div style={{ width: 16, height: 16, borderRadius: 4, border: "1.5px solid rgba(255,255,255,0.4)", flexShrink: 0, marginTop: 1 }} />
+            <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+              I agree to the <span style={{ color: "#5b9bf5" }}>terms</span> & <span style={{ color: "#5b9bf5" }}>privacy policy</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        padding: "10px 14px", background: "#d8e0f0", borderRadius: "0 0 28px 28px", marginTop: -1,
+      }}>
+        <span style={{ color: "#444", fontSize: 12 }}>🖥️ app.findme.com.ng</span>
+        <span style={{ color: "#666", fontSize: 12 }}>↻</span>
+      </div>
+    </div>
   );
 }
 
@@ -159,16 +371,16 @@ function FoundItMockup() {
     <PhoneShell>
       <ChatHeader />
       <ChatBg>
-        <div style={{ textAlign: "center", marginBottom: 12 }}>
-          <span style={{ background: "#182229", color: "#8696a0", fontSize: 11, padding: "4px 12px", borderRadius: 8, fontWeight: 500 }}>TODAY</span>
-        </div>
-
+        <TodayPill />
+        <EncryptionNotice />
         <ChatBubble from="user" text="FOUND_9bf345aceb06" time="4:15 PM" />
-        <ChatBubble from="findme" text={"✅ Owner Notified!\n\n📦 Item: My phone\n\nThe owner will reply here shortly."} time="4:15 PM" />
-        <ChatBubble from="user" text="Hiii" time="4:15 PM" />
-        <ChatBubble from="relay" text="Hii 😌" time="4:15 PM" />
-        <ChatBubble from="relay" text={"Please I lost my phone\nCan you kindly tell me your location please"} time="4:16 PM" />
+        <ChatBubble from="findme" text={"✅ Owner notified!\n\n📦 Item: My iPhone 14 Pro\n\nThe owner will reply here shortly."} time="4:15 PM" />
+        <ChatBubble from="user" text="Hi, I found your phone." time="4:15 PM" />
+        <ChatBubble from="relay" text="Hi! Thank you so much 😭" time="4:16 PM" label="Anonymous Owner" />
+        <ChatBubble from="relay" text={"Where are you located?\nWe can meet to return it."} time="4:16 PM" label="Anonymous Owner" />
+        <ChatBubble from="user" text="I'm near Zenith Bank, Victoria Island." time="4:17 PM" />
       </ChatBg>
+      <ChatInputBar />
     </PhoneShell>
   );
 }
@@ -285,99 +497,189 @@ export default function HowItWorks() {
           ))}
         </div>
 
-        {/* ── SEE IT IN ACTION — WhatsApp mockup ── */}
+        {/* ── DETAILED WALKTHROUGH — Linking a tag, step by step ── */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          style={{
-            marginTop: 80,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 56,
-            alignItems: "center",
-          }}
+          style={{ marginTop: 96, textAlign: "center", maxWidth: 680, marginLeft: "auto", marginRight: "auto" }}
         >
-          <div>
-            <p style={{
-              fontSize: 12, fontWeight: 700, letterSpacing: 3,
-              textTransform: "uppercase", color: "#1db954", marginBottom: 14,
-            }}>
-              See it in action
-            </p>
-            <h3 style={{
-              fontFamily: "Syne, sans-serif",
-              fontSize: "clamp(26px, 3vw, 36px)",
-              fontWeight: 800, color: "#fff", lineHeight: 1.2, marginBottom: 20,
-            }}>
-              Linking a tag takes 30 seconds
-            </h3>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.75)", lineHeight: 1.8, marginBottom: 16 }}>
-              Scan your new tag, send the code that pops up, and tell us what it's protecting. That's it — no app, no account, no setup screens.
-            </p>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Scan the QR code on your tag", "Send the auto-filled WhatsApp message", "Name your item and you're protected"].map((t, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(255,255,255,0.85)", fontSize: 14.5 }}>
-                  <span style={{
-                    width: 22, height: 22, borderRadius: "50%", background: "#1db954", color: "#000",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0,
-                  }}>{i + 1}</span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <WhatsAppMockup />
+          <p style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: 3,
+            textTransform: "uppercase", color: "#1db954", marginBottom: 14,
+          }}>
+            Step-by-step walkthrough
+          </p>
+          <h3 style={{
+            fontFamily: "Syne, sans-serif",
+            fontSize: "clamp(26px, 3vw, 36px)",
+            fontWeight: 800, color: "#fff", lineHeight: 1.2, marginBottom: 18,
+          }}>
+            Exactly what happens when you link a tag
+          </h3>
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.75)", lineHeight: 1.8 }}>
+            No app to download, no account to create. Just three quick taps and your item is protected for good.
+          </p>
         </motion.div>
+
+        <div style={{
+          marginTop: 56,
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: 40,
+        }}>
+          {/* SUB-STEP 1 — Scan the tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: "50%", background: "#1db954", color: "#000",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>1</span>
+              <h4 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: 0 }}>
+                Scan the tag
+              </h4>
+            </div>
+            <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 24 }}>
+              Stick the tag to your item, then open your phone's camera and point it at the QR code. A link pops up — tap it.
+            </p>
+            <ScanPageMockup />
+          </motion.div>
+
+          {/* SUB-STEP 2 — WhatsApp opens */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: "50%", background: "#1db954", color: "#000",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>2</span>
+              <h4 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: 0 }}>
+                Agree & open WhatsApp
+              </h4>
+            </div>
+            <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 24 }}>
+              Tick the box to agree to our terms and privacy policy, then tap <strong style={{ color: "#fff" }}>"Link on WhatsApp."</strong> A message gets typed out for you automatically — just hit send.
+            </p>
+            <div style={{
+              background: "rgba(29,185,84,0.08)", border: "1px solid rgba(29,185,84,0.25)",
+              borderRadius: 14, padding: "16px 18px", display: "flex", gap: 10, alignItems: "flex-start",
+            }}>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>⏱️</span>
+              <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.85)", lineHeight: 1.6, margin: 0 }}>
+                <strong style={{ color: "#1db954" }}>Heads up:</strong> our WhatsApp assistant can take a few seconds to reply. Wait for its message before typing your item's name.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* SUB-STEP 3 — Name your item */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: "50%", background: "#1db954", color: "#000",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>3</span>
+              <h4 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: 0 }}>
+                Name your item & you're done
+              </h4>
+            </div>
+            <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 24 }}>
+              FindMe will ask what you're protecting — reply with something simple like "My iPhone 14 Pro." That's it. Your tag is now linked and ready.
+            </p>
+            <WhatsAppMockup />
+          </motion.div>
+        </div>
 
         {/* ── SEE IT IN ACTION 2 — Found It flow ── */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          style={{
-            marginTop: 64,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: 56,
-            alignItems: "center",
-          }}
+          style={{ textAlign: "center", maxWidth: 680, marginLeft: "auto", marginRight: "auto", marginTop: 96 }}
         >
-          <div>
-            <p style={{
-              fontSize: 12, fontWeight: 700, letterSpacing: 3,
-              textTransform: "uppercase", color: "#1db954", marginBottom: 14,
-            }}>
-              When it's found
-            </p>
-            <h3 style={{
-              fontFamily: "Syne, sans-serif",
-              fontSize: "clamp(26px, 3vw, 36px)",
-              fontWeight: 800, color: "#fff", lineHeight: 1.2, marginBottom: 20,
-            }}>
-              The finder connects with you instantly
-            </h3>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.75)", lineHeight: 1.8, marginBottom: 16 }}>
-              Anyone who finds your item scans the tag, and you're notified immediately. They chat with you directly — but your real number stays completely hidden the whole time.
-            </p>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Finder scans the QR code on your item", "You get an instant WhatsApp alert", "Chat anonymously to arrange the return"].map((t, i) => (
-                <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, color: "rgba(255,255,255,0.85)", fontSize: 14.5 }}>
-                  <span style={{
-                    width: 22, height: 22, borderRadius: "50%", background: "#1db954", color: "#000",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, flexShrink: 0,
-                  }}>{i + 1}</span>
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <FoundItMockup />
+          <p style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: 3,
+            textTransform: "uppercase", color: "#1db954", marginBottom: 14,
+          }}>
+            When it's found
+          </p>
+          <h3 style={{
+            fontFamily: "Syne, sans-serif",
+            fontSize: "clamp(26px, 3vw, 36px)",
+            fontWeight: 800, color: "#fff", lineHeight: 1.2, marginBottom: 18,
+          }}>
+            The finder connects with you instantly
+          </h3>
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.75)", lineHeight: 1.8 }}>
+            Anyone who finds your item — a stranger, a driver, a security guard — just needs to scan the tag with their phone camera, same as you did. No FindMe account, no app download required on their end either.
+          </p>
         </motion.div>
+
+        <div style={{
+          marginTop: 56,
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+          gap: 40,
+        }}>
+          {/* SUB-STEP 1 — Finder scans the tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: "50%", background: "#1db954", color: "#000",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>1</span>
+              <h4 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: 0 }}>
+                Finder scans the tag
+              </h4>
+            </div>
+            <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 24 }}>
+              They point their phone camera at the QR code on your item and tap the link that pops up — no app or account needed.
+            </p>
+            <FoundScanPageMockup />
+          </motion.div>
+
+          {/* SUB-STEP 2 — Chat opens */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <span style={{
+                width: 28, height: 28, borderRadius: "50%", background: "#1db954", color: "#000",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0,
+              }}>2</span>
+              <h4 style={{ fontFamily: "Syne, sans-serif", fontSize: 18, fontWeight: 800, color: "#fff", margin: 0 }}>
+                You chat, completely anonymously
+              </h4>
+            </div>
+            <p style={{ fontSize: 14.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 24 }}>
+              After they tick the box and tap "Start an anonymous chat," you'll get a WhatsApp message — wait a few seconds for it. Reply directly to arrange the return. Your real number stays hidden the whole time.
+            </p>
+            <FoundItMockup />
+          </motion.div>
+        </div>
 
         {/* TRUST LINE */}
         <div style={{
