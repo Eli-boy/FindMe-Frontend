@@ -129,7 +129,7 @@ export default function CartPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/monnify/initiate", {
+      const res = await fetch("/api/paystack/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

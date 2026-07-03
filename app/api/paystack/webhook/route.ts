@@ -8,81 +8,73 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
 const resend = new Resend(process.env.RESEND_API_KEY);
-const SECRET_KEY = process.env.MONNIFY_SECRET_KEY!;
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
 
-/* ── Verify Monnify webhook signature ── */
+/* ── Verify Paystack webhook signature ── */
 function verifySignature(body: string, signature: string): boolean {
   const hash = crypto
-    .createHmac("sha512", SECRET_KEY)
+    .createHmac("sha512", PAYSTACK_SECRET)
     .update(body)
     .digest("hex");
-  return hash.toLowerCase() === signature.toLowerCase();
+  return hash === signature;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
-    const signature = req.headers.get("monnify-signature") || "";
+    const signature = req.headers.get("x-paystack-signature") || "";
 
-    /* ── Verify signature ── */
     if (!verifySignature(rawBody, signature)) {
-      console.error("Invalid Monnify webhook signature");
+      console.error("Invalid Paystack webhook signature");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const event = JSON.parse(rawBody);
-    const { eventType, eventData } = event;
 
-    /* ── Only process successful payments ── */
-    if (eventType !== "SUCCESSFUL_TRANSACTION") {
+    /* ── Only process successful charges ── */
+    if (event.event !== "charge.success") {
       return NextResponse.json({ received: true });
     }
 
-    const {
-      paymentReference,
-      amountPaid,
-      paidOn,
-      customer,
-    } = eventData;
+    const { reference, amount, paid_at, customer } = event.data;
 
-    /* ── Find the order by payment reference ── */
+    /* ── Find order by payment reference ── */
     const { data: order, error } = await supabase
       .from("orders")
       .select("*")
-      .eq("payment_reference", paymentReference)
+      .eq("payment_reference", reference)
       .single();
 
     if (error || !order) {
-      console.error("Order not found for reference:", paymentReference);
+      console.error("Order not found for reference:", reference);
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    /* ── Generate pickup code if this is a self-pickup order ── */
+    /* ── Generate pickup code if self-pickup ── */
     const pickupCode = order.delivery_method === "pickup"
       ? Math.floor(100000 + Math.random() * 900000).toString()
       : null;
 
-    /* ── Update order to paid ── */
+    /* ── Mark order as paid ── */
     await supabase
       .from("orders")
       .update({
         payment_status: "paid",
-        paid_at: paidOn || new Date().toISOString(),
-        status: "pending", // now ready to fulfil
+        paid_at: paid_at || new Date().toISOString(),
+        status: "pending",
         ...(pickupCode ? { pickup_code: pickupCode } : {}),
       })
-      .eq("payment_reference", paymentReference);
+      .eq("payment_reference", reference);
 
-    /* ── Increment coupon usage if applicable ── */
+    /* ── Increment coupon usage ── */
     if (order.coupon_code) {
       try {
         await supabase.rpc("increment_coupon_usage", { coupon_code: order.coupon_code });
       } catch (_) {}
     }
 
-    /* ── Fetch next-order coupon for email ── */
+    /* ── Fetch next-order coupon ── */
     const { data: couponData } = await supabase
       .from("coupons")
       .select("code, discount")
@@ -93,6 +85,8 @@ export async function POST(req: NextRequest) {
       .single();
 
     const nextCoupon = couponData || { code: "FINDME10", discount: 10 };
+    const amountPaid = (amount / 100).toLocaleString(); // convert kobo back to naira
+    const isPickup = order.delivery_method === "pickup";
 
     /* ── Build email item rows ── */
     const items = order.items || [];
@@ -124,7 +118,7 @@ export async function POST(req: NextRequest) {
 
         <tr><td style="padding:40px;">
           <h2 style="margin:0 0 8px;color:#1a3a2a;font-size:22px;font-weight:700;">Hey ${order.customer_name}! 🎉</h2>
-          <p style="margin:0 0 24px;color:#4a7a5a;font-size:15px;line-height:1.7;">Your payment of <strong>&#8358;${Number(amountPaid).toLocaleString()}</strong> has been confirmed. We will be in touch via WhatsApp to arrange ${order.delivery_method === "pickup" ? "pickup" : "delivery"}.</p>
+          <p style="margin:0 0 24px;color:#4a7a5a;font-size:15px;line-height:1.7;">Your payment of <strong>&#8358;${amountPaid}</strong> has been confirmed. We will be in touch via WhatsApp shortly.</p>
 
           <div style="background:#f0f7f0;border-radius:12px;padding:14px 20px;margin-bottom:24px;">
             <table width="100%">
@@ -162,14 +156,18 @@ export async function POST(req: NextRequest) {
 
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
             <tr>
-              <td style="padding:12px 0 6px;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Total Paid</td>
-              <td style="padding:12px 0 6px;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">&#8358;${Number(order.total).toLocaleString()}</td>
+              <td style="padding:12px 0;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Total Paid</td>
+              <td style="padding:12px 0;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">&#8358;${Number(order.total).toLocaleString()}</td>
             </tr>
           </table>
 
-          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:28px;">
-            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">${order.delivery_method === "pickup" ? "Pickup" : "Delivery Address"}</p>
-            <p style="margin:0;color:#1a3a2a;font-size:14px;">${order.delivery_method === "pickup" ? "&#x1F3EA; Self Pickup — we will share location via WhatsApp" : "&#x1F69A; " + order.delivery_address}</p>
+          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">${isPickup ? "Pickup" : "Delivery Address"}</p>
+            ${isPickup
+              ? `<p style="margin:0;color:#1a3a2a;font-size:14px;">&#x1F3EA; Self Pickup — location shared via WhatsApp</p>`
+              : `<p style="margin:0;color:#1a3a2a;font-size:14px;">&#x1F69A; ${order.delivery_address}</p>`
+            }
+            ${pickupCode ? `<p style="margin:10px 0 0;font-size:13px;color:#4a7a5a;">Your pickup code: <strong style="color:#1a3a2a;font-size:16px;letter-spacing:2px;">${pickupCode}</strong></p>` : ""}
           </div>
 
           <div style="border:2px dashed #1db954;border-radius:16px;padding:20px;text-align:center;margin-bottom:28px;background:#f8fff8;">
@@ -199,7 +197,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
 
   } catch (err: any) {
-    console.error("Webhook error:", err);
+    console.error("Paystack webhook error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
