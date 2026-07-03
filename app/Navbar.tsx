@@ -86,16 +86,34 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* SHOP DROPDOWN */}
+          {/* SHOP DROPDOWN — clicking "Shop" goes to /shop, arrow opens dropdown */}
           <div style={{ position: "relative" }} ref={dropdownRef}>
-            <button
-              onClick={(e) => { e.stopPropagation(); setOpenShop(!openShop); }}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#4a6a4a", fontSize: 14, fontWeight: 600 }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
-            >
-              Shop ▾
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Link
+                href="/shop"
+                style={{
+                  color: pathname === "/shop" ? "#1a3a2a" : "#4a6a4a",
+                  textDecoration: "none", fontSize: 14, fontWeight: 600,
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = pathname === "/shop" ? "#1a3a2a" : "#4a6a4a")}
+              >
+                Shop
+              </Link>
+              <button
+                onClick={(e) => { e.stopPropagation(); setOpenShop(!openShop); }}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  color: "#4a6a4a", fontSize: 11, padding: "0 2px", lineHeight: 1,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#1a3a2a")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#4a6a4a")}
+              >
+                ▾
+              </button>
+            </div>
+
             {openShop && (
               <div
                 style={{
@@ -140,7 +158,6 @@ export default function Navbar() {
 
         {/* RIGHT */}
         <div className="hidden md:flex" style={{ alignItems: "center", gap: 20 }}>
-          {/* CART */}
           <Link href="/cart" style={{ position: "relative", color: "#1a3a2a", textDecoration: "none", fontSize: 20 }}>
             🛒
             {itemCount > 0 && (
