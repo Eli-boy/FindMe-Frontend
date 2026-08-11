@@ -194,6 +194,114 @@ export async function POST(req: NextRequest) {
 </html>`,
     });
 
+    /* ── Send admin notifications ── */
+    const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || "2348073238118";
+    const adminEmail = process.env.ADMIN_EMAIL || "support@findme.com.ng";
+    const itemSummary = items.map((i: any) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
+
+    // WhatsApp notification to admin
+    try {
+      await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
+        method: "POST",
+        headers: {
+          Authorization: "Basic " + Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64"),
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          From: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886"}`,
+          To: `whatsapp:+${adminPhone}`,
+          Body:
+            `🛍️ *New FindMe Order!*
+
+` +
+            `Order: *#${order.order_number}*
+` +
+            `Customer: ${order.customer_name}
+` +
+            `Phone: ${order.customer_phone}
+` +
+            `Email: ${order.customer_email}
+
+` +
+            `${itemSummary}
+
+` +
+            `Total: *₦${Number(order.total).toLocaleString()}*
+` +
+            `Delivery: ${isPickup ? "Self Pickup" : "Home Delivery — " + order.delivery_address}
+` +
+            (pickupCode ? `Pickup Code: *${pickupCode}*
+` : "") +
+            `
+View order: https://findme.com.ng/admin`,
+        }).toString(),
+      });
+    } catch (waErr) {
+      console.error("Admin WhatsApp notification failed:", waErr);
+    }
+
+    // Email notification to admin
+    try {
+      await resend.emails.send({
+        from: "FindMe Orders <orders@findme.com.ng>",
+        to: adminEmail,
+        subject: `🛍️ New Order #${order.order_number} — ₦${Number(order.total).toLocaleString()}`,
+        html: `
+<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f0f7f0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7f0;padding:40px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(26,58,42,0.08);">
+        <tr><td style="background:#1a3a2a;padding:28px 40px;">
+          <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;">🛍️ New Order Received</h1>
+          <p style="margin:6px 0 0;color:#1db954;font-size:14px;font-weight:700;">Order #${order.order_number} · ₦${Number(order.total).toLocaleString()}</p>
+        </td></tr>
+        <tr><td style="padding:32px 40px;">
+
+          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Customer</p>
+            <p style="margin:0 0 3px;font-size:15px;font-weight:700;color:#1a3a2a;">${order.customer_name}</p>
+            <p style="margin:0 0 3px;font-size:13px;color:#4a7a5a;">${order.customer_email}</p>
+            <p style="margin:0;font-size:13px;color:#4a7a5a;">${order.customer_phone}</p>
+          </div>
+
+          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+            <p style="margin:0 0 10px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Items Ordered</p>
+            ${items.map((i: any) => `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0ede0;">
+              <span style="font-size:14px;color:#1a3a2a;">${i.name} <span style="color:#4a7a5a;">x${i.quantity}</span></span>
+              <span style="font-size:14px;font-weight:700;color:#1a3a2a;">₦${(i.price * i.quantity).toLocaleString()}</span>
+            </div>`).join("")}
+            <div style="display:flex;justify-content:space-between;padding:10px 0 0;">
+              <span style="font-size:16px;font-weight:800;color:#1a3a2a;">Total</span>
+              <span style="font-size:16px;font-weight:800;color:#1db954;">₦${Number(order.total).toLocaleString()}</span>
+            </div>
+          </div>
+
+          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
+            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Fulfilment</p>
+            <p style="margin:0;font-size:14px;color:#1a3a2a;">${isPickup
+              ? `🏪 Self Pickup${pickupCode ? ` · Code: <strong>${pickupCode}</strong>` : ""}`
+              : `🚚 Home Delivery · ${order.delivery_address}`
+            }</p>
+          </div>
+
+          <div style="text-align:center;">
+            <a href="https://findme.com.ng/admin" style="display:inline-block;background:#1a3a2a;color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-weight:700;font-size:14px;">View in Dashboard →</a>
+          </div>
+
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+      });
+    } catch (emailErr) {
+      console.error("Admin email notification failed:", emailErr);
+    }
+
     return NextResponse.json({ success: true });
 
   } catch (err: any) {
