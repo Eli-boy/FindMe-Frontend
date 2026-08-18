@@ -201,6 +201,12 @@ export async function POST(req: NextRequest) {
 
     // WhatsApp notification to admin
     try {
+      const twilioFrom = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
+      // Ensure From has whatsapp: prefix but not doubled
+      const fromNumber = twilioFrom.startsWith("whatsapp:") ? twilioFrom : `whatsapp:${twilioFrom}`;
+      // Ensure To has whatsapp: prefix
+      const toNumber = adminPhone.startsWith("whatsapp:") ? adminPhone : `whatsapp:+${adminPhone.replace(/^\+/, "")}`;
+
       await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
         method: "POST",
         headers: {
@@ -208,8 +214,8 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          From: `whatsapp:${process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886"}`,
-          To: `whatsapp:+${adminPhone}`,
+          From: fromNumber,
+          To: toNumber,
           Body:
             `🛍️ *New FindMe Order!*
 

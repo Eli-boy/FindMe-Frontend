@@ -8,6 +8,7 @@ const supabase = createClient(
 );
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://findme.com.ng";
 
 export async function POST(req: NextRequest) {
   try {
@@ -57,13 +58,13 @@ export async function POST(req: NextRequest) {
         amount: Math.round(total * 100), // Paystack uses kobo (smallest unit)
         reference,
         currency: "NGN",
-        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/order-success?ref=${reference}&order=${order.order_number}`,
+        callback_url: `${SITE_URL}/order-success?ref=${reference}&order=${order.order_number}`,
         metadata: {
           order_id: order.id,
           order_number: order.order_number,
           customer_name: name,
           customer_phone: phone,
-          cancel_action: `${process.env.NEXT_PUBLIC_SITE_URL}/cart`,
+          cancel_action: `${SITE_URL}/cart`,
         },
         channels: ["card", "bank", "ussd", "bank_transfer"],
       }),
