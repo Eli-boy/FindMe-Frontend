@@ -126,7 +126,7 @@ export default function Home() {
             style={{ position: "relative" }}
           >
             <Image
-              src="/eli2.png"
+              src="/hero_img.png"
               alt="FindMe Smart ID Tag"
               width={isMobile ? 300 : 640}
               height={isMobile ? 300 : 640}
