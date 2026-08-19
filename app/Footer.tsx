@@ -96,7 +96,7 @@ export default function Footer() {
                   { icon: <FaFacebookF />, href: "https://www.facebook.com/share/17dS92Q1K1/?mibextid=wwXIfr" },
                   { icon: <FaInstagram />, href: "https://www.instagram.com/findme_nigeria/" },
                   { icon: <FaLinkedinIn />, href: "#" },
-                  { icon: <FaTiktok />, href: "#" },
+                  { icon: <FaTiktok />, href: "https://www.tiktok.com/@findme_nig?_r=1&_t=ZS-990bXUgzzYe" },
                 ].map((s, i) => (
                   <a
                     key={i}
