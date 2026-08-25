@@ -18,6 +18,17 @@ export async function POST(req: NextRequest) {
       couponCode, discountAmount,
     } = await req.json();
 
+    /* ── 0. Validate required fields ── */
+    if (!email || !email.includes("@")) {
+      return NextResponse.json({ error: "Invalid email address", message: "Please enter a valid email address." }, { status: 400 });
+    }
+    if (!name || !name.trim()) {
+      return NextResponse.json({ error: "Name required", message: "Please enter your name." }, { status: 400 });
+    }
+    if (!total || total < 100) {
+      return NextResponse.json({ error: "Invalid amount", message: "Order total must be at least ₦100." }, { status: 400 });
+    }
+
     /* ── 1. Save order to Supabase as unpaid ── */
     const { data: order, error } = await supabase
       .from("orders")
@@ -54,7 +65,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email,
+        email: email.trim().toLowerCase(),
         amount: Math.round(total * 100), // Paystack uses kobo (smallest unit)
         reference,
         currency: "NGN",
