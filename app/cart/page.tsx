@@ -250,9 +250,9 @@ export default function CartPage() {
                       style={{ color: GREEN, cursor: "pointer", letterSpacing: 1, textDecoration: "underline dotted" }}
                       title="Click to fill"
                     >
-                      FINDME10
+                      FINDME5
                     </strong>
-                    {" "}for 10% off your first order
+                    {" "}for 5% off your first order
                   </p>
                   <button
                     onClick={() => {
