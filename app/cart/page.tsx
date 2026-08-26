@@ -32,13 +32,16 @@ export default function CartPage() {
       return;
     }
 
-    // For FINDME10 (first-order coupon), require email to be entered first
-    if (code === "FINDME10") {
+    // Audience-restricted codes: FINDME5 = first order only, FINDME10/FINDME15 = returning customers only
+    const isFindme5 = code === "FINDME5";
+    const isReturningCode = code === "FINDME10" || code === "FINDME15";
+
+    if (isFindme5 || isReturningCode) {
       if (!form.email || !form.email.includes("@")) {
         setCouponMsg({ text: "Please enter your email first so we can verify this code.", ok: false });
         return;
       }
-      // Check if actually a first-time customer
+      // Quick client-side eligibility check (the server re-verifies on validation)
       try {
         const checkRes = await fetch("/api/check-first-order", {
           method: "POST",
@@ -46,14 +49,19 @@ export default function CartPage() {
           body: JSON.stringify({ email: form.email }),
         });
         const checkData = await checkRes.json();
-        if (!checkData.isFirstOrder) {
+        if (isFindme5 && !checkData.isFirstOrder) {
           setIsFirstOrder(false);
           setCouponMsg({ text: "FINDME5 is for first-time orders only. Enter a different code.", ok: false });
           return;
         }
-        setIsFirstOrder(true);
+        if (isReturningCode && checkData.isFirstOrder) {
+          setIsFirstOrder(true);
+          setCouponMsg({ text: code + " unlocks after your first order — it's for returning customers 🎉", ok: false });
+          return;
+        }
+        setIsFirstOrder(checkData.isFirstOrder);
       } catch {
-        // continue if check fails
+        // continue if check fails — the server still verifies the audience
       }
     }
 
@@ -61,7 +69,7 @@ export default function CartPage() {
       const res = await fetch("/api/check-first-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ validateCoupon: true, couponCode: code }),
+        body: JSON.stringify({ validateCoupon: true, couponCode: code, email: form.email || undefined }),
       });
       const data = await res.json();
       if (data.valid) {
@@ -94,12 +102,18 @@ export default function CartPage() {
       });
       const data = await res.json();
       setIsFirstOrder(data.isFirstOrder);
-      // If returning customer had FINDME10 applied, remove it
-      if (!data.isFirstOrder && appliedCoupon === "FINDME5") {
+      // Remove an applied coupon if this email is no longer eligible for it
+      const nowIneligible =
+        (appliedCoupon === "FINDME5" && !data.isFirstOrder) ||
+        ((appliedCoupon === "FINDME10" || appliedCoupon === "FINDME15") && data.isFirstOrder);
+      if (nowIneligible) {
         setAppliedCoupon(null);
         setCouponDiscount(0);
         setCouponInput("");
-        setCouponMsg({ text: "FINDME5 is for first-time orders only. Code removed.", ok: false });
+        setCouponMsg({
+          text: appliedCoupon + " doesn't apply to this email — code removed.",
+          ok: false,
+        });
       }
     } catch {
       setIsFirstOrder(null);
@@ -271,7 +285,7 @@ export default function CartPage() {
               )}
               {!appliedCoupon && isFirstOrder === false && (
                 <div style={{ marginBottom: 12, padding: "8px 12px", background: "rgba(26,58,42,0.05)", borderRadius: 10, fontSize: 12, color: "#4a7a5a" }}>
-                  Welcome back! 👋 Enter a coupon code below if you have one.
+                  Welcome back! 👋 Returning-customer codes FINDME10 & FINDME15 work from your 2nd order — enter one below.
                 </div>
               )}
               {!appliedCoupon ? (
