@@ -256,8 +256,8 @@ export default function CartPage() {
                   </p>
                   <button
                     onClick={() => {
-                      setCouponInput("FINDME10");
-                      applyCoupon("FINDME10");
+                      setCouponInput("FINDME5");
+                      applyCoupon("FINDME5");
                     }}
                     style={{
                       background: GREEN, color: "#000", border: "none",
