@@ -1,4 +1,5 @@
 "use client";
+import { trackBeginCheckout, trackWhatsAppClick } from "@/app/analytics";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +13,7 @@ const GREEN = "#1db954";
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty, clearCart } = useCart();
 
+  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [form, setForm] = useState({
@@ -22,6 +24,7 @@ export default function CartPage() {
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(true);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
   const [checkingEmail, setCheckingEmail] = useState(false);
 
   const applyCoupon = async (overrideCode?: string) => {
@@ -32,16 +35,13 @@ export default function CartPage() {
       return;
     }
 
-    // Audience-restricted codes: FINDME5 = first order only, FINDME10/FINDME15 = returning customers only
-    const isFindme5 = code === "FINDME5";
-    const isReturningCode = code === "FINDME10" || code === "FINDME15";
-
-    if (isFindme5 || isReturningCode) {
+    // For FINDME10 (first-order coupon), require email to be entered first
+    if (code === "FINDME10") {
       if (!form.email || !form.email.includes("@")) {
         setCouponMsg({ text: "Please enter your email first so we can verify this code.", ok: false });
         return;
       }
-      // Quick client-side eligibility check (the server re-verifies on validation)
+      // Check if actually a first-time customer
       try {
         const checkRes = await fetch("/api/check-first-order", {
           method: "POST",
@@ -49,19 +49,14 @@ export default function CartPage() {
           body: JSON.stringify({ email: form.email }),
         });
         const checkData = await checkRes.json();
-        if (isFindme5 && !checkData.isFirstOrder) {
+        if (!checkData.isFirstOrder) {
           setIsFirstOrder(false);
-          setCouponMsg({ text: "FINDME5 is for first-time orders only. Enter a different code.", ok: false });
+          setCouponMsg({ text: "FINDME10 is for first-time orders only. Enter a different code.", ok: false });
           return;
         }
-        if (isReturningCode && checkData.isFirstOrder) {
-          setIsFirstOrder(true);
-          setCouponMsg({ text: code + " unlocks after your first order — it's for returning customers 🎉", ok: false });
-          return;
-        }
-        setIsFirstOrder(checkData.isFirstOrder);
+        setIsFirstOrder(true);
       } catch {
-        // continue if check fails — the server still verifies the audience
+        // continue if check fails
       }
     }
 
@@ -69,7 +64,7 @@ export default function CartPage() {
       const res = await fetch("/api/check-first-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ validateCoupon: true, couponCode: code, email: form.email || undefined }),
+        body: JSON.stringify({ validateCoupon: true, couponCode: code }),
       });
       const data = await res.json();
       if (data.valid) {
@@ -92,7 +87,9 @@ export default function CartPage() {
   };
 
   const checkFirstOrder = async (email: string) => {
-    if (!email || !email.includes("@")) return;
+    const emailErr = validateEmail(email);
+    setFieldErrors((prev) => ({ ...prev, email: emailErr }));
+    if (emailErr) return;
     setCheckingEmail(true);
     try {
       const res = await fetch("/api/check-first-order", {
@@ -102,23 +99,35 @@ export default function CartPage() {
       });
       const data = await res.json();
       setIsFirstOrder(data.isFirstOrder);
-      // Remove an applied coupon if this email is no longer eligible for it
-      const nowIneligible =
-        (appliedCoupon === "FINDME5" && !data.isFirstOrder) ||
-        ((appliedCoupon === "FINDME10" || appliedCoupon === "FINDME15") && data.isFirstOrder);
-      if (nowIneligible) {
+      // If returning customer had FINDME5 applied, remove it
+      if (!data.isFirstOrder && appliedCoupon === "FINDME5") {
         setAppliedCoupon(null);
         setCouponDiscount(0);
         setCouponInput("");
-        setCouponMsg({
-          text: appliedCoupon + " doesn't apply to this email — code removed.",
-          ok: false,
-        });
+        setCouponMsg({ text: "FINDME5 is for first-time orders only. Code removed.", ok: false });
       }
     } catch {
       setIsFirstOrder(null);
     }
     setCheckingEmail(false);
+  };
+
+  /* ── Field validators ── */
+  const validateEmail = (email: string) => {
+    if (!email) return "Email is required.";
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(email)) return "Please enter a valid email address.";
+    return "";
+  };
+
+  const validatePhone = (phone: string) => {
+    if (!phone) return "Phone number is required.";
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 10 || digits.length > 14) return "Please enter a valid Nigerian phone number.";
+    // Nigerian numbers start with 070, 080, 081, 090, 091, 011 or +234
+    const nigerian = /^(\+?234|0)(7[0-9]|8[0-1]|9[0-1]|1[1])[0-9]{8}$/;
+    if (!nigerian.test(phone.replace(/\s/g, ""))) return "Enter a valid Nigerian number (e.g. 0801 234 5678).";
+    return "";
   };
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -134,10 +143,25 @@ export default function CartPage() {
       alert("Please fill in all fields.");
       return;
     }
+    // Validate email
+    const emailErr = validateEmail(form.email);
+    if (emailErr) {
+      setFieldErrors((prev) => ({ ...prev, email: emailErr }));
+      return;
+    }
+    // Validate phone
+    const phoneErr = validatePhone(form.phone);
+    if (phoneErr) {
+      setFieldErrors((prev) => ({ ...prev, phone: phoneErr }));
+      return;
+    }
     if (deliveryMethod === "delivery" && !form.address) {
       alert("Please enter your delivery address.");
       return;
     }
+
+    // Track checkout start
+    trackBeginCheckout(total, cart.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })));
 
     setLoading(true);
 
@@ -157,7 +181,7 @@ export default function CartPage() {
         clearCart();
         window.location.href = data.checkoutUrl;
       } else {
-        const msg = data.monnifyMessage || data.error || "Unknown error.";
+        const msg = data.message || data.error || "Unknown error.";
         alert(`Payment failed: ${msg}`);
         console.error("Payment error details:", data);
       }
@@ -285,7 +309,7 @@ export default function CartPage() {
               )}
               {!appliedCoupon && isFirstOrder === false && (
                 <div style={{ marginBottom: 12, padding: "8px 12px", background: "rgba(26,58,42,0.05)", borderRadius: 10, fontSize: 12, color: "#4a7a5a" }}>
-                  Welcome back! 👋 Returning-customer enter your discount coupon for your 2nd order — enter  below.
+                  Welcome back! 👋 Enter a coupon code below if you have one.
                 </div>
               )}
               {!appliedCoupon ? (
@@ -331,105 +355,137 @@ export default function CartPage() {
                 </div>
               )}
 
-              {/* CHECKOUT FORM — always visible */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
+              {/* CHECKOUT FORM */}
+              {!showForm ? (
+                <button
+                  onClick={() => setShowForm(true)}
+                  style={{ width: "100%", background: DARK, color: "#fff", border: "none", padding: "15px", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
+                >
+                  Proceed to Checkout →
+                </button>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
 
-                {/* DELIVERY METHOD */}
-                <div>
-                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {[
-                      { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
-                      { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
-                    ].map((opt) => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
-                        style={{
-                          padding: "14px 10px", borderRadius: 14, cursor: "pointer",
-                          transition: "all 0.2s", textAlign: "center",
-                          background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
-                          border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
-                        }}
-                      >
-                        <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
-                        <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
-                        <div style={{
-                          fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
-                          color: opt.value === "pickup" ? GREEN : "#4a7a5a",
-                        }}>{opt.note}</div>
-                      </button>
-                    ))}
+                  {/* DELIVERY METHOD */}
+                  <div>
+                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      {[
+                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦5,000" },
+                        { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
+                      ].map((opt) => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
+                          style={{
+                            padding: "14px 10px", borderRadius: 14, cursor: "pointer",
+                            transition: "all 0.2s", textAlign: "center",
+                            background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
+                            border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
+                          }}
+                        >
+                          <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
+                          <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
+                          <div style={{
+                            fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
+                            color: opt.value === "pickup" ? GREEN : "#4a7a5a",
+                          }}>{opt.note}</div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* PICKUP NOTE */}
+                    {deliveryMethod === "pickup" && (
+                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
+                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
+                          📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                  {/* PICKUP NOTE */}
-                  {deliveryMethod === "pickup" && (
-                    <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
-                      <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
-                        📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
+                  {[
+                    { name: "name", placeholder: "Full Name", type: "text" },
+                    { name: "email", placeholder: "Email Address", type: "email" },
+                    { name: "phone", placeholder: "Phone Number", type: "tel" },
+                  ].map((f) => (
+                    <input
+                      key={f.name}
+                      name={f.name}
+                      type={f.type}
+                      placeholder={f.placeholder}
+                      value={(form as any)[f.name]}
+                      onChange={handleChange}
+                      onBlur={
+                        f.name === "email"
+                          ? (e) => checkFirstOrder(e.target.value)
+                          : f.name === "phone"
+                          ? (e) => {
+                              const err = validatePhone(e.target.value);
+                              setFieldErrors((prev) => ({ ...prev, phone: err }));
+                            }
+                          : undefined
+                      }
+                      onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
+                      style={{
+                        width: "100%", padding: "12px 16px",
+                        background: "rgba(26,58,42,0.05)",
+                        border: "1.5px solid rgba(26,58,42,0.15)",
+                        borderRadius: 12, fontSize: 14, color: DARK,
+                        outline: "none", boxSizing: "border-box",
+                        fontFamily: "Syne, sans-serif",
+                      }}
+                    />
+                    {f.name === "email" && fieldErrors.email && (
+                      <p style={{ color: "#ef4444", fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
+                        ⚠ {fieldErrors.email}
                       </p>
-                    </div>
-                  )}
-                </div>
+                    )}
+                    {f.name === "phone" && fieldErrors.phone && (
+                      <p style={{ color: "#ef4444", fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
+                        ⚠ {fieldErrors.phone}
+                      </p>
+                    )}
+                  ))}
 
-                {[
-                  { name: "name", placeholder: "Full Name", type: "text" },
-                  { name: "email", placeholder: "Email Address", type: "email" },
-                  { name: "phone", placeholder: "Phone Number", type: "tel" },
-                ].map((f) => (
-                  <input
-                    key={f.name}
-                    name={f.name}
-                    type={f.type}
-                    placeholder={f.placeholder}
-                    value={(form as any)[f.name]}
+                  {deliveryMethod === "delivery" && (
+                  <textarea
+                    name="address"
+                    placeholder="Delivery Address"
+                    value={form.address}
                     onChange={handleChange}
-                    onBlur={f.name === "email" ? (e) => checkFirstOrder(e.target.value) : undefined}
-                    onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
+                    rows={3}
                     style={{
                       width: "100%", padding: "12px 16px",
                       background: "rgba(26,58,42,0.05)",
                       border: "1.5px solid rgba(26,58,42,0.15)",
                       borderRadius: 12, fontSize: 14, color: DARK,
-                      outline: "none", boxSizing: "border-box",
+                      outline: "none", resize: "none", boxSizing: "border-box",
                       fontFamily: "Syne, sans-serif",
                     }}
                   />
-                ))}
+                  )}
 
-                {deliveryMethod === "delivery" && (
-                <textarea
-                  name="address"
-                  placeholder="Delivery Address"
-                  value={form.address}
-                  onChange={handleChange}
-                  rows={3}
-                  style={{
-                    width: "100%", padding: "12px 16px",
-                    background: "rgba(26,58,42,0.05)",
-                    border: "1.5px solid rgba(26,58,42,0.15)",
-                    borderRadius: 12, fontSize: 14, color: DARK,
-                    outline: "none", resize: "none", boxSizing: "border-box",
-                    fontFamily: "Syne, sans-serif",
-                  }}
-                />
-                )}
+                  <button
+                    onClick={handleCheckout}
+                    disabled={loading}
+                    style={{
+                      width: "100%", background: loading ? "#aaa" : GREEN,
+                      color: "#000", border: "none", padding: "15px",
+                      borderRadius: 40, fontFamily: "Syne, sans-serif",
+                      fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {loading ? "Redirecting to Payment..." : "Pay Now →"}
+                  </button>
 
-                <button
-                  onClick={handleCheckout}
-                  disabled={loading}
-                  style={{
-                    width: "100%", background: loading ? "#aaa" : GREEN,
-                    color: "#000", border: "none", padding: "15px",
-                    borderRadius: 40, fontFamily: "Syne, sans-serif",
-                    fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
-                  }}
-                >
-                  {loading ? "Redirecting to Payment..." : "Pay Now →"}
-                </button>
-              </div>
+                  <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#aaa", fontSize: 13, cursor: "pointer" }}>
+                    ← Back
+                  </button>
+                </div>
+              )}
 
               <button onClick={clearCart} style={{ background: "none", border: "none", color: "#e57373", fontSize: 13, fontWeight: 600, cursor: "pointer", width: "100%", marginTop: 12 }}>
                 Clear Cart
