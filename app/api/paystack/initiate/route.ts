@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
     /* ── 0. Validate required fields ── */
     if (!email || !email.includes("@")) {
-      return NextResponse.json({ error: "Invalid email address", message: "Please enter a valid email address." }, { status: 400 });
+      return NextResponse.json({ error: "Invalid email address Please enter a valid email address", message: "Please enter a valid email address." }, { status: 400 });
     }
     if (!name || !name.trim()) {
       return NextResponse.json({ error: "Name required", message: "Please enter your name." }, { status: 400 });

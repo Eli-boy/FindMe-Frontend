@@ -29,7 +29,7 @@ type Order = {
   id: string; order_number: number; customer_name: string; customer_email: string;
   customer_phone: string; delivery_address: string; delivery_method: string;
   items: any[]; subtotal: number; total: number; status: string; created_at: string;
-  payment_status?: string; paid_at?: string; pickup_code?: string; ready_notified_at?: string;
+  payment_status?: string; payment_method?: string; paid_at?: string; pickup_code?: string; ready_notified_at?: string; order_type?: string;
 };
 
 type CMSField = { key: string; value: string; type: string };
@@ -80,7 +80,41 @@ export default function AdminDashboard() {
   const [printLoading, setPrintLoading] = useState(false);
   const [printDone, setPrintDone] = useState<{ count: number; csv: string } | null>(null);
 
+  // Manual Order & Invoice Modals
+  const [showManualOrderModal, setShowManualOrderModal] = useState(false);
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
+  const [manualForm, setManualForm] = useState({
+    customer_name: "", customer_email: "", customer_phone: "", delivery_address: "",
+    delivery_method: "delivery", payment_method: "bank_transfer", payment_status: "paid",
+    items: [{ name: "", price: 0, quantity: 1 }]
+  });
+
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
+
+  const handleCreateManualOrder = async () => {
+    if (!manualForm.customer_name || !manualForm.customer_email) {
+      showToast("Please provide customer name and email");
+      return;
+    }
+    setSaving(true);
+    const total = manualForm.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const payload = { ...manualForm, subtotal: total, total, order_type: "manual", status: "packed" };
+
+    const res = await api("create_manual_order", { order: payload });
+    if (res.order) {
+      setOrders((prev) => [res.order, ...prev]);
+      setShowManualOrderModal(false);
+      showToast("Manual Order created!");
+      setManualForm({
+        customer_name: "", customer_email: "", customer_phone: "", delivery_address: "",
+        delivery_method: "delivery", payment_method: "bank_transfer", payment_status: "paid",
+        items: [{ name: "", price: 0, quantity: 1 }]
+      });
+    } else {
+      showToast("Error creating manual order: " + (res.error || "Unknown error"));
+    }
+    setSaving(false);
+  };
 
   const generateAndExport = async () => {
     if (printCount < 1 || printCount > 300) { showToast("Enter a number between 1 and 300"); return; }
@@ -260,6 +294,140 @@ export default function AdminDashboard() {
 
       {toast && <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, background: G, color: "#000", padding: "12px 20px", borderRadius: 40, fontWeight: 700, fontSize: 14 }}>✓ {toast}</div>}
 
+      {/* CREATE MANUAL ORDER MODAL */}
+      {showManualOrderModal && (
+        <div onClick={() => setShowManualOrderModal(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: CARD, border: `1px solid ${BORDER}`, borderRadius: 24, padding: 32, maxWidth: 600, width: "100%", maxHeight: "90vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+              <h2 style={{ margin: 0, fontWeight: 800, fontSize: 20 }}>➕ Create Manual Order</h2>
+              <button onClick={() => setShowManualOrderModal(false)} style={{ background: "rgba(255,255,255,0.06)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#4a7a5a", fontSize: 18, cursor: "pointer" }}>✕</button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <input placeholder="Customer Name" value={manualForm.customer_name} onChange={(e) => setManualForm({ ...manualForm, customer_name: e.target.value })} style={inp()} />
+              <input placeholder="Customer Email" value={manualForm.customer_email} onChange={(e) => setManualForm({ ...manualForm, customer_email: e.target.value })} style={inp()} />
+              <input placeholder="Customer Phone" value={manualForm.customer_phone} onChange={(e) => setManualForm({ ...manualForm, customer_phone: e.target.value })} style={inp()} />
+              <input placeholder="Delivery Address" value={manualForm.delivery_address} onChange={(e) => setManualForm({ ...manualForm, delivery_address: e.target.value })} style={inp()} />
+
+              <div style={{ display: "flex", gap: 10 }}>
+                <select value={manualForm.payment_method} onChange={(e) => setManualForm({ ...manualForm, payment_method: e.target.value })} style={{ ...inp(), flex: 1, cursor: "pointer" }}>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="cash">Cash</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="paystack">Paystack</option>
+                </select>
+                <select value={manualForm.payment_status} onChange={(e) => setManualForm({ ...manualForm, payment_status: e.target.value })} style={{ ...inp(), flex: 1, cursor: "pointer" }}>
+                  <option value="paid">Paid</option>
+                  <option value="unpaid">Unpaid</option>
+                </select>
+              </div>
+
+              <div style={{ marginTop: 10 }}>
+                <p style={{ fontWeight: 700, fontSize: 13, color: G, marginBottom: 8 }}>Order Items</p>
+                {manualForm.items.map((item, idx) => (
+                  <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                    <input placeholder="Item Name" value={item.name} onChange={(e) => {
+                      const updated = [...manualForm.items];
+                      updated[idx].name = e.target.value;
+                      setManualForm({ ...manualForm, items: updated });
+                    }} style={{ ...inp(), flex: 2 }} />
+                    <input placeholder="Price" type="number" value={item.price || ""} onChange={(e) => {
+                      const updated = [...manualForm.items];
+                      updated[idx].price = Number(e.target.value);
+                      setManualForm({ ...manualForm, items: updated });
+                    }} style={{ ...inp(), flex: 1 }} />
+                    <input placeholder="Qty" type="number" value={item.quantity} onChange={(e) => {
+                      const updated = [...manualForm.items];
+                      updated[idx].quantity = Number(e.target.value);
+                      setManualForm({ ...manualForm, items: updated });
+                    }} style={{ ...inp(), flex: 1 }} />
+                  </div>
+                ))}
+                <button onClick={() => setManualForm({ ...manualForm, items: [...manualForm.items, { name: "", price: 0, quantity: 1 }] })}
+                  style={{ ...btn({ background: "rgba(255,255,255,0.06)", color: "#e8f5e8", fontSize: 12, padding: "6px 12px" }) }}>
+                  + Add Item
+                </button>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+                <button onClick={handleCreateManualOrder} disabled={saving} style={btn({ flex: 1, padding: "12px", borderRadius: 12 })}>{saving ? "Creating..." : "Create Order"}</button>
+                <button onClick={() => setShowManualOrderModal(false)} style={{ ...btn({ flex: 1, padding: "12px", borderRadius: 12, background: "rgba(255,255,255,0.06)", color: "#4a7a5a" }) }}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* INVOICE MODAL */}
+      {invoiceOrder && (
+        <div onClick={() => setInvoiceOrder(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: "#ffffff", color: "#000000", borderRadius: 16, padding: 36, maxWidth: 650, width: "100%", maxHeight: "90vh", overflowY: "auto", fontFamily: "sans-serif" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "2px solid #eee", paddingBottom: 20 }}>
+              <div>
+                <h1 style={{ fontWeight: 800, fontSize: 24, margin: 0, fontFamily: "Syne, sans-serif" }}>Find<span style={{ color: G }}>Me</span></h1>
+                <p style={{ color: "#666", fontSize: 12, margin: "4px 0 0" }}>https://findme.com.ng</p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <h2 style={{ margin: 0, fontSize: 20, color: "#333" }}>INVOICE</h2>
+                <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>Order #{invoiceOrder.order_number}</p>
+                <p style={{ margin: "2px 0 0", fontSize: 12, color: "#888" }}>Date: {new Date(invoiceOrder.created_at).toLocaleDateString()}</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "space-between", margin: "24px 0" }}>
+              <div>
+                <p style={{ margin: "0 0 4px", fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase" }}>Billed To</p>
+                <p style={{ margin: "0 0 2px", fontWeight: 700, fontSize: 14 }}>{invoiceOrder.customer_name}</p>
+                <p style={{ margin: 0, color: "#555", fontSize: 13 }}>{invoiceOrder.customer_email}</p>
+                <p style={{ margin: 0, color: "#555", fontSize: 13 }}>{invoiceOrder.customer_phone}</p>
+                {invoiceOrder.delivery_address && <p style={{ margin: "4px 0 0", color: "#555", fontSize: 13 }}>{invoiceOrder.delivery_address}</p>}
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <p style={{ margin: "0 0 4px", fontSize: 11, fontWeight: 700, color: "#888", textTransform: "uppercase" }}>Payment Details</p>
+                <p style={{ margin: 0, fontSize: 13 }}>Status: <strong>{(invoiceOrder.payment_status || "unpaid").toUpperCase()}</strong></p>
+                <p style={{ margin: "2px 0 0", fontSize: 13 }}>Method: <strong>{(invoiceOrder.payment_method || "Online").replace("_", " ").toUpperCase()}</strong></p>
+              </div>
+            </div>
+
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 24 }}>
+              <thead>
+                <tr style={{ background: "#f8f9fa", textAlign: "left" }}>
+                  <th style={{ padding: "10px", fontSize: 12, color: "#555" }}>Item</th>
+                  <th style={{ padding: "10px", fontSize: 12, color: "#555", textAlign: "center" }}>Qty</th>
+                  <th style={{ padding: "10px", fontSize: 12, color: "#555", textAlign: "right" }}>Price</th>
+                  <th style={{ padding: "10px", fontSize: 12, color: "#555", textAlign: "right" }}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(invoiceOrder.items || []).map((item: any, i: number) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #eee" }}>
+                    <td style={{ padding: "12px 10px", fontSize: 14 }}>{item.name}</td>
+                    <td style={{ padding: "12px 10px", fontSize: 14, textAlign: "center" }}>{item.quantity}</td>
+                    <td style={{ padding: "12px 10px", fontSize: 14, textAlign: "right" }}>₦{Number(item.price).toLocaleString()}</td>
+                    <td style={{ padding: "12px 10px", fontSize: 14, textAlign: "right", fontWeight: 700 }}>₦{(item.price * item.quantity).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 28 }}>
+              <div style={{ width: 220 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 14 }}>
+                  <span>Subtotal</span><span>₦{(invoiceOrder.subtotal || invoiceOrder.total || 0).toLocaleString()}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderTop: "2px solid #000", fontWeight: 800, fontSize: 16 }}>
+                  <span>Total</span><span>₦{(invoiceOrder.total || 0).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+              <button onClick={() => window.print()} style={{ padding: "10px 20px", background: "#000", color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}>🖨️ Print / Save PDF</button>
+              <button onClick={() => setInvoiceOrder(null)} style={{ padding: "10px 16px", background: "#eee", color: "#333", border: "none", borderRadius: 8, fontWeight: 600, cursor: "pointer" }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ORDER MODAL */}
       {selected && (
         <div onClick={() => setSelected(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -315,16 +483,22 @@ export default function AdminDashboard() {
                 </button>
               ))}
             </div>
-            <button onClick={() => {
-                let phone = (selected.customer_phone || "").replace(/\D/g, "");
-                if (phone.startsWith("0")) phone = "234" + phone.slice(1);
-                if (!phone.startsWith("234")) phone = "234" + phone;
-                const msg = "Hello " + selected.customer_name + ", regarding your FindMe order #" + selected.order_number;
-                window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
-              }}
-              style={{ width: "100%", padding: 12, background: "#25D366", color: "#000", border: "none", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-              💬 Message on WhatsApp
-            </button>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button onClick={() => setInvoiceOrder(selected)}
+                style={{ flex: 1, padding: 12, background: G, color: "#000", border: "none", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                📄 Generate Invoice
+              </button>
+              <button onClick={() => {
+                  let phone = (selected.customer_phone || "").replace(/\D/g, "");
+                  if (phone.startsWith("0")) phone = "234" + phone.slice(1);
+                  if (!phone.startsWith("234")) phone = "234" + phone;
+                  const msg = "Hello " + selected.customer_name + ", regarding your FindMe order #" + selected.order_number;
+                  window.open("https://api.whatsapp.com/send?phone=" + phone + "&text=" + encodeURIComponent(msg), "_blank");
+                }}
+                style={{ flex: 1, padding: 12, background: "#25D366", color: "#000", border: "none", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+                💬 Message on WhatsApp
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -414,8 +588,14 @@ export default function AdminDashboard() {
           {/* OVERVIEW */}
           {tab === 0 && (
             <div>
-              <h2 style={{ fontWeight: 800, fontSize: 26, margin: "0 0 6px" }}>Overview</h2>
-              <p style={{ color: "#4a7a5a", marginBottom: 32, fontSize: 13 }}>{new Date().toDateString()}</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                <div>
+                  <h2 style={{ fontWeight: 800, fontSize: 26, margin: "0 0 6px" }}>Overview</h2>
+                  <p style={{ color: "#4a7a5a", margin: 0, fontSize: 13 }}>{new Date().toDateString()}</p>
+                </div>
+                <button onClick={() => setShowManualOrderModal(true)} style={btn()}>➕ Create Manual Order</button>
+              </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16, marginBottom: 36 }}>
                 {[
                   { label: "Total Revenue", value: `₦${totalRevenue.toLocaleString()}`, icon: "💰", color: G },
@@ -442,6 +622,7 @@ export default function AdminDashboard() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontWeight: 800, color: G, fontSize: 14 }}>₦{(o.total || o.subtotal || 0).toLocaleString()}</span>
                     <PaymentBadge status={o.payment_status} />
+                    <button onClick={(e) => { e.stopPropagation(); setInvoiceOrder(o); }} style={{ padding: "4px 8px", background: "rgba(255,255,255,0.06)", border: "none", borderRadius: 6, color: "#e8f5e8", fontSize: 12, cursor: "pointer" }}>📄 Invoice</button>
                     <span style={{ background: STATUS_COLORS[o.status] || "#4a7a5a", color: "#000", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 700 }}>{o.status || "pending"}</span>
                   </div>
                 </div>
@@ -458,6 +639,7 @@ export default function AdminDashboard() {
                   <p style={{ color: "#4a7a5a", fontSize: 13, margin: 0 }}>{filtered.length} orders</p>
                 </div>
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <button onClick={() => setShowManualOrderModal(true)} style={btn()}>➕ Create Manual Order</button>
                   <input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ ...inp({ width: 200, borderRadius: 40 }) }} />
                   <select value={filter} onChange={(e) => setFilter(e.target.value)} style={{ ...inp({ width: "auto", borderRadius: 40, cursor: "pointer" }) }}>
                     <option value="all">All</option>
@@ -484,6 +666,7 @@ export default function AdminDashboard() {
                       <span style={{ color: "#4a7a5a", fontSize: 12 }}>{new Date(o.created_at).toLocaleDateString()}</span>
                       <span style={{ fontWeight: 800, color: G, fontSize: 15 }}>₦{(o.total || o.subtotal || 0).toLocaleString()}</span>
                       <PaymentBadge status={o.payment_status} />
+                      <button onClick={(e) => { e.stopPropagation(); setInvoiceOrder(o); }} style={{ padding: "4px 8px", background: "rgba(255,255,255,0.06)", border: "none", borderRadius: 6, color: "#e8f5e8", fontSize: 12, cursor: "pointer" }}>📄 Invoice</button>
                       <span style={{ background: STATUS_COLORS[o.status || "pending"], color: "#000", padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 700 }}>
                         {(o.status || "pending").charAt(0).toUpperCase() + (o.status || "pending").slice(1)}
                       </span>
