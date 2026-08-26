@@ -12,7 +12,6 @@ const GREEN = "#1db954";
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty, clearCart } = useCart();
 
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [form, setForm] = useState({
@@ -49,7 +48,7 @@ export default function CartPage() {
         const checkData = await checkRes.json();
         if (!checkData.isFirstOrder) {
           setIsFirstOrder(false);
-          setCouponMsg({ text: "FINDME10 is for first-time orders only. Enter a different code.", ok: false });
+          setCouponMsg({ text: "FINDME5 is for first-time orders only. Enter a different code.", ok: false });
           return;
         }
         setIsFirstOrder(true);
@@ -96,11 +95,11 @@ export default function CartPage() {
       const data = await res.json();
       setIsFirstOrder(data.isFirstOrder);
       // If returning customer had FINDME10 applied, remove it
-      if (!data.isFirstOrder && appliedCoupon === "FINDME10") {
+      if (!data.isFirstOrder && appliedCoupon === "FINDME5") {
         setAppliedCoupon(null);
         setCouponDiscount(0);
         setCouponInput("");
-        setCouponMsg({ text: "FINDME10 is for first-time orders only. Code removed.", ok: false });
+        setCouponMsg({ text: "FINDME5 is for first-time orders only. Code removed.", ok: false });
       }
     } catch {
       setIsFirstOrder(null);
@@ -246,7 +245,7 @@ export default function CartPage() {
                   <p style={{ margin: 0, fontSize: 13, color: "#2a4a2a", fontFamily: "Syne, sans-serif" }}>
                     🎉 Welcome! Use code{" "}
                     <strong
-                      onClick={() => setCouponInput("FINDME10")}
+                      onClick={() => setCouponInput("FINDME5")}
                       style={{ color: GREEN, cursor: "pointer", letterSpacing: 1, textDecoration: "underline dotted" }}
                       title="Click to fill"
                     >
@@ -318,118 +317,105 @@ export default function CartPage() {
                 </div>
               )}
 
-              {/* CHECKOUT FORM */}
-              {!showForm ? (
-                <button
-                  onClick={() => setShowForm(true)}
-                  style={{ width: "100%", background: DARK, color: "#fff", border: "none", padding: "15px", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
-                >
-                  Proceed to Checkout →
-                </button>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
+              {/* CHECKOUT FORM — always visible */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
 
-                  {/* DELIVERY METHOD */}
-                  <div>
-                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                      {[
-                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
-                        { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
-                      ].map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
-                          style={{
-                            padding: "14px 10px", borderRadius: 14, cursor: "pointer",
-                            transition: "all 0.2s", textAlign: "center",
-                            background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
-                            border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
-                          }}
-                        >
-                          <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
-                          <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
-                          <div style={{
-                            fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
-                            color: opt.value === "pickup" ? GREEN : "#4a7a5a",
-                          }}>{opt.note}</div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* PICKUP NOTE */}
-                    {deliveryMethod === "pickup" && (
-                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
-                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
-                          📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
-                        </p>
-                      </div>
-                    )}
+                {/* DELIVERY METHOD */}
+                <div>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {[
+                      { value: "delivery", label: "Home Delivery", icon: "🚚", note: "" },
+                      { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
+                        style={{
+                          padding: "14px 10px", borderRadius: 14, cursor: "pointer",
+                          transition: "all 0.2s", textAlign: "center",
+                          background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
+                          border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
+                        }}
+                      >
+                        <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
+                        <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
+                        <div style={{
+                          fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
+                          color: opt.value === "pickup" ? GREEN : "#4a7a5a",
+                        }}>{opt.note}</div>
+                      </button>
+                    ))}
                   </div>
 
-                  {[
-                    { name: "name", placeholder: "Full Name", type: "text" },
-                    { name: "email", placeholder: "Email Address", type: "email" },
-                    { name: "phone", placeholder: "Phone Number", type: "tel" },
-                  ].map((f) => (
-                    <input
-                      key={f.name}
-                      name={f.name}
-                      type={f.type}
-                      placeholder={f.placeholder}
-                      value={(form as any)[f.name]}
-                      onChange={handleChange}
-                      onBlur={f.name === "email" ? (e) => checkFirstOrder(e.target.value) : undefined}
-                      onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
-                      style={{
-                        width: "100%", padding: "12px 16px",
-                        background: "rgba(26,58,42,0.05)",
-                        border: "1.5px solid rgba(26,58,42,0.15)",
-                        borderRadius: 12, fontSize: 14, color: DARK,
-                        outline: "none", boxSizing: "border-box",
-                        fontFamily: "Syne, sans-serif",
-                      }}
-                    />
-                  ))}
+                  {/* PICKUP NOTE */}
+                  {deliveryMethod === "pickup" && (
+                    <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
+                      <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
+                        📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
+                      </p>
+                    </div>
+                  )}
+                </div>
 
-                  {deliveryMethod === "delivery" && (
-                  <textarea
-                    name="address"
-                    placeholder="Delivery Address"
-                    value={form.address}
+                {[
+                  { name: "name", placeholder: "Full Name", type: "text" },
+                  { name: "email", placeholder: "Email Address", type: "email" },
+                  { name: "phone", placeholder: "Phone Number", type: "tel" },
+                ].map((f) => (
+                  <input
+                    key={f.name}
+                    name={f.name}
+                    type={f.type}
+                    placeholder={f.placeholder}
+                    value={(form as any)[f.name]}
                     onChange={handleChange}
-                    rows={3}
+                    onBlur={f.name === "email" ? (e) => checkFirstOrder(e.target.value) : undefined}
+                    onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
                     style={{
                       width: "100%", padding: "12px 16px",
                       background: "rgba(26,58,42,0.05)",
                       border: "1.5px solid rgba(26,58,42,0.15)",
                       borderRadius: 12, fontSize: 14, color: DARK,
-                      outline: "none", resize: "none", boxSizing: "border-box",
+                      outline: "none", boxSizing: "border-box",
                       fontFamily: "Syne, sans-serif",
                     }}
                   />
-                  )}
+                ))}
 
-                  <button
-                    onClick={handleCheckout}
-                    disabled={loading}
-                    style={{
-                      width: "100%", background: loading ? "#aaa" : GREEN,
-                      color: "#000", border: "none", padding: "15px",
-                      borderRadius: 40, fontFamily: "Syne, sans-serif",
-                      fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {loading ? "Redirecting to Payment..." : "Pay Now →"}
-                  </button>
+                {deliveryMethod === "delivery" && (
+                <textarea
+                  name="address"
+                  placeholder="Delivery Address"
+                  value={form.address}
+                  onChange={handleChange}
+                  rows={3}
+                  style={{
+                    width: "100%", padding: "12px 16px",
+                    background: "rgba(26,58,42,0.05)",
+                    border: "1.5px solid rgba(26,58,42,0.15)",
+                    borderRadius: 12, fontSize: 14, color: DARK,
+                    outline: "none", resize: "none", boxSizing: "border-box",
+                    fontFamily: "Syne, sans-serif",
+                  }}
+                />
+                )}
 
-                  <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#aaa", fontSize: 13, cursor: "pointer" }}>
-                    ← Back
-                  </button>
-                </div>
-              )}
+                <button
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  style={{
+                    width: "100%", background: loading ? "#aaa" : GREEN,
+                    color: "#000", border: "none", padding: "15px",
+                    borderRadius: 40, fontFamily: "Syne, sans-serif",
+                    fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {loading ? "Redirecting to Payment..." : "Pay Now →"}
+                </button>
+              </div>
 
               <button onClick={clearCart} style={{ background: "none", border: "none", color: "#e57373", fontSize: 13, fontWeight: 600, cursor: "pointer", width: "100%", marginTop: 12 }}>
                 Clear Cart
