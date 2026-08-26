@@ -285,7 +285,7 @@ export default function CartPage() {
               )}
               {!appliedCoupon && isFirstOrder === false && (
                 <div style={{ marginBottom: 12, padding: "8px 12px", background: "rgba(26,58,42,0.05)", borderRadius: 10, fontSize: 12, color: "#4a7a5a" }}>
-                  Welcome back! 👋 Returning-customer codes FINDME10 & FINDME15 work from your 2nd order — enter one below.
+                  Welcome back! 👋 Returning-customer enter your discount coupon for your 2nd order — enter  below.
                 </div>
               )}
               {!appliedCoupon ? (
