@@ -1,4 +1,5 @@
 "use client";
+
 import { trackBeginCheckout, trackWhatsAppClick } from "@/app/analytics";
 
 import Image from "next/image";
@@ -10,10 +11,29 @@ const BG = "#c8dfc8";
 const DARK = "#1a3a2a";
 const GREEN = "#1db954";
 
+/* ── Field validators ── */
+const validateEmail = (email: string): string => {
+  if (!email) return "Email is required.";
+  const re = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+  if (!re.test(email.trim())) return "Please enter a valid email address.";
+  return "";
+};
+
+const validatePhone = (phone: string): string => {
+  if (!phone) return "Phone number is required.";
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 10 || digits.length > 15) return "Please enter a valid phone number.";
+  // Nigerian numbers: 070x/080x/081x/090x/091x (0 + 10 digits) or 234/+234 prefix
+  const nigerian = /^(234|0)(7[0-9]|8[0-1]|9[0-1])[0-9]{8}$/;
+  if (nigerian.test(digits)) return "";
+  // Other international numbers: + followed by 8–15 digits
+  if (phone.trim().startsWith("+") && digits.length >= 8 && digits.length <= 15) return "";
+  return "Enter a valid Nigerian number (e.g. 0801 234 5678).";
+};
+
 export default function CartPage() {
   const { cart, removeFromCart, increaseQty, decreaseQty, clearCart } = useCart();
 
-  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [form, setForm] = useState({
@@ -35,13 +55,16 @@ export default function CartPage() {
       return;
     }
 
-    // For FINDME10 (first-order coupon), require email to be entered first
-    if (code === "FINDME10") {
+    // Audience-restricted codes: FINDME5 = first order only, FINDME10/FINDME15 = returning customers only
+    const isFindme5 = code === "FINDME5";
+    const isReturningCode = code === "FINDME10" || code === "FINDME15";
+
+    if (isFindme5 || isReturningCode) {
       if (!form.email || !form.email.includes("@")) {
         setCouponMsg({ text: "Please enter your email first so we can verify this code.", ok: false });
         return;
       }
-      // Check if actually a first-time customer
+      // Quick client-side eligibility check (the server re-verifies on validation)
       try {
         const checkRes = await fetch("/api/check-first-order", {
           method: "POST",
@@ -49,14 +72,19 @@ export default function CartPage() {
           body: JSON.stringify({ email: form.email }),
         });
         const checkData = await checkRes.json();
-        if (!checkData.isFirstOrder) {
+        if (isFindme5 && !checkData.isFirstOrder) {
           setIsFirstOrder(false);
-          setCouponMsg({ text: "FINDME10 is for first-time orders only. Enter a different code.", ok: false });
+          setCouponMsg({ text: "FINDME5 is for first-time orders only. Enter a different code.", ok: false });
           return;
         }
-        setIsFirstOrder(true);
+        if (isReturningCode && checkData.isFirstOrder) {
+          setIsFirstOrder(true);
+          setCouponMsg({ text: code + " unlocks after your first order — it's for returning customers 🎉", ok: false });
+          return;
+        }
+        setIsFirstOrder(checkData.isFirstOrder);
       } catch {
-        // continue if check fails
+        // continue if check fails — the server still verifies the audience
       }
     }
 
@@ -64,7 +92,7 @@ export default function CartPage() {
       const res = await fetch("/api/check-first-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ validateCoupon: true, couponCode: code }),
+        body: JSON.stringify({ validateCoupon: true, couponCode: code, email: form.email || undefined }),
       });
       const data = await res.json();
       if (data.valid) {
@@ -88,7 +116,7 @@ export default function CartPage() {
 
   const checkFirstOrder = async (email: string) => {
     const emailErr = validateEmail(email);
-    setFieldErrors((prev) => ({ ...prev, email: emailErr }));
+    setFieldErrors((prev) => ({ ...prev, email: emailErr || undefined }));
     if (emailErr) return;
     setCheckingEmail(true);
     try {
@@ -99,12 +127,18 @@ export default function CartPage() {
       });
       const data = await res.json();
       setIsFirstOrder(data.isFirstOrder);
-      // If returning customer had FINDME5 applied, remove it
-      if (!data.isFirstOrder && appliedCoupon === "FINDME5") {
+      // Remove an applied coupon if this email is no longer eligible for it
+      const nowIneligible =
+        (appliedCoupon === "FINDME5" && !data.isFirstOrder) ||
+        ((appliedCoupon === "FINDME10" || appliedCoupon === "FINDME15") && data.isFirstOrder);
+      if (nowIneligible) {
         setAppliedCoupon(null);
         setCouponDiscount(0);
         setCouponInput("");
-        setCouponMsg({ text: "FINDME5 is for first-time orders only. Code removed.", ok: false });
+        setCouponMsg({
+          text: appliedCoupon + " doesn't apply to this email — code removed.",
+          ok: false,
+        });
       }
     } catch {
       setIsFirstOrder(null);
@@ -112,49 +146,33 @@ export default function CartPage() {
     setCheckingEmail(false);
   };
 
-  /* ── Field validators ── */
-  const validateEmail = (email: string) => {
-    if (!email) return "Email is required.";
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) return "Please enter a valid email address.";
-    return "";
-  };
-
-  const validatePhone = (phone: string) => {
-    if (!phone) return "Phone number is required.";
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length < 10 || digits.length > 14) return "Please enter a valid Nigerian phone number.";
-    // Nigerian numbers start with 070, 080, 081, 090, 091, 011 or +234
-    const nigerian = /^(\+?234|0)(7[0-9]|8[0-1]|9[0-1]|1[1])[0-9]{8}$/;
-    if (!nigerian.test(phone.replace(/\s/g, ""))) return "Enter a valid Nigerian number (e.g. 0801 234 5678).";
-    return "";
-  };
-
   const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
   const discountAmount = appliedCoupon ? Math.round(subtotal * couponDiscount / 100) : 0;
   const total = subtotal - discountAmount; // No fixed shipping — fee shared via WhatsApp
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    // Live-clear an existing error the moment the field becomes valid
+    if (name === "email" && fieldErrors.email) {
+      setFieldErrors((prev) => ({ ...prev, email: validateEmail(value) || undefined }));
+    }
+    if (name === "phone" && fieldErrors.phone) {
+      setFieldErrors((prev) => ({ ...prev, phone: validatePhone(value) || undefined }));
+    }
   };
 
   const handleCheckout = async () => {
+    // Validate both fields at once so all problems show immediately
+    const emailErr = validateEmail(form.email);
+    const phoneErr = validatePhone(form.phone);
+    setFieldErrors({ email: emailErr || undefined, phone: phoneErr || undefined });
+
     if (!form.name || !form.email || !form.phone) {
       alert("Please fill in all fields.");
       return;
     }
-    // Validate email
-    const emailErr = validateEmail(form.email);
-    if (emailErr) {
-      setFieldErrors((prev) => ({ ...prev, email: emailErr }));
-      return;
-    }
-    // Validate phone
-    const phoneErr = validatePhone(form.phone);
-    if (phoneErr) {
-      setFieldErrors((prev) => ({ ...prev, phone: phoneErr }));
-      return;
-    }
+    if (emailErr || phoneErr) return; // inline errors are already showing on the fields
     if (deliveryMethod === "delivery" && !form.address) {
       alert("Please enter your delivery address.");
       return;
@@ -267,7 +285,7 @@ export default function CartPage() {
                   <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 800, fontSize: 18, color: GREEN }}>₦{total.toLocaleString()}</span>
                 </div>
                 <div style={{ fontSize: 12, color: "#4a7a5a", textAlign: "right" }}>
-                  {deliveryMethod === "delivery" ? "🚚 Delivery fee confirmed via WhatsApp" : "🏪 Self pickup — no delivery fee"}
+                  {deliveryMethod === "delivery" ? "🚚 Delivery fee will be communicated with you via WhatsApp" : "🏪 Self pickup — no delivery fee"}
                 </div>
               </div>
 
@@ -309,7 +327,7 @@ export default function CartPage() {
               )}
               {!appliedCoupon && isFirstOrder === false && (
                 <div style={{ marginBottom: 12, padding: "8px 12px", background: "rgba(26,58,42,0.05)", borderRadius: 10, fontSize: 12, color: "#4a7a5a" }}>
-                  Welcome back! 👋 Enter a coupon code below if you have one.
+                  Welcome back! 👋 Returning-customer enter a discount code for your 2nd order — enter  below.
                 </div>
               )}
               {!appliedCoupon ? (
@@ -355,137 +373,135 @@ export default function CartPage() {
                 </div>
               )}
 
-              {/* CHECKOUT FORM */}
-              {!showForm ? (
-                <button
-                  onClick={() => setShowForm(true)}
-                  style={{ width: "100%", background: DARK, color: "#fff", border: "none", padding: "15px", borderRadius: 40, fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
-                >
-                  Proceed to Checkout →
-                </button>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
+              {/* CHECKOUT FORM — always visible */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 14, color: DARK, margin: 0 }}>Your Details</p>
 
-                  {/* DELIVERY METHOD */}
-                  <div>
-                    <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                      {[
-                        { value: "delivery", label: "Home Delivery", icon: "🚚", note: "+₦5,000" },
-                        { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
-                      ].map((opt) => (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
-                          style={{
-                            padding: "14px 10px", borderRadius: 14, cursor: "pointer",
-                            transition: "all 0.2s", textAlign: "center",
-                            background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
-                            border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
-                          }}
-                        >
-                          <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
-                          <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
-                          <div style={{
-                            fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
-                            color: opt.value === "pickup" ? GREEN : "#4a7a5a",
-                          }}>{opt.note}</div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* PICKUP NOTE */}
-                    {deliveryMethod === "pickup" && (
-                      <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
-                        <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
-                          📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
-                        </p>
-                      </div>
-                    )}
+                {/* DELIVERY METHOD */}
+                <div>
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, fontSize: 12, color: "#4a7a5a", textTransform: "uppercase", letterSpacing: 1, margin: "0 0 10px" }}>Fulfilment Method</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {[
+                      { value: "delivery", label: "Home Delivery", icon: "🚚", note: "Fee will be communicated with you via WhatsApp" },
+                      { value: "pickup", label: "Self Pickup", icon: "🏪", note: "Free" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setDeliveryMethod(opt.value as "delivery" | "pickup")}
+                        style={{
+                          padding: "14px 10px", borderRadius: 14, cursor: "pointer",
+                          transition: "all 0.2s", textAlign: "center",
+                          background: deliveryMethod === opt.value ? "rgba(26,58,42,0.08)" : "rgba(26,58,42,0.03)",
+                          border: deliveryMethod === opt.value ? `2px solid ${DARK}` : "1.5px solid rgba(26,58,42,0.15)",
+                        }}
+                      >
+                        <div style={{ fontSize: 22, marginBottom: 6 }}>{opt.icon}</div>
+                        <div style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 13, color: DARK }}>{opt.label}</div>
+                        <div style={{
+                          fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: 12, marginTop: 4,
+                          color: opt.value === "pickup" ? GREEN : "#4a7a5a", lineHeight: 1.4,
+                        }}>{opt.note}</div>
+                      </button>
+                    ))}
                   </div>
 
-                  {[
-                    { name: "name", placeholder: "Full Name", type: "text" },
-                    { name: "email", placeholder: "Email Address", type: "email" },
-                    { name: "phone", placeholder: "Phone Number", type: "tel" },
-                  ].map((f) => (
-                    <input
-                      key={f.name}
-                      name={f.name}
-                      type={f.type}
-                      placeholder={f.placeholder}
-                      value={(form as any)[f.name]}
-                      onChange={handleChange}
-                      onBlur={
-                        f.name === "email"
-                          ? (e) => checkFirstOrder(e.target.value)
-                          : f.name === "phone"
-                          ? (e) => {
-                              const err = validatePhone(e.target.value);
-                              setFieldErrors((prev) => ({ ...prev, phone: err }));
-                            }
-                          : undefined
-                      }
-                      onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
-                      style={{
-                        width: "100%", padding: "12px 16px",
-                        background: "rgba(26,58,42,0.05)",
-                        border: "1.5px solid rgba(26,58,42,0.15)",
-                        borderRadius: 12, fontSize: 14, color: DARK,
-                        outline: "none", boxSizing: "border-box",
-                        fontFamily: "Syne, sans-serif",
-                      }}
-                    />
-                    {f.name === "email" && fieldErrors.email && (
-                      <p style={{ color: "#ef4444", fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
-                        ⚠ {fieldErrors.email}
+                  {/* PICKUP NOTE */}
+                  {deliveryMethod === "pickup" && (
+                    <div style={{ marginTop: 10, padding: "10px 14px", background: "rgba(29,185,84,0.08)", borderRadius: 10, border: "1px solid rgba(29,185,84,0.2)" }}>
+                      <p style={{ margin: 0, fontSize: 12, color: "#2a5a3a", lineHeight: 1.6 }}>
+                        📍 <strong>Pickup location</strong> will be shared via WhatsApp after your order is confirmed.
                       </p>
-                    )}
-                    {f.name === "phone" && fieldErrors.phone && (
-                      <p style={{ color: "#ef4444", fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
-                        ⚠ {fieldErrors.phone}
-                      </p>
-                    )}
-                  ))}
-
-                  {deliveryMethod === "delivery" && (
-                  <textarea
-                    name="address"
-                    placeholder="Delivery Address"
-                    value={form.address}
-                    onChange={handleChange}
-                    rows={3}
-                    style={{
-                      width: "100%", padding: "12px 16px",
-                      background: "rgba(26,58,42,0.05)",
-                      border: "1.5px solid rgba(26,58,42,0.15)",
-                      borderRadius: 12, fontSize: 14, color: DARK,
-                      outline: "none", resize: "none", boxSizing: "border-box",
-                      fontFamily: "Syne, sans-serif",
-                    }}
-                  />
+                    </div>
                   )}
-
-                  <button
-                    onClick={handleCheckout}
-                    disabled={loading}
-                    style={{
-                      width: "100%", background: loading ? "#aaa" : GREEN,
-                      color: "#000", border: "none", padding: "15px",
-                      borderRadius: 40, fontFamily: "Syne, sans-serif",
-                      fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {loading ? "Redirecting to Payment..." : "Pay Now →"}
-                  </button>
-
-                  <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", color: "#aaa", fontSize: 13, cursor: "pointer" }}>
-                    ← Back
-                  </button>
                 </div>
-              )}
+
+                {[
+                  { name: "name", placeholder: "Full Name", type: "text" },
+                  { name: "email", placeholder: "Email Address", type: "email" },
+                  { name: "phone", placeholder: "Phone Number", type: "tel" },
+                ].map((f) => {
+                  const value = String((form as any)[f.name] || "");
+                  const err = f.name === "email" ? fieldErrors.email : f.name === "phone" ? fieldErrors.phone : undefined;
+                  const liveErr =
+                    f.name === "email" ? validateEmail(value)
+                    : f.name === "phone" ? validatePhone(value)
+                    : "";
+                  const showError = !!err;
+                  const showValid = !liveErr && value.trim().length > 0;
+                  return (
+                    <div key={f.name}>
+                      <input
+                        name={f.name}
+                        type={f.type}
+                        placeholder={f.placeholder}
+                        value={value}
+                        onChange={handleChange}
+                        onBlur={
+                          f.name === "email"
+                            ? (e) => checkFirstOrder(e.target.value)
+                            : f.name === "phone"
+                            ? (e) => {
+                                const perr = validatePhone(e.target.value);
+                                setFieldErrors((prev) => ({ ...prev, phone: perr || undefined }));
+                              }
+                            : undefined
+                        }
+                        onFocus={f.name === "email" ? () => { if (couponMsg && !couponMsg.ok) setCouponMsg(null); } : undefined}
+                        style={{
+                          width: "100%", padding: "12px 16px",
+                          background: showError ? "rgba(239,68,68,0.06)" : "rgba(26,58,42,0.05)",
+                          border: `1.5px solid ${showError ? "#ef4444" : showValid ? GREEN : "rgba(26,58,42,0.15)"}`,
+                          borderRadius: 12, fontSize: 14, color: DARK,
+                          outline: "none", boxSizing: "border-box",
+                          fontFamily: "Syne, sans-serif",
+                        }}
+                      />
+                      {showError && (
+                        <p style={{ color: "#ef4444", fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
+                          ⚠ {err}
+                        </p>
+                      )}
+                      {showValid && (f.name === "email" || f.name === "phone") && (
+                        <p style={{ color: GREEN, fontSize: 12, margin: "4px 0 0 4px", fontFamily: "Syne, sans-serif" }}>
+                          ✓ Looks good
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {deliveryMethod === "delivery" && (
+                <textarea
+                  name="address"
+                  placeholder="Delivery Address"
+                  value={form.address}
+                  onChange={handleChange}
+                  rows={3}
+                  style={{
+                    width: "100%", padding: "12px 16px",
+                    background: "rgba(26,58,42,0.05)",
+                    border: "1.5px solid rgba(26,58,42,0.15)",
+                    borderRadius: 12, fontSize: 14, color: DARK,
+                    outline: "none", resize: "none", boxSizing: "border-box",
+                    fontFamily: "Syne, sans-serif",
+                  }}
+                />
+                )}
+
+                <button
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  style={{
+                    width: "100%", background: loading ? "#aaa" : GREEN,
+                    color: "#000", border: "none", padding: "15px",
+                    borderRadius: 40, fontFamily: "Syne, sans-serif",
+                    fontWeight: 700, fontSize: 15, cursor: loading ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {loading ? "Redirecting to Payment..." : "Pay Now →"}
+                </button>
+              </div>
 
               <button onClick={clearCart} style={{ background: "none", border: "none", color: "#e57373", fontSize: 13, fontWeight: 600, cursor: "pointer", width: "100%", marginTop: 12 }}>
                 Clear Cart
