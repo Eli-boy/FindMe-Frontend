@@ -29,6 +29,85 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   }
 
+  /* ── MANUAL ORDER (admin-created, e.g. walk-in / WhatsApp orders) ── */
+  if (action === "create_manual_order") {
+    const o = body.order || {};
+
+    if (!o.customer_name || !o.customer_email) {
+      return NextResponse.json({ error: "Missing customer name or email" }, { status: 400 });
+    }
+    if (!Array.isArray(o.items) || o.items.length === 0) {
+      return NextResponse.json({ error: "Order has no items" }, { status: 400 });
+    }
+
+    const base = {
+      customer_name: String(o.customer_name),
+      customer_email: String(o.customer_email),
+      customer_phone: String(o.customer_phone || ""),
+      delivery_address: String(o.delivery_address || ""),
+      delivery_method: o.delivery_method === "pickup" ? "pickup" : "delivery",
+      payment_method: String(o.payment_method || "bank_transfer"),
+      payment_status: o.payment_status === "unpaid" ? "unpaid" : "paid",
+      paid_at: o.payment_status === "paid" ? new Date().toISOString() : null,
+      items: o.items,
+      subtotal: Number(o.subtotal) || 0,
+      total: Number(o.total) || 0,
+      status: String(o.status || "packed"),
+      order_type: "manual",
+      created_at: new Date().toISOString(),
+    };
+
+    // Attempt 1: let the DB generate order_number (default/trigger) if it can
+    let result = await supabase.from("orders").insert(base).select().single();
+
+    // Attempt 2: table requires an explicit order_number → use max + 1
+    if (result.error) {
+      const { data: last } = await supabase
+        .from("orders")
+        .select("order_number")
+        .order("order_number", { ascending: false })
+        .limit(1);
+      const nextNumber = (Number(last?.[0]?.order_number) || 0) + 1;
+
+      const retry = await supabase
+        .from("orders")
+        .insert({ ...base, order_number: nextNumber })
+        .select()
+        .single();
+
+      // Attempt 3: minimal columns (table may not have order_type / paid_at / created_at)
+      if (retry.error) {
+        const minimal = await supabase
+          .from("orders")
+          .insert({
+            customer_name: base.customer_name,
+            customer_email: base.customer_email,
+            customer_phone: base.customer_phone,
+            delivery_address: base.delivery_address,
+            delivery_method: base.delivery_method,
+            payment_method: base.payment_method,
+            payment_status: base.payment_status,
+            items: base.items,
+            subtotal: base.subtotal,
+            total: base.total,
+            status: base.status,
+            order_number: nextNumber,
+          })
+          .select()
+          .single();
+
+        if (minimal.error) {
+          console.error("create_manual_order error:", minimal.error);
+          return NextResponse.json({ error: minimal.error.message }, { status: 500 });
+        }
+        return NextResponse.json({ order: minimal.data });
+      }
+      return NextResponse.json({ order: retry.data });
+    }
+
+    return NextResponse.json({ order: result.data });
+  }
+
   /* ── CMS ── */
   if (action === "get_cms") {
     const { data, error } = await supabase.from("cms").select("*");
