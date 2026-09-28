@@ -62,7 +62,7 @@ const faqs = [
   },
   {
     q: "What are the delivery options?",
-    a: "We deliver across Nigeria. Delivery timelines and costs are shown at checkout based on your location. For enquiries, contact us via WhatsApp at +234 803 624 4441.",
+    a: "We deliver across Nigeria. Delivery timelines and costs are shown at checkout based on your location. For enquiries, contact us via WhatsApp at +234 807 323 8118.",
   },
 ];
 
