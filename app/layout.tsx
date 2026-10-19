@@ -71,6 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 gtag('config', '${GA_ID}', {
                   page_path: window.location.pathname,
                 });
+                gtag('config', 'AW-924250777');
               `}
             </Script>
           </>

@@ -33,6 +33,15 @@ export default function OrderSuccessClient() {
             data.items || [],
             data.coupon_code
           );
+          // Google Ads Purchase conversion
+          if (typeof (window as any).gtag === "function") {
+            (window as any).gtag("event", "conversion", {
+              send_to: "AW-924250777/QW4hCNzdsaIdEJnl27gD",
+              value: data.total || 10000,
+              currency: "NGN",
+              transaction_id: String(orderNumber || ""),
+            });
+          }
         }
 
         setStatus(data.paid ? "paid" : "pending");
