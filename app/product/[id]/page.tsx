@@ -279,6 +279,16 @@ export default function ProductPage() {
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <button
                 onClick={() => {
+                  const totalPrice = (product.variants ? product.variants[selectedVariant].price : product.price) * qty;
+                  if (typeof (window as any).gtag === "function") {
+                    (window as any).gtag("event", "conversion", {
+                      send_to: "AW-924250777/ueACCKDwpKIdEJnl27gD",
+                      value: totalPrice,
+                      currency: "NGN",
+                      transaction_id: "",
+                    });
+                  }
+
                   const cartProduct = product.variants
                     ? { ...product, price: product.variants[selectedVariant].price * qty, name: `${product.name} (${product.variants[selectedVariant].label})` }
                     : { ...product, price: product.price * qty };
@@ -301,6 +311,16 @@ export default function ProductPage() {
                 onClick={() => {
                   const variantLabel = product.variants ? ` — ${product.variants[selectedVariant].label}` : "";
                   const price = (product.variants ? product.variants[selectedVariant].price : product.price) * qty;
+
+                  if (typeof (window as any).gtag === "function") {
+                    (window as any).gtag("event", "conversion", {
+                      send_to: "AW-924250777/ueACCKDwpKIdEJnl27gD",
+                      value: price,
+                      currency: "NGN",
+                      transaction_id: "",
+                    });
+                  }
+
                   const msg = `Hello, I want to buy ${product.name}${variantLabel} x${qty} (₦${price.toLocaleString()})`;
                   window.open(`https://wa.me/2348073238118?text=${encodeURIComponent(msg)}`, "_blank");
                 }}
