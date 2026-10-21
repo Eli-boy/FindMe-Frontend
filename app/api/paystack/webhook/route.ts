@@ -8,101 +8,109 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-const resend = new Resend(process.env.RESEND_API_KEY);
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
 
-/* ── Verify Paystack webhook signature ── */
-function verifySignature(body: string, signature: string): boolean {
-  const hash = crypto
-    .createHmac("sha512", PAYSTACK_SECRET)
-    .update(body)
-    .digest("hex");
-  return hash === signature;
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+function generatePickupCode(): string {
+  return "FM-" + Math.random().toString(36).substring(2, 7).toUpperCase();
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const rawBody = await req.text();
-    const signature = req.headers.get("x-paystack-signature") || "";
+  // ── 1. Read raw body for signature verification ──
+  const rawBody = await req.text();
 
-    if (!verifySignature(rawBody, signature)) {
-      console.error("Invalid Paystack webhook signature");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    }
+  // ── 2. Verify Paystack signature ──
+  const paystackSecret = process.env.PAYSTACK_SECRET_KEY!;
+  const hash = crypto
+    .createHmac("sha512", paystackSecret)
+    .update(rawBody)
+    .digest("hex");
 
-    const event = JSON.parse(rawBody);
+  const signature = req.headers.get("x-paystack-signature") || "";
 
-    /* ── Only process successful charges ── */
-    if (event.event !== "charge.success") {
-      return NextResponse.json({ received: true });
-    }
+  if (hash !== signature) {
+    console.error("Paystack webhook: invalid signature");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
 
-    const { reference, amount, paid_at, customer } = event.data;
+  const event = JSON.parse(rawBody);
+  console.log("Paystack webhook event:", event.event, event.data?.reference);
 
-    /* ── Find order by payment reference ── */
-    const { data: order, error } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("payment_reference", reference)
-      .single();
+  // ── 3. Only handle successful charge ──
+  if (event.event !== "charge.success") {
+    return NextResponse.json({ received: true });
+  }
 
-    if (error || !order) {
-      console.error("Order not found for reference:", reference);
-      return NextResponse.json({ error: "Order not found" }, { status: 404 });
-    }
+  const { reference, amount, customer, metadata } = event.data;
+  const amountPaid = amount / 100; // Paystack sends in kobo
 
-    /* ── Generate pickup code if self-pickup ── */
-    const pickupCode = order.delivery_method === "pickup"
-      ? Math.floor(100000 + Math.random() * 900000).toString()
-      : null;
+  // ── 4. Find the order by payment_reference ──
+  const { data: order, error: fetchError } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("payment_reference", reference)
+    .single();
 
-    /* ── Mark order as paid ── */
-    await supabase
-      .from("orders")
-      .update({
-        payment_status: "paid",
-        paid_at: paid_at || new Date().toISOString(),
-        status: "pending",
-        ...(pickupCode ? { pickup_code: pickupCode } : {}),
-      })
-      .eq("payment_reference", reference);
+  if (fetchError || !order) {
+    console.error("Webhook: order not found for reference", reference, fetchError);
+    // Still return 200 so Paystack doesn't retry
+    return NextResponse.json({ received: true });
+  }
 
-    /* ── Increment coupon usage ── */
-    if (order.coupon_code) {
-      try {
-        await supabase.rpc("increment_coupon_usage", { coupon_code: order.coupon_code });
-      } catch (_) {}
-    }
+  // ── 5. Skip if already marked paid (idempotency) ──
+  if (order.payment_status === "paid") {
+    console.log("Webhook: order already paid, skipping", order.id);
+    return NextResponse.json({ received: true });
+  }
 
-    /* ── Fetch next-order coupon ── */
-    const { data: couponData } = await supabase
-      .from("coupons")
-      .select("code, discount")
-      .eq("active", true)
-      .neq("code", order.coupon_code || "")
-      .order("discount", { ascending: false })
-      .limit(1)
-      .single();
+  const pickupCode = generatePickupCode();
+  const now = new Date().toISOString();
 
-    const nextCoupon = couponData || { code: "FINDME10", discount: 10 };
-    const amountPaid = (amount / 100).toLocaleString(); // convert kobo back to naira
-    const isPickup = order.delivery_method === "pickup";
+  // ── 6. Mark order as paid ──
+  const { error: updateError } = await supabase
+    .from("orders")
+    .update({
+      payment_status: "paid",
+      status: "pending",
+      pickup_code: pickupCode,
+      paid_at: now,
+    })
+    .eq("id", order.id);
 
-    /* ── Build email item rows ── */
-    const items = order.items || [];
-    const itemRows = items.map((item: any) => `
+  if (updateError) {
+    console.error("Webhook: failed to update order", updateError);
+    return NextResponse.json({ error: "DB update failed" }, { status: 500 });
+  }
+
+  const customerName = order.customer_name || customer?.first_name || "Customer";
+  const customerEmail = order.customer_email || customer?.email;
+  const customerPhone = order.customer_phone;
+  const deliveryMethod = order.delivery_method;
+  const deliveryAddress = order.delivery_address;
+  const items = order.items || [];
+  const total = order.total;
+  const orderNumber = order.order_number;
+
+  // ── 7. Build item rows for email ──
+  const itemRows = items
+    .map(
+      (item: any) => `
       <tr>
-        <td style="padding:10px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#2a4a2a;">${item.name}</td>
-        <td style="padding:10px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#2a4a2a;text-align:center;">x${item.quantity}</td>
-        <td style="padding:10px 0;border-bottom:1px solid #e8f0e8;font-size:14px;font-weight:700;text-align:right;color:#1a3a2a;">&#8358;${(item.price * item.quantity).toLocaleString()}</td>
-      </tr>`).join("");
+        <td style="padding:12px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#2a4a2a;">${item.name}</td>
+        <td style="padding:12px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#2a4a2a;text-align:center;">x${item.quantity}</td>
+        <td style="padding:12px 0;border-bottom:1px solid #e8f0e8;font-size:14px;color:#1a3a2a;font-weight:700;text-align:right;">&#8358;${(item.price * item.quantity).toLocaleString()}</td>
+      </tr>`
+    )
+    .join("");
 
-    /* ── Send confirmation email ── */
-    await resend.emails.send({
-      from: "FindMe <orders@findme.com.ng>",
-      to: order.customer_email,
-      subject: `Payment Confirmed — FindMe Order #${order.order_number}`,
-      html: `
+  // ── 8. Send customer confirmation email ──
+  if (customerEmail) {
+    try {
+      await resend.emails.send({
+        from: "FindMe <orders@findme.com.ng>",
+        to: customerEmail,
+        subject: `Payment Confirmed — FindMe #${orderNumber}`,
+        html: `
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"/></head>
@@ -117,63 +125,45 @@ export async function POST(req: NextRequest) {
         </td></tr>
 
         <tr><td style="padding:40px;">
-          <h2 style="margin:0 0 8px;color:#1a3a2a;font-size:22px;font-weight:700;">Hey ${order.customer_name}! 🎉</h2>
-          <p style="margin:0 0 24px;color:#4a7a5a;font-size:15px;line-height:1.7;">Your payment of <strong>&#8358;${amountPaid}</strong> has been confirmed. We will be in touch via WhatsApp shortly.</p>
+          <h2 style="margin:0 0 8px;color:#1a3a2a;font-size:22px;font-weight:700;">Hey ${customerName}! 🎉</h2>
+          <p style="margin:0 0 32px;color:#4a7a5a;font-size:15px;line-height:1.7;">Your payment has been received! We're preparing your order and will be in touch via WhatsApp shortly.</p>
 
-          <div style="background:#f0f7f0;border-radius:12px;padding:14px 20px;margin-bottom:24px;">
+          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:32px;">
             <table width="100%">
               <tr>
-                <td style="color:#4a7a5a;font-size:13px;">Order Number</td>
-                <td style="text-align:right;color:#1a3a2a;font-weight:800;font-size:15px;">#${order.order_number}</td>
+                <td style="color:#4a7a5a;font-size:13px;">Order ID</td>
+                <td style="text-align:right;color:#1a3a2a;font-weight:800;font-size:15px;">#${orderNumber}</td>
               </tr>
               <tr>
-                <td style="color:#4a7a5a;font-size:13px;padding-top:6px;">Payment Status</td>
-                <td style="text-align:right;color:#1db954;font-weight:800;font-size:14px;padding-top:6px;">PAID ✅</td>
+                <td style="color:#4a7a5a;font-size:13px;padding-top:8px;">Pickup Code</td>
+                <td style="text-align:right;color:#1db954;font-weight:800;font-size:18px;letter-spacing:2px;">${pickupCode}</td>
               </tr>
             </table>
           </div>
 
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <thead><tr>
-              <th style="text-align:left;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:10px;border-bottom:2px solid #e8f0e8;">Item</th>
-              <th style="text-align:center;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:10px;border-bottom:2px solid #e8f0e8;">Qty</th>
-              <th style="text-align:right;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:10px;border-bottom:2px solid #e8f0e8;">Price</th>
+              <th style="text-align:left;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid #e8f0e8;">Item</th>
+              <th style="text-align:center;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid #e8f0e8;">Qty</th>
+              <th style="text-align:right;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;border-bottom:2px solid #e8f0e8;">Price</th>
             </tr></thead>
             <tbody>${itemRows}</tbody>
           </table>
 
-          ${order.discount_amount > 0 ? `
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:6px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
             <tr>
-              <td style="color:#4a7a5a;font-size:13px;">Subtotal</td>
-              <td style="text-align:right;color:#2a4a2a;font-size:13px;">&#8358;${Number(order.subtotal).toLocaleString()}</td>
-            </tr>
-            <tr>
-              <td style="color:#1db954;font-size:13px;">Discount (${order.coupon_code})</td>
-              <td style="text-align:right;color:#1db954;font-size:13px;font-weight:700;">-&#8358;${Number(order.discount_amount).toLocaleString()}</td>
-            </tr>
-          </table>` : ""}
-
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-            <tr>
-              <td style="padding:12px 0;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Total Paid</td>
-              <td style="padding:12px 0;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">&#8358;${Number(order.total).toLocaleString()}</td>
+              <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;color:#1a3a2a;font-size:17px;font-weight:800;">Total Paid</td>
+              <td style="padding:14px 0 6px;border-top:1.5px solid #e8f0e8;text-align:right;color:#1db954;font-size:19px;font-weight:800;">&#8358;${total?.toLocaleString()}</td>
             </tr>
           </table>
 
-          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
-            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">${isPickup ? "Pickup" : "Delivery Address"}</p>
-            ${isPickup
-              ? `<p style="margin:0;color:#1a3a2a;font-size:14px;">&#x1F3EA; Self Pickup — location shared via WhatsApp</p>`
-              : `<p style="margin:0;color:#1a3a2a;font-size:14px;">&#x1F69A; ${order.delivery_address}</p>`
+          <div style="background:#f0f7f0;border-radius:12px;padding:20px;margin-bottom:32px;">
+            <p style="margin:0 0 8px;font-size:12px;color:#4a7a5a;text-transform:uppercase;letter-spacing:1px;font-weight:700;">${deliveryMethod === "pickup" ? "Fulfilment" : "Delivery Address"}</p>
+            ${
+              deliveryMethod === "pickup"
+                ? `<p style="margin:0;color:#1a3a2a;font-size:14px;font-weight:700;">🏪 Self Pickup — location shared via WhatsApp</p>`
+                : `<p style="margin:0;color:#1a3a2a;font-size:14px;line-height:1.6;">🚚 ${deliveryAddress}</p>`
             }
-            ${pickupCode ? `<p style="margin:10px 0 0;font-size:13px;color:#4a7a5a;">Your pickup code: <strong style="color:#1a3a2a;font-size:16px;letter-spacing:2px;">${pickupCode}</strong></p>` : ""}
-          </div>
-
-          <div style="border:2px dashed #1db954;border-radius:16px;padding:20px;text-align:center;margin-bottom:28px;background:#f8fff8;">
-            <p style="margin:0 0 4px;font-size:11px;color:#4a7a5a;text-transform:uppercase;letter-spacing:2px;font-weight:700;">&#x1F389; ${nextCoupon.discount}% Off Your Next Order</p>
-            <p style="margin:0 0 12px;font-size:13px;color:#4a7a5a;">Use this code at checkout:</p>
-            <div style="background:#1a3a2a;color:#ffffff;padding:10px 24px;border-radius:8px;display:inline-block;font-size:18px;font-weight:800;letter-spacing:3px;">${nextCoupon.code}</div>
           </div>
 
           <div style="text-align:center;">
@@ -181,10 +171,68 @@ export async function POST(req: NextRequest) {
           </div>
         </td></tr>
 
-        <tr><td style="background:#f0f7f0;padding:20px 40px;text-align:center;border-top:1px solid #e0ede0;">
-          <p style="margin:0 0 4px;font-size:13px;color:#4a7a5a;">Questions? Chat with us on WhatsApp</p>
+        <tr><td style="background:#f0f7f0;padding:24px 40px;text-align:center;border-top:1px solid #e0ede0;">
+          <p style="margin:0 0 6px;font-size:13px;color:#4a7a5a;">Questions? Chat with us on WhatsApp</p>
           <a href="https://wa.me/2348073238118" style="color:#1db954;font-weight:700;font-size:13px;text-decoration:none;">+234 807 323 8118</a>
-          <p style="margin:10px 0 0;font-size:11px;color:#aaa;">© 2026 FindMe Nigeria · findme.com.ng</p>
+          <p style="margin:12px 0 0;font-size:12px;color:#aaa;">© 2026 FindMe Nigeria · findme.com.ng</p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+      });
+    } catch (emailErr) {
+      console.error("Webhook: failed to send customer email", emailErr);
+    }
+  }
+
+  // ── 9. Send admin notification email ──
+  const adminEmail = process.env.ADMIN_EMAIL || "support@findme.com.ng";
+  try {
+    await resend.emails.send({
+      from: "FindMe Orders <orders@findme.com.ng>",
+      to: adminEmail,
+      subject: `💰 New Paid Order #${orderNumber} — ₦${total?.toLocaleString()}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"/></head>
+<body style="margin:0;padding:0;background:#f0f7f0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7f0;padding:40px 0;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(26,58,42,0.08);">
+
+        <tr><td style="background:#1a3a2a;padding:28px 40px;text-align:center;">
+          <h1 style="margin:0;color:#1db954;font-size:22px;font-weight:800;">💰 New Paid Order!</h1>
+          <p style="margin:6px 0 0;color:rgba(255,255,255,0.7);font-size:13px;">FindMe Admin Alert</p>
+        </td></tr>
+
+        <tr><td style="padding:32px 40px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Order #</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1a3a2a;font-weight:700;">#${orderNumber}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Customer</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1a3a2a;font-weight:700;">${customerName}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Email</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1a3a2a;">${customerEmail || "—"}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Phone</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1a3a2a;">${customerPhone || "—"}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Delivery</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1a3a2a;">${deliveryMethod === "pickup" ? "Self Pickup" : deliveryAddress}</td></tr>
+            <tr><td style="padding:8px 0;border-bottom:1px solid #e8f0e8;color:#4a7a5a;font-size:14px;">Pickup Code</td>
+                <td style="padding:8px 0;border-bottom:1px solid #e8f0e8;text-align:right;color:#1db954;font-weight:800;font-size:16px;letter-spacing:2px;">${pickupCode}</td></tr>
+            <tr><td style="padding:12px 0 0;color:#1a3a2a;font-size:16px;font-weight:800;">TOTAL PAID</td>
+                <td style="padding:12px 0 0;text-align:right;color:#1db954;font-size:20px;font-weight:800;">₦${total?.toLocaleString()}</td></tr>
+          </table>
+
+          <h3 style="color:#1a3a2a;font-size:14px;margin:0 0 12px;">Items Ordered:</h3>
+          <table width="100%">${itemRows}</table>
+
+          <div style="margin-top:28px;text-align:center;">
+            <a href="https://www.findme.com.ng/admin" style="display:inline-block;background:#1a3a2a;color:#ffffff;padding:12px 32px;border-radius:40px;text-decoration:none;font-weight:700;font-size:14px;">Open Admin Dashboard →</a>
+          </div>
         </td></tr>
 
       </table>
@@ -193,125 +241,35 @@ export async function POST(req: NextRequest) {
 </body>
 </html>`,
     });
+  } catch (adminEmailErr) {
+    console.error("Webhook: failed to send admin email", adminEmailErr);
+  }
 
-    /* ── Send admin notifications ── */
-    const adminPhone = process.env.ADMIN_WHATSAPP_NUMBER || "2348073238118";
-    const adminEmail = process.env.ADMIN_EMAIL || "support@findme.com.ng";
-    const itemSummary = items.map((i: any) => `• ${i.name} x${i.quantity} — ₦${(i.price * i.quantity).toLocaleString()}`).join("\n");
-
-    // WhatsApp notification to admin
+  // ── 10. Send admin WhatsApp notification ──
+  const adminWhatsApp = process.env.ADMIN_WHATSAPP_NUMBER;
+  if (adminWhatsApp) {
     try {
-      const twilioFrom = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
-      // Ensure From has whatsapp: prefix but not doubled
-      const fromNumber = twilioFrom.startsWith("whatsapp:") ? twilioFrom : `whatsapp:${twilioFrom}`;
-      // Ensure To has whatsapp: prefix
-      const toNumber = adminPhone.startsWith("whatsapp:") ? adminPhone : `whatsapp:+${adminPhone.replace(/^\+/, "")}`;
+      const Twilio = require("twilio");
+      const twilioClient = Twilio(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN
+      );
+      const fromNumber = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
 
-      await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, {
-        method: "POST",
-        headers: {
-          Authorization: "Basic " + Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64"),
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          From: fromNumber,
-          To: toNumber,
-          Body:
-            `🛍️ *New FindMe Order!*
+      const itemSummary = items
+        .map((i: any) => `• ${i.name} x${i.quantity}`)
+        .join("\n");
 
-` +
-            `Order: *#${order.order_number}*
-` +
-            `Customer: ${order.customer_name}
-` +
-            `Phone: ${order.customer_phone}
-` +
-            `Email: ${order.customer_email}
-
-` +
-            `${itemSummary}
-
-` +
-            `Total: *₦${Number(order.total).toLocaleString()}*
-` +
-            `Delivery: ${isPickup ? "Self Pickup" : "Home Delivery — " + order.delivery_address}
-` +
-            (pickupCode ? `Pickup Code: *${pickupCode}*
-` : "") +
-            `
-View order: https://findme.com.ng/admin`,
-        }).toString(),
+      await twilioClient.messages.create({
+        from: fromNumber,
+        to: `whatsapp:${adminWhatsApp}`,
+        body: `💰 *New Paid Order!*\n\n*Order #${orderNumber}*\n*Customer:* ${customerName}\n*Phone:* ${customerPhone || "—"}\n*Delivery:* ${deliveryMethod === "pickup" ? "Self Pickup" : deliveryAddress}\n*Pickup Code:* ${pickupCode}\n\n*Items:*\n${itemSummary}\n\n*Total:* ₦${total?.toLocaleString()}\n\nView: https://www.findme.com.ng/admin`,
       });
     } catch (waErr) {
-      console.error("Admin WhatsApp notification failed:", waErr);
+      console.error("Webhook: failed to send admin WhatsApp", waErr);
     }
-
-    // Email notification to admin
-    try {
-      await resend.emails.send({
-        from: "FindMe Orders <orders@findme.com.ng>",
-        to: adminEmail,
-        subject: `🛍️ New Order #${order.order_number} — ₦${Number(order.total).toLocaleString()}`,
-        html: `
-<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#f0f7f0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f7f0;padding:40px 0;">
-    <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(26,58,42,0.08);">
-        <tr><td style="background:#1a3a2a;padding:28px 40px;">
-          <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;">🛍️ New Order Received</h1>
-          <p style="margin:6px 0 0;color:#1db954;font-size:14px;font-weight:700;">Order #${order.order_number} · ₦${Number(order.total).toLocaleString()}</p>
-        </td></tr>
-        <tr><td style="padding:32px 40px;">
-
-          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
-            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Customer</p>
-            <p style="margin:0 0 3px;font-size:15px;font-weight:700;color:#1a3a2a;">${order.customer_name}</p>
-            <p style="margin:0 0 3px;font-size:13px;color:#4a7a5a;">${order.customer_email}</p>
-            <p style="margin:0;font-size:13px;color:#4a7a5a;">${order.customer_phone}</p>
-          </div>
-
-          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:20px;">
-            <p style="margin:0 0 10px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Items Ordered</p>
-            ${items.map((i: any) => `
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e0ede0;">
-              <span style="font-size:14px;color:#1a3a2a;">${i.name} <span style="color:#4a7a5a;">x${i.quantity}</span></span>
-              <span style="font-size:14px;font-weight:700;color:#1a3a2a;">₦${(i.price * i.quantity).toLocaleString()}</span>
-            </div>`).join("")}
-            <div style="display:flex;justify-content:space-between;padding:10px 0 0;">
-              <span style="font-size:16px;font-weight:800;color:#1a3a2a;">Total</span>
-              <span style="font-size:16px;font-weight:800;color:#1db954;">₦${Number(order.total).toLocaleString()}</span>
-            </div>
-          </div>
-
-          <div style="background:#f0f7f0;border-radius:12px;padding:16px 20px;margin-bottom:24px;">
-            <p style="margin:0 0 6px;font-size:11px;color:#4a7a5a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Fulfilment</p>
-            <p style="margin:0;font-size:14px;color:#1a3a2a;">${isPickup
-              ? `🏪 Self Pickup${pickupCode ? ` · Code: <strong>${pickupCode}</strong>` : ""}`
-              : `🚚 Home Delivery · ${order.delivery_address}`
-            }</p>
-          </div>
-
-          <div style="text-align:center;">
-            <a href="https://findme.com.ng/admin" style="display:inline-block;background:#1a3a2a;color:#fff;padding:12px 32px;border-radius:40px;text-decoration:none;font-weight:700;font-size:14px;">View in Dashboard →</a>
-          </div>
-
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`,
-      });
-    } catch (emailErr) {
-      console.error("Admin email notification failed:", emailErr);
-    }
-
-    return NextResponse.json({ success: true });
-
-  } catch (err: any) {
-    console.error("Paystack webhook error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
   }
+
+  console.log(`Webhook: order #${orderNumber} marked paid, pickup code ${pickupCode}`);
+  return NextResponse.json({ received: true });
 }
