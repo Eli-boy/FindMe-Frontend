@@ -56,7 +56,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
           rel="stylesheet"
         />
-        {/* Google Analytics */}
+
+        {/* Google Tag Manager */}
+        <Script
+          id="gtm-script"
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtm.js?id=GTM-W5WSH6SS"
+        />
+        <Script id="gtm-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+          `}
+        </Script>
+
+        {/* Google Analytics + Google Ads */}
         {GA_ID && (
           <>
             <Script
@@ -81,6 +96,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ background: "#0a0a0a", color: "#f5f4f0" }}
         className="min-h-screen flex flex-col antialiased"
       >
+        {/* Google Tag Manager (noscript fallback) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-W5WSH6SS"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+
         <CartProvider>
           <Navbar />
           <main className="pt-[72px] flex-grow">{children}</main>
