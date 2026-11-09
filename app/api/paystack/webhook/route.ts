@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
+import twilio from "twilio";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,6 +13,14 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 function generatePickupCode(): string {
   return "FM-" + Math.random().toString(36).substring(2, 7).toUpperCase();
+}
+
+// Normalizes a Nigerian phone number (e.g. 0807..., 234807..., +234807...)
+// into Twilio's required "whatsapp:+234..." format.
+function toWhatsAppAddress(raw: string): string {
+  let digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("0")) digits = "234" + digits.slice(1);
+  return `whatsapp:+${digits}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -28,7 +37,7 @@ export async function POST(req: NextRequest) {
   console.log("Webhook received:", event.event, event.data?.reference);
 
   // Only handle successful charge
-  if (event.event !== "charge.success") {
+  if (event.event !== "charge.success" || event.data?.status !== "success") {
     return NextResponse.json({ received: true });
   }
 
@@ -44,6 +53,13 @@ export async function POST(req: NextRequest) {
   if (fetchError || !order) {
     console.error("Webhook: order not found for reference", reference, fetchError);
     return NextResponse.json({ received: true });
+  }
+
+  // Sanity check: Paystack amounts are in kobo; order.total is in naira
+  if (amount != null && order.total != null && Math.round(order.total * 100) !== amount) {
+    console.warn(
+      `Webhook: amount mismatch for ${reference} — paid ${amount} kobo vs order total ${order.total}`
+    );
   }
 
   // Skip if already paid (idempotency)
@@ -196,13 +212,12 @@ ${deliveryMethod === "pickup"
   const adminWhatsApp = process.env.ADMIN_WHATSAPP_NUMBER;
   if (adminWhatsApp) {
     try {
-      const Twilio = require("twilio");
-      const client = Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
       const from = process.env.TWILIO_WHATSAPP_FROM || "whatsapp:+14155238886";
       const itemSummary = items.map((i: any) => `• ${i.name} x${i.quantity}`).join("\n");
       await client.messages.create({
         from,
-        to: `whatsapp:${adminWhatsApp}`,
+        to: toWhatsAppAddress(adminWhatsApp),
         body: `💰 *New Paid Order!*\n\n*Order #${orderNumber}*\n*Customer:* ${customerName}\n*Phone:* ${customerPhone || "—"}\n*Delivery:* ${deliveryMethod === "pickup" ? "Self Pickup" : deliveryAddress}\n*Pickup Code:* ${pickupCode}\n\n*Items:*\n${itemSummary}\n\n*Total:* ₦${total?.toLocaleString()}\n\nView: https://www.findme.com.ng/admin`,
       });
     } catch (e) {

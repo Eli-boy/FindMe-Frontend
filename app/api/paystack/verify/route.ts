@@ -13,9 +13,17 @@ export async function GET(req: NextRequest) {
 
   const { data } = await supabase
     .from("orders")
-    .select("payment_status")
+    .select("payment_status, total, items, coupon_code, order_number")
     .eq("payment_reference", ref)
     .single();
 
-  return NextResponse.json({ paid: data?.payment_status === "paid" });
+  const paid = data?.payment_status === "paid";
+
+  return NextResponse.json({
+    paid,
+    total: data?.total ?? 0,
+    items: data?.items ?? [],
+    coupon_code: data?.coupon_code ?? null,
+    order_number: data?.order_number ?? null,
+  });
 }
