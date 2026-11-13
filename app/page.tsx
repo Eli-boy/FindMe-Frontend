@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { products } from "./data/products";
 import toast from "react-hot-toast";
 import { useCart } from "./CartContext";
+import { trackSelectItem, trackViewItemList } from "./analytics";
 
 const BG = "#c8dfc8";
 
@@ -36,6 +37,18 @@ export default function Home() {
     check();
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
+  }, []);
+
+  // GA4 view_item_list for the featured products row
+  useEffect(() => {
+    trackViewItemList(
+      products.filter((p) => [1, 2, 4, 6, 7].includes(p.id)).map((p, i) => ({
+        id: p.id, name: p.name, price: p.price, quantity: 1,
+        category: p.category, index: i,
+      })),
+      "home_featured",
+      "Featured Products"
+    );
   }, []);
 
   return (
@@ -221,7 +234,11 @@ export default function Home() {
                   BEST VALUE
                 </div>
               )}
-              <Link href={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <Link
+                href={`/product/${p.id}`}
+                onClick={() => trackSelectItem({ id: p.id, name: p.name, price: p.price, category: p.category }, "home_featured", "Featured Products")}
+                style={{ textDecoration: "none" }}
+              >
                 <div style={{ background: "#1a3a2a", padding: 24 }}>
                   <Image src={p.image} alt={p.name} width={400} height={200}
                     style={{ width: "100%", height: "200px", objectFit: "contain" }}/>

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import Image from "next/image";
+import { trackAddToCart, trackRemoveFromCart } from "./analytics";
 
 /* ================= TYPES ================= */
 type Product = {
@@ -12,18 +13,24 @@ type Product = {
   price: number;
   image: string;
   description?: string;
+  category?: string;
+  variant?: string;
 };
 
-type CartItem = Product & { quantity: number };
+type CartItem = Product & { quantity: number; cartId?: string };
+
+// Unique per product+variant so different variants don't merge into one line
+export const cartKey = (i: { id: number; cartId?: string; variant?: string; name?: string }) =>
+  i.cartId ?? `${i.id}:${i.variant ?? i.name ?? ""}`;
 
 type CartContextType = {
   cart: CartItem[];
   total: number;
   itemCount: number;
-  addToCart: (product: Product) => void;
-  removeFromCart: (id: number) => void;
-  increaseQty: (id: number) => void;
-  decreaseQty: (id: number) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (cartId: string) => void;
+  increaseQty: (cartId: string) => void;
+  decreaseQty: (cartId: string) => void;
   clearCart: () => void;
   isOpen: boolean;
   openCart: () => void;
@@ -45,31 +52,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("findme-cart", JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, quantity = 1) => {
+    const cartId = `${product.id}:${product.variant ?? ""}`;
     setCart((prev) => {
-      const existing = prev.find((i) => i.id === product.id);
+      const existing = prev.find((i) => cartKey(i) === cartId);
       if (existing)
         return prev.map((i) =>
-          i.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
+          cartKey(i) === cartId ? { ...i, quantity: i.quantity + quantity } : i
         );
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity, cartId }];
     });
+    trackAddToCart({ ...product, quantity });
   };
 
-  const removeFromCart = (id: number) =>
-    setCart((prev) => prev.filter((i) => i.id !== id));
+  const removeFromCart = (id: string) => {
+    const item = cart.find((i) => cartKey(i) === id);
+    if (item) trackRemoveFromCart(item);
+    setCart((prev) => prev.filter((i) => cartKey(i) !== id));
+  };
 
-  const increaseQty = (id: number) =>
+  const increaseQty = (id: string) => {
+    const item = cart.find((i) => cartKey(i) === id);
+    if (item) trackAddToCart({ ...item, quantity: 1 });
     setCart((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, quantity: i.quantity + 1 } : i))
+      prev.map((i) => (cartKey(i) === id ? { ...i, quantity: i.quantity + 1 } : i))
     );
+  };
 
-  const decreaseQty = (id: number) =>
+  const decreaseQty = (id: string) => {
+    const item = cart.find((i) => cartKey(i) === id);
+    if (item) trackRemoveFromCart({ ...item, quantity: 1 });
     setCart((prev) =>
       prev
-        .map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .map((i) => (cartKey(i) === id ? { ...i, quantity: i.quantity - 1 } : i))
         .filter((i) => i.quantity > 0)
     );
+  };
 
   const clearCart = () => setCart([]);
   const openCart = () => setIsOpen(true);
@@ -172,7 +190,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                     <AnimatePresence>
                       {cart.map((item) => (
                         <motion.div
-                          key={item.id}
+                          key={cartKey(item)}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, x: 40 }}
@@ -218,7 +236,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                           {/* Qty controls */}
                           <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                             <button
-                              onClick={() => decreaseQty(item.id)}
+                              onClick={() => decreaseQty(cartKey(item))}
                               style={{
                                 width: 28, height: 28, borderRadius: "50%",
                                 background: "rgba(255,255,255,0.07)", border: "none",
@@ -238,7 +256,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                             </span>
 
                             <button
-                              onClick={() => increaseQty(item.id)}
+                              onClick={() => increaseQty(cartKey(item))}
                               style={{
                                 width: 28, height: 28, borderRadius: "50%",
                                 background: "rgba(29,185,84,0.15)", border: "none",
@@ -251,7 +269,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                             >+</button>
 
                             <button
-                              onClick={() => removeFromCart(item.id)}
+                              onClick={() => removeFromCart(cartKey(item))}
                               style={{
                                 width: 28, height: 28, borderRadius: "50%",
                                 background: "rgba(239,68,68,0.1)", border: "none",

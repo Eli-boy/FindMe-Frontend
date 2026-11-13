@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { products } from "../data/products";
 import toast from "react-hot-toast";
 import { useCart } from "../CartContext";
+import { trackSelectItem, trackViewItemList } from "../analytics";
+import { useEffect } from "react";
 
 /* ================= FILTER CATEGORIES ================= */
 const categories = [
@@ -32,6 +34,22 @@ export default function ShopPage({
     category && category !== "all"
       ? category.charAt(0).toUpperCase() + category.slice(1)
       : null;
+
+  const listId = `shop_${category ?? "all"}`;
+  const listName = formattedCategory ? `${formattedCategory} Tags` : "All Products";
+
+  // GA4 view_item_list — fires when the product grid is shown
+  useEffect(() => {
+    trackViewItemList(
+      filteredProducts.map((p, i) => ({
+        id: p.id, name: p.name, price: p.price, quantity: 1,
+        category: p.category, index: i,
+      })),
+      listId,
+      listName
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
 
   return (
     <div style={{ background: "#c8dfc8", minHeight: "100vh", color: "#1a3a2a" }}>
@@ -145,7 +163,11 @@ export default function ShopPage({
               }}
             >
               {/* IMAGE */}
-              <Link href={`/product/${p.id}`} style={{ textDecoration: "none", display: "block" }}>
+              <Link
+                href={`/product/${p.id}`}
+                onClick={() => trackSelectItem({ id: p.id, name: p.name, price: p.price, category: p.category }, listId, listName)}
+                style={{ textDecoration: "none", display: "block" }}
+              >
                 <div style={{
                   background: "#1a3a2a",
                   padding: "24px 24px 0",

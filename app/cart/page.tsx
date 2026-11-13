@@ -1,11 +1,11 @@
 "use client";
 
-import { trackBeginCheckout, trackWhatsAppClick } from "@/app/analytics";
+import { trackAddPaymentInfo, trackBeginCheckout, trackViewCart } from "@/app/analytics";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCart } from "../CartContext";
-import { useState } from "react";
+import { cartKey, useCart } from "../CartContext";
+import { useEffect, useRef, useState } from "react";
 
 const BG = "#c8dfc8";
 const DARK = "#1a3a2a";
@@ -46,6 +46,19 @@ export default function CartPage() {
   const [isFirstOrder, setIsFirstOrder] = useState<boolean | null>(true);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; phone?: string }>({});
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const viewCartTracked = useRef(false);
+
+  // GA4 view_cart — fires once per page load when the cart has items
+  useEffect(() => {
+    if (cart.length > 0 && !viewCartTracked.current) {
+      viewCartTracked.current = true;
+      trackViewCart(
+        cart.map((i) => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, category: i.category, variant: i.variant })),
+        total
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart.length]);
 
   const applyCoupon = async (overrideCode?: string) => {
     const code = (overrideCode || couponInput).trim().toUpperCase();
@@ -178,8 +191,9 @@ export default function CartPage() {
       return;
     }
 
-    // Track checkout start
-    trackBeginCheckout(total, cart.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })));
+    // GA4 funnel: begin_checkout → add_payment_info (Paystack redirect)
+    const gaItems = cart.map((i) => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, category: i.category, variant: i.variant }));
+    trackBeginCheckout(gaItems, total, appliedCoupon);
 
     setLoading(true);
 
@@ -196,6 +210,7 @@ export default function CartPage() {
       const data = await res.json();
 
       if (data.checkoutUrl) {
+        trackAddPaymentInfo(gaItems, total, appliedCoupon);
         clearCart();
         window.location.href = data.checkoutUrl;
       } else {
@@ -238,7 +253,7 @@ export default function CartPage() {
             {/* LEFT — ITEMS */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {cart.map((item) => (
-                <div key={item.id} style={{ background: "rgba(255,255,255,0.8)", borderRadius: 20, padding: "20px 24px", display: "flex", gap: 20, alignItems: "center", border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 2px 12px rgba(26,58,42,0.06)" }}>
+                <div key={cartKey(item)} style={{ background: "rgba(255,255,255,0.8)", borderRadius: 20, padding: "20px 24px", display: "flex", gap: 20, alignItems: "center", border: "1px solid rgba(26,58,42,0.1)", boxShadow: "0 2px 12px rgba(26,58,42,0.06)" }}>
                   <div style={{ background: DARK, borderRadius: 14, padding: 10, flexShrink: 0 }}>
                     <Image src={item.image} alt={item.name} width={80} height={70} style={{ objectFit: "contain", width: 80, height: 70 }} />
                   </div>
@@ -249,11 +264,11 @@ export default function CartPage() {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12, background: "rgba(26,58,42,0.06)", borderRadius: 40, padding: "6px 14px" }}>
-                      <button onClick={() => decreaseQty(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>−</button>
+                      <button onClick={() => decreaseQty(cartKey(item))} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>−</button>
                       <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, color: DARK, fontSize: 15, minWidth: 20, textAlign: "center" }}>{item.quantity}</span>
-                      <button onClick={() => increaseQty(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>+</button>
+                      <button onClick={() => increaseQty(cartKey(item))} style={{ background: "none", border: "none", cursor: "pointer", color: DARK, fontSize: 18, fontWeight: 700, lineHeight: 1 }}>+</button>
                     </div>
-                    <button onClick={() => removeFromCart(item.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#e57373", fontSize: 12, fontWeight: 600 }}>Remove</button>
+                    <button onClick={() => removeFromCart(cartKey(item))} style={{ background: "none", border: "none", cursor: "pointer", color: "#e57373", fontSize: 12, fontWeight: 600 }}>Remove</button>
                   </div>
                 </div>
               ))}
@@ -266,7 +281,7 @@ export default function CartPage() {
               {/* PRICE BREAKDOWN */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 {cart.map((i) => (
-                  <div key={i.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
+                  <div key={cartKey(i)} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#4a7a5a" }}>
                     <span>{i.name} x{i.quantity}</span>
                     <span>₦{(i.price * i.quantity).toLocaleString()}</span>
                   </div>

@@ -2,6 +2,7 @@ import "./globals.css";
 
 import { CartProvider } from "./CartContext";
 import Footer from "./Footer";
+import PageViewTracker from "./PageViewTracker";
 import type { Metadata } from "next";
 import Navbar from "./Navbar";
 import Script from "next/script";
@@ -107,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </noscript>
 
         <CartProvider>
+          <PageViewTracker />
           <Navbar />
           <main className="pt-[72px] flex-grow">{children}</main>
           <Footer />

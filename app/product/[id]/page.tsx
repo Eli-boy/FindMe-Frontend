@@ -5,8 +5,9 @@ import Link from "next/link";
 import { products } from "../../data/products";
 import toast from "react-hot-toast";
 import { useCart } from "../../CartContext";
+import { trackViewItem } from "../../analytics";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const BG = "#c8dfc8";
 const DARK = "#1a3a2a";
@@ -53,6 +54,21 @@ export default function ProductPage() {
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [useCaseImg, setUseCaseImg] = useState<string | null>(null);
+
+  // GA4 view_item — fires on product view and when the variant changes
+  useEffect(() => {
+    if (!product) return;
+    const v = product.variants?.[selectedVariant];
+    trackViewItem({
+      id: product.id,
+      name: v ? `${product.name} (${v.label})` : product.name,
+      price: v ? v.price : product.price,
+      quantity: qty,
+      category: product.category,
+      variant: v?.label,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id, selectedVariant]);
 
   if (!product) {
     return (
@@ -289,10 +305,15 @@ export default function ProductPage() {
                     });
                   }
 
-                  const cartProduct = product.variants
-                    ? { ...product, price: product.variants[selectedVariant].price * qty, name: `${product.name} (${product.variants[selectedVariant].label})` }
-                    : { ...product, price: product.price * qty };
-                  addToCart(cartProduct);
+                  const variant = product.variants?.[selectedVariant];
+                  const cartProduct = {
+                    ...product,
+                    price: variant ? variant.price : product.price,
+                    name: variant ? `${product.name} (${variant.label})` : product.name,
+                    category: product.category,
+                    variant: variant?.label,
+                  };
+                  addToCart(cartProduct, qty);
                   toast.success(`${product.name} added to cart 🛒`);
                 }}
                 style={{

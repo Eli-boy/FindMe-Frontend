@@ -42,87 +42,136 @@ export const trackPhoneClick = (location: string) =>
    PRODUCT EVENTS
    ════════════════════════════════════════════ */
 
-/** Generic product view */
-export const trackProductView = (
-  productName: string,
-  productId: string | number,
-  price: number,
-  category: string
-) =>
-  track("product_view", {
-    product_name: productName,
-    product_id: String(productId),
-    price,
-    category,
-  });
-
-/** Specific product views */
-export const trackLuggageTagView   = (variant?: string) => track("luggage_tag_view",   { variant: variant || "default" });
-export const trackKeychainView     = (variant?: string) => track("keychain_view",       { variant: variant || "default" });
-export const trackStickerPackView  = (variant?: string) => track("sticker_pack_view",  { variant: variant || "default" });
-
 /* ════════════════════════════════════════════
-   SALES / CONVERSION EVENTS
+   GA4 ECOMMERCE — standard event schema
+   Events: view_item_list, select_item, view_item,
+   add_to_cart, remove_from_cart, view_cart,
+   begin_checkout, add_payment_info, purchase
    ════════════════════════════════════════════ */
 
-/** User clicks "Add to Cart" */
-export const trackAddToCart = (
-  productName: string,
-  price: number,
-  quantity: number,
-  category: string
+export type AnalyticsItem = {
+  id?: number | string;
+  name: string;
+  price: number;
+  quantity?: number;
+  category?: string;
+  variant?: string;
+  index?: number;
+};
+
+function ga4Item(i: AnalyticsItem) {
+  const item: Record<string, any> = {
+    item_name: i.name,
+    price: i.price,
+    quantity: i.quantity ?? 1,
+  };
+  if (i.id != null) item.item_id = String(i.id);
+  if (i.category) item.item_category = i.category;
+  if (i.variant) item.item_variant = i.variant;
+  if (i.index != null) item.index = i.index;
+  return item;
+}
+
+const lineValue = (i: AnalyticsItem) => i.price * (i.quantity ?? 1);
+
+/** Product grid/list shown to the user */
+export const trackViewItemList = (
+  items: AnalyticsItem[],
+  listId: string,
+  listName: string
 ) =>
+  track("view_item_list", {
+    currency: "NGN",
+    item_list_id: listId,
+    item_list_name: listName,
+    items: items.map(ga4Item),
+  });
+
+/** User clicks a product from a list */
+export const trackSelectItem = (
+  item: AnalyticsItem,
+  listId: string,
+  listName: string
+) =>
+  track("select_item", {
+    currency: "NGN",
+    item_list_id: listId,
+    item_list_name: listName,
+    items: [ga4Item(item)],
+  });
+
+/** User views a product detail page */
+export const trackViewItem = (item: AnalyticsItem) =>
+  track("view_item", {
+    currency: "NGN",
+    value: lineValue(item),
+    items: [ga4Item(item)],
+  });
+
+/** Item added to cart (also fired for quantity increases) */
+export const trackAddToCart = (item: AnalyticsItem) =>
   track("add_to_cart", {
     currency: "NGN",
-    value: price * quantity,
-    items: [{ item_name: productName, price, quantity, item_category: category }],
+    value: lineValue(item),
+    items: [ga4Item(item)],
   });
 
-/** User clicks "Buy Now" / "Pay Now" button */
-export const trackBuyNow = (
-  productName: string,
-  price: number,
-  quantity: number
-) =>
-  track("buy_now", {
+/** Item removed from cart (also fired for quantity decreases) */
+export const trackRemoveFromCart = (item: AnalyticsItem) =>
+  track("remove_from_cart", {
     currency: "NGN",
-    value: price * quantity,
-    item_name: productName,
-    quantity,
+    value: lineValue(item),
+    items: [ga4Item(item)],
   });
 
-/** User reaches the cart/checkout page */
+/** User views the cart page */
+export const trackViewCart = (items: AnalyticsItem[], total: number) =>
+  track("view_cart", {
+    currency: "NGN",
+    value: total,
+    items: items.map(ga4Item),
+  });
+
+/** User clicks "Pay Now" / begins checkout */
 export const trackBeginCheckout = (
+  items: AnalyticsItem[],
   total: number,
-  items: { name: string; price: number; quantity: number }[]
+  couponCode?: string | null
 ) =>
   track("begin_checkout", {
     currency: "NGN",
     value: total,
-    items: items.map((i) => ({
-      item_name: i.name,
-      price: i.price,
-      quantity: i.quantity,
-    })),
+    coupon: couponCode || undefined,
+    items: items.map(ga4Item),
+  });
+
+/** User is sent to the payment provider */
+export const trackAddPaymentInfo = (
+  items: AnalyticsItem[],
+  total: number,
+  couponCode?: string | null
+) =>
+  track("add_payment_info", {
+    currency: "NGN",
+    value: total,
+    coupon: couponCode || undefined,
+    payment_type: "Paystack",
+    items: items.map(ga4Item),
   });
 
 /** Payment confirmed — the most important event */
 export const trackPurchase = (
-  orderNumber: number,
+  orderNumber: number | string,
   total: number,
-  items: { name: string; price: number; quantity: number }[],
-  couponCode?: string
+  items: AnalyticsItem[],
+  couponCode?: string | null
 ) =>
   track("purchase", {
     transaction_id: String(orderNumber),
     currency: "NGN",
     value: total,
-    coupon: couponCode || "",
-    items: items.map((i) => ({
-      item_name: i.name,
-      price: i.price,
-      quantity: i.quantity,
-    })),
+    coupon: couponCode || undefined,
+    items: items.map(ga4Item),
   });
 
 /* ════════════════════════════════════════════
